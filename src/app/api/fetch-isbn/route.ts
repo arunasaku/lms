@@ -9,8 +9,12 @@ export async function GET(request: Request) {
   }
 
   try {
+    // Determine if the input is an ISBN or a Book Name
+    const isName = /[a-zA-Z]{3,}/.test(isbn);
+    
     // 1. Try Google Books API First
-    let res = await fetch(`https://www.googleapis.com/books/v1/volumes?q=isbn:${isbn}`);
+    const googleQuery = isName ? `intitle:${encodeURIComponent(isbn)}` : `isbn:${isbn}`;
+    let res = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${googleQuery}&maxResults=1`);
     let data = await res.json();
 
     if (data.items && data.items.length > 0) {
@@ -24,43 +28,43 @@ export async function GET(request: Request) {
       });
     }
 
-    // 2. Try OpenLibrary API as a fallback
-    res = await fetch(`https://openlibrary.org/api/books?bibkeys=ISBN:${isbn}&format=json&jscmd=data`);
-    const olData = await res.json();
-    const olKey = `ISBN:${isbn}`;
+    if (!isName) {
+      // 2. Try OpenLibrary API as a fallback (Only for ISBNs)
+      res = await fetch(`https://openlibrary.org/api/books?bibkeys=ISBN:${isbn}&format=json&jscmd=data`);
+      const olData = await res.json();
+      const olKey = `ISBN:${isbn}`;
 
-    if (olData[olKey]) {
-      const bookInfo = olData[olKey];
-      return NextResponse.json({
-        title: bookInfo.title || "",
-        author: bookInfo.authors ? bookInfo.authors.map((a: any) => a.name).join(", ") : "",
-        publisher: bookInfo.publishers ? bookInfo.publishers.map((p: any) => p.name).join(", ") : "",
-        year: bookInfo.publish_date ? bookInfo.publish_date : "",
-        source: "Open Library"
-      });
-    }
-
-    // 3. Web Scraping for Grantha.lk
-    try {
-      const granthaRes = await fetch(`https://grantha.lk/catalogsearch/result/?q=${isbn}`);
-      const html = await granthaRes.text();
-      
-      const titleMatch = html.match(/class="product-item-link"\s*href="[^"]+">\s*([^<]+)\s*<\/a>/i);
-      
-      if (titleMatch) {
-        let title = titleMatch[1].trim();
-        // Sometimes title has extra HTML entities, unescape them if needed, but basic works
-        
+      if (olData[olKey]) {
+        const bookInfo = olData[olKey];
         return NextResponse.json({
-          title: title,
-          author: "", // Author might need a deeper scrape, keep empty for manual entry
-          publisher: "",
-          year: "",
-          source: "Grantha.lk (Scraped)"
+          title: bookInfo.title || "",
+          author: bookInfo.authors ? bookInfo.authors.map((a: any) => a.name).join(", ") : "",
+          publisher: bookInfo.publishers ? bookInfo.publishers.map((p: any) => p.name).join(", ") : "",
+          year: bookInfo.publish_date ? bookInfo.publish_date : "",
+          source: "Open Library"
         });
       }
-    } catch (e) {
-      console.log("Grantha scrape failed:", e);
+
+      // 3. Web Scraping for Grantha.lk (Only for ISBNs)
+      try {
+        const granthaRes = await fetch(`https://grantha.lk/catalogsearch/result/?q=${isbn}`);
+        const html = await granthaRes.text();
+        
+        const titleMatch = html.match(/class="product-item-link"\s*href="[^"]+">\s*([^<]+)\s*<\/a>/i);
+        
+        if (titleMatch) {
+          let title = titleMatch[1].trim();
+          return NextResponse.json({
+            title: title,
+            author: "",
+            publisher: "",
+            year: "",
+            source: "Grantha.lk (Scraped)"
+          });
+        }
+      } catch (e) {
+        console.log("Grantha scrape failed:", e);
+      }
     }
     
     return NextResponse.json({ error: "Book not found" }, { status: 404 });

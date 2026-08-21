@@ -70,14 +70,14 @@ export default function NewBookForm() {
         {/* ISBN Fetch Section */}
         <div className="bg-indigo-50 p-4 rounded-lg border border-indigo-100 flex flex-col sm:flex-row gap-4 items-end">
           <div className="flex-1 space-y-2 w-full">
-            <label htmlFor="isbn" className="block text-sm font-medium text-indigo-900">ISBN (Auto-fill)</label>
+            <label htmlFor="isbn" className="block text-sm font-medium text-indigo-900">ISBN / Book Name (Auto-fill)</label>
             <input 
               type="text" 
               id="isbn" 
               name="isbn" 
               value={isbn}
               onChange={(e) => setIsbn(e.target.value)}
-              placeholder="Enter ISBN..."
+              placeholder="Enter ISBN or Book Name..."
               className="w-full px-4 py-2.5 bg-white border border-indigo-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
             />
           </div>
