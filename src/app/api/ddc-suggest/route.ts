@@ -18,7 +18,7 @@ export async function POST(request: Request) {
     }
 
     const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: 'gemini-flash' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
 
     const prompt = `
 You are a professional librarian expert in the Dewey Decimal Classification (DDC) system.
@@ -43,6 +43,25 @@ Publisher: ${publisher || 'Unknown'}
     return NextResponse.json({ ddc });
   } catch (error: any) {
     console.error('Error fetching DDC suggestion:', error);
-    return NextResponse.json({ error: error.message || 'Internal Server Error' }, { status: 500 });
+    
+    // If it's a 404 model not found, let's fetch available models
+    let availableModels = "";
+    if (error.message && error.message.includes('404')) {
+      try {
+        const apiKey = process.env.GEMINI_API_KEY;
+        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
+        const data = await res.json();
+        if (data && data.models) {
+          const names = data.models
+            .filter((m: any) => m.supportedGenerationMethods.includes("generateContent"))
+            .map((m: any) => m.name.replace('models/', ''));
+          availableModels = " Available models: " + names.join(", ");
+        }
+      } catch (e) {
+        console.error("Could not fetch models list", e);
+      }
+    }
+
+    return NextResponse.json({ error: (error.message || 'Internal Server Error') + availableModels }, { status: 500 });
   }
 }
