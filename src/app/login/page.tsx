@@ -3,6 +3,7 @@
 import { signIn } from "next-auth/react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 export default function LoginPage() {
   const [memberId, setMemberId] = useState("");
@@ -40,7 +41,7 @@ export default function LoginPage() {
     <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
       <div className="w-full max-w-md bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-100">
           <div className="bg-slate-900 p-8 text-center flex flex-col items-center border-b border-slate-800">
-            <img src="/logo.jpg" alt="පොත by Brandspire" className="w-40 h-40 object-cover rounded-full shadow-2xl ring-4 ring-slate-800" />
+            <Image src="/logo.jpg" alt="පොත by Brandspire" width={160} height={160} priority className="w-40 h-40 object-cover rounded-full shadow-2xl ring-4 ring-slate-800 bg-[#fbfbf9]" />
             <p className="text-slate-400 mt-6 text-sm font-medium">Sign in to your account</p>
           </div>
         
