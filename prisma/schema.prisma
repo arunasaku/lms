@@ -1,0 +1,67 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id         String   @id @default(uuid())
+  memberId   String   @unique
+  name       String
+  role       String   @default("MEMBER") // ADMIN, STAFF, MEMBER
+  email      String?  @unique
+  password   String
+  phone      String?
+  department String?
+  address    String?
+  // For STAFF permissions
+  permCirculation Boolean  @default(false)
+  permCatalog     Boolean  @default(false)
+  permMembers     Boolean  @default(false)
+  permInventory   Boolean  @default(false)
+  permDashboard   Boolean  @default(false)
+
+  createdAt     DateTime @default(now())
+  
+  loans         Loan[]
+}
+
+model Book {
+  id            String   @id @default(uuid())
+  accNo         String   @unique
+  accNoInt      Int?
+  dateAdded     String?
+  title         String
+  author        String?
+  publisher     String?
+  year          String?
+  vendor        String?
+  price         Float?
+  billNo        String?
+  isbn          String?
+  ddc           String?
+  
+  status        String   @default("AVAILABLE") // AVAILABLE, BORROWED, LOST, DISCARDED, REPAIR
+  lastVerified  DateTime?
+  
+  loans         Loan[]
+}
+
+model Loan {
+  id         String   @id @default(uuid())
+  bookId     String
+  userId     String
+  borrowDate DateTime @default(now())
+  dueDate    DateTime
+  returnDate DateTime?
+  fine       Float    @default(0)
+  status     String   @default("ACTIVE") // ACTIVE, RETURNED
+  lastReminded DateTime?
+
+  book       Book     @relation(fields: [bookId], references: [id])
+  user       User     @relation(fields: [userId], references: [id])
+}
