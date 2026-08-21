@@ -39,10 +39,10 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
       <div className="w-full max-w-md bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-100">
-          <div className="bg-[#fbfbf9] p-8 text-center flex flex-col items-center border-b border-slate-200">
-            <img src="/logo.jpg" alt="පොත by Brandspire" className="w-56 h-auto object-contain mix-blend-multiply" />
-            <p className="text-slate-500 mt-4 text-sm font-medium">Sign in to your account</p>
-        </div>
+          <div className="bg-slate-900 p-8 text-center flex flex-col items-center border-b border-slate-800">
+            <img src="/logo.jpg" alt="පොත by Brandspire" className="w-40 h-40 object-cover rounded-full shadow-2xl ring-4 ring-slate-800" />
+            <p className="text-slate-400 mt-6 text-sm font-medium">Sign in to your account</p>
+          </div>
         
         <div className="p-8">
           {error && (

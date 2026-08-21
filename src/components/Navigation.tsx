@@ -16,7 +16,7 @@ export function Navigation({ session, children }: { session: any, children: Reac
       {/* Mobile Header */}
       <div className="md:hidden flex items-center justify-between bg-slate-900 text-white h-14 px-4 shrink-0 shadow-md">
         <div className="flex flex-col items-center ml-2">
-          <img src="/logo.jpg" alt="පොත by Brandspire" className="w-24 h-auto object-contain bg-[#fbfbf9] px-2 py-1 rounded-sm mix-blend-screen" style={{ mixBlendMode: 'screen' }} />
+          <img src="/logo.jpg" alt="පොත by Brandspire" className="w-10 h-10 object-cover rounded-full shadow-sm ring-1 ring-slate-700" />
         </div>
         <div className="flex items-center space-x-2">
           <LogoutButton />
@@ -43,8 +43,8 @@ export function Navigation({ session, children }: { session: any, children: Reac
       <div className="flex h-full overflow-hidden relative">
         {/* Sidebar Navigation */}
         <aside className={`${isOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0 transition-transform duration-300 absolute md:relative z-40 w-64 bg-slate-900 text-slate-300 flex flex-col h-full shrink-0 shadow-xl`}>
-          <div className="hidden md:flex flex-col p-4 border-b border-slate-800 bg-[#fbfbf9] items-center justify-center">
-            <img src="/logo.jpg" alt="පොත by Brandspire" className="w-44 h-auto object-contain mix-blend-multiply" />
+          <div className="hidden md:flex flex-col p-6 border-b border-slate-800 items-center justify-center">
+            <img src="/logo.jpg" alt="පොත by Brandspire" className="w-36 h-36 object-cover rounded-full shadow-lg ring-2 ring-slate-700/50" />
           </div>
           
           <nav className="flex-1 py-6 px-3 space-y-1 overflow-y-auto">
