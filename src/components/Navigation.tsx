@@ -40,14 +40,14 @@ export function Navigation({ session, children }: { session: any, children: Reac
         />
       )}
 
-      <div className="flex h-full overflow-hidden relative">
+      <div className="flex flex-1 w-full h-full overflow-hidden relative">
         {/* Sidebar Navigation */}
         <aside className={`${isOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0 transition-transform duration-300 absolute md:relative z-40 w-64 bg-slate-900 text-slate-300 flex flex-col h-full shrink-0 shadow-xl`}>
           <div className="hidden md:flex flex-col p-6 border-b border-slate-800 items-center justify-center">
-            <img src="/logo.jpg" alt="පොත by Brandspire" className="w-36 h-36 object-cover rounded-full shadow-lg ring-2 ring-slate-700/50" />
+            <img src="/logo.jpg" alt="පොත by Brandspire" className="w-28 h-28 object-cover rounded-full shadow-lg ring-2 ring-slate-700/50" />
           </div>
           
-          <nav className="flex-1 py-6 px-3 space-y-1 overflow-y-auto">
+          <nav className="flex-1 py-6 px-3 space-y-1 overflow-y-auto hide-scrollbar">
             {((session.user as any)?.role === 'ADMIN' || (session.user as any)?.role === 'LIBRARIAN' || (session.user as any)?.permDashboard) && (
               <Link onClick={closeMenu} href="/" className={`flex items-center px-3 py-2.5 rounded-lg group transition font-medium ${pathname === '/' ? 'bg-indigo-500/10 text-indigo-400' : 'text-slate-300 hover:bg-slate-800 hover:text-white'}`}>
                 <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
