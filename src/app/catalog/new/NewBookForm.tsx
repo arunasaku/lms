@@ -185,6 +185,43 @@ export default function NewBookForm() {
                 {suggestingDdc ? "Thinking..." : "Suggest"}
               </button>
             </div>
+            
+            <div className="space-y-2">
+              <label htmlFor="itemType" className="block text-sm font-medium text-slate-700">Item Type (ද්‍රව්‍ය වර්ගය)</label>
+              <select 
+                id="itemType" 
+                name="itemType" 
+                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+              >
+                <option value="LENDING">Lending (බැහැර දෙන)</option>
+                <option value="REFERENCE">Reference (විමර්ශන)</option>
+                <option value="MAGAZINE">Magazine / Journal (සඟරා)</option>
+                <option value="MEDIA">Media / CD / DVD (මාධ්‍ය)</option>
+              </select>
+            </div>
+            
+            <div className="space-y-2">
+              <label htmlFor="category" className="block text-sm font-medium text-slate-700">Category / Genre (කාණ්ඩය)</label>
+              <input 
+                type="text" 
+                id="category" 
+                name="category" 
+                placeholder="e.g. Fiction, Science, Kids"
+                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label htmlFor="shelfLoc" className="block text-sm font-medium text-slate-700">Shelf Location (රාක්ක අංකය)</label>
+              <input 
+                type="text" 
+                id="shelfLoc" 
+                name="shelfLoc" 
+                placeholder="e.g. A3, Row 2"
+                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+              />
+            </div>
+            
           </div>
         </div>
 

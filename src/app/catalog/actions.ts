@@ -17,6 +17,9 @@ export async function createBook(formData: FormData) {
   const billNo = formData.get("billNo") as string | null;
   const isbn = formData.get("isbn") as string | null;
   const ddc = formData.get("ddc") as string | null;
+  const itemType = formData.get("itemType") as string | null;
+  const category = formData.get("category") as string | null;
+  const shelfLoc = formData.get("shelfLoc") as string | null;
 
   if (!accNo || !title) {
     throw new Error("Accession Number and Title are required");
@@ -41,6 +44,9 @@ export async function createBook(formData: FormData) {
       billNo,
       isbn,
       ddc,
+      itemType: itemType || "LENDING",
+      category,
+      shelfLoc,
       dateAdded,
       status: "AVAILABLE",
     },
@@ -61,6 +67,9 @@ export async function updateBook(formData: FormData) {
   const priceStr = formData.get("price") as string | null;
   const billNo = formData.get("billNo") as string | null;
   const ddc = formData.get("ddc") as string | null;
+  const itemType = formData.get("itemType") as string | null;
+  const category = formData.get("category") as string | null;
+  const shelfLoc = formData.get("shelfLoc") as string | null;
   const status = formData.get("status") as string;
 
   if (!id || !accNo || !title) {
@@ -83,6 +92,9 @@ export async function updateBook(formData: FormData) {
       price: isNaN(price as number) ? null : price,
       billNo: billNo || null,
       ddc: ddc || null,
+      itemType: itemType || "LENDING",
+      category: category || null,
+      shelfLoc: shelfLoc || null,
       status: status || "AVAILABLE",
     },
   });
