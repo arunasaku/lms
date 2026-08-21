@@ -73,7 +73,7 @@ export async function GET(request: Request) {
         const apiKey = process.env.GEMINI_API_KEY;
         if (apiKey) {
           const genAI = new GoogleGenerativeAI(apiKey);
-          const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+          const model = genAI.getGenerativeModel({ model: 'gemini-3.5-flash' });
           const prompt = `Provide the details for the book "${isbn}". 
 Respond ONLY in this exact JSON format, nothing else:
 {"title": "Book Name", "author": "Author Name", "publisher": "Publisher Name", "year": "YYYY"}
@@ -83,8 +83,12 @@ If you don't know the exact year or publisher, leave them blank. Make sure the a
           const response = await result.response;
           let text = response.text().trim();
           
-          // clean up markdown json blocks if any
-          text = text.replace(/```json/gi, '').replace(/```/g, '').trim();
+          // Extract JSON block in case AI added extra text
+          const jsonMatch = text.match(/\{[\s\S]*\}/);
+          if (jsonMatch) {
+            text = jsonMatch[0];
+          }
+          
           const aiData = JSON.parse(text);
           
           if (aiData.title) {

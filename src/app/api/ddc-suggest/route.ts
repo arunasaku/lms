@@ -18,7 +18,7 @@ export async function POST(request: Request) {
     }
 
     const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-3.5-flash' });
 
     const prompt = `
 You are a professional librarian expert in the Dewey Decimal Classification (DDC) system.
@@ -37,7 +37,7 @@ Publisher: ${publisher || 'Unknown'}
     const text = response.text().trim();
     
     // Clean up response to ensure only numbers (and possibly decimal like 891.4)
-    const match = text.match(/^[0-9]+(\.[0-9]+)?/);
+    const match = text.match(/[0-9]+(\.[0-9]+)?/);
     const ddc = match ? match[0] : text;
 
     return NextResponse.json({ ddc });
