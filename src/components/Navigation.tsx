@@ -15,7 +15,10 @@ export function Navigation({ session, children }: { session: any, children: Reac
     <>
       {/* Mobile Header */}
       <div className="md:hidden flex items-center justify-between bg-slate-900 text-white h-14 px-4 shrink-0 shadow-md">
-        <h1 className="text-lg font-bold tracking-tight">Library<span className="text-indigo-500">Pro</span></h1>
+        <div className="flex flex-col">
+          <h1 className="text-lg font-extrabold text-white tracking-tighter leading-none" style={{fontFamily: "'Abhaya Libre', 'Noto Sans Sinhala', sans-serif"}}>පොත</h1>
+          <span className="text-[8px] font-bold text-indigo-400 tracking-widest uppercase mt-0.5">BY BRANDSPIRE</span>
+        </div>
         <div className="flex items-center space-x-2">
           <LogoutButton />
           <button onClick={() => setIsOpen(!isOpen)} className="p-1 border border-slate-700 rounded-md">
@@ -30,11 +33,20 @@ export function Navigation({ session, children }: { session: any, children: Reac
         </div>
       </div>
 
-      <div className="flex flex-1 overflow-hidden relative">
+      {/* Backdrop for mobile */}
+      {isOpen && (
+        <div 
+          className="fixed inset-0 bg-slate-900/80 z-30 md:hidden backdrop-blur-sm"
+          onClick={() => setIsOpen(false)}
+        />
+      )}
+
+      <div className="flex h-full overflow-hidden relative">
         {/* Sidebar Navigation */}
         <aside className={`${isOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0 transition-transform duration-300 absolute md:relative z-40 w-64 bg-slate-900 text-slate-300 flex flex-col h-full shrink-0 shadow-xl`}>
-          <div className="hidden md:flex p-6 border-b border-slate-800">
-            <h1 className="text-xl font-bold text-white tracking-tight">Library<span className="text-indigo-500">Pro</span></h1>
+          <div className="hidden md:flex flex-col p-6 border-b border-slate-800">
+            <h1 className="text-3xl font-extrabold text-white tracking-tighter leading-none" style={{fontFamily: "'Abhaya Libre', 'Noto Sans Sinhala', sans-serif"}}>පොත</h1>
+            <span className="text-[10px] font-bold text-indigo-400 tracking-widest uppercase mt-1">BY BRANDSPIRE</span>
           </div>
           
           <nav className="flex-1 py-6 px-3 space-y-1 overflow-y-auto">

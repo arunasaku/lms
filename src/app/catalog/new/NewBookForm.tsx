@@ -178,7 +178,7 @@ export default function NewBookForm() {
                 type="button" 
                 onClick={suggestDdc}
                 disabled={suggestingDdc}
-                className="px-4 py-2.5 bg-indigo-100 hover:bg-indigo-200 disabled:bg-slate-100 text-indigo-700 disabled:text-slate-400 rounded-lg font-medium transition shadow-sm flex items-center gap-2 border border-indigo-200"
+                className="flex-shrink-0 px-4 py-2.5 bg-indigo-100 hover:bg-indigo-200 disabled:bg-slate-100 text-indigo-700 disabled:text-slate-400 rounded-lg font-medium transition shadow-sm flex items-center gap-2 border border-indigo-200"
                 title="Suggest DDC with AI"
               >
                 <Wand2 size={18} />

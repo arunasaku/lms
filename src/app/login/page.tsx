@@ -39,8 +39,9 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
       <div className="w-full max-w-md bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-100">
-        <div className="bg-slate-900 p-8 text-center">
-          <h1 className="text-3xl font-bold text-white tracking-tight">Library<span className="text-indigo-500">Pro</span></h1>
+          <div className="bg-slate-900 p-8 text-center flex flex-col items-center">
+            <h1 className="text-4xl font-extrabold text-white tracking-tighter leading-none" style={{fontFamily: "'Abhaya Libre', 'Noto Sans Sinhala', sans-serif"}}>පොත</h1>
+            <span className="text-xs font-bold text-indigo-400 tracking-widest uppercase mt-1">BY BRANDSPIRE</span>
           <p className="text-slate-400 mt-2 text-sm">Sign in to your account</p>
         </div>
         
