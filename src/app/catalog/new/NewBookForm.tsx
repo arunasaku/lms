@@ -26,6 +26,11 @@ export default function NewBookForm() {
         if (data.author) setAuthor(data.author);
         if (data.publisher) setPublisher(data.publisher);
         if (data.year) setYear(data.year);
+        
+        // Auto suggest DDC
+        if (data.title) {
+          suggestDdc(data.title, data.author, data.publisher);
+        }
       } else {
         alert("Book not found for this ISBN in global databases or local stores.");
       }
@@ -37,27 +42,20 @@ export default function NewBookForm() {
     }
   };
 
-  const suggestDdc = async () => {
-    if (!title) {
-      alert("Please enter a title first to get a DDC suggestion.");
-      return;
-    }
+  const suggestDdc = async (t: string, a?: string, p?: string) => {
     setSuggestingDdc(true);
     try {
       const res = await fetch("/api/ddc-suggest", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title, author, publisher }),
+        body: JSON.stringify({ title: t, author: a, publisher: p }),
       });
       const data = await res.json();
       if (data.ddc) {
         setDdc(data.ddc);
-      } else {
-        alert(data.error || "Could not generate DDC.");
       }
     } catch (e) {
       console.error(e);
-      alert("Error generating DDC.");
     } finally {
       setSuggestingDdc(false);
     }
@@ -163,65 +161,41 @@ export default function NewBookForm() {
           </div>
           
           <div className="space-y-2">
-            <label htmlFor="ddc" className="block text-sm font-medium text-slate-700">Dewey Decimal (DDC)</label>
-            <div className="flex gap-2">
-              <input 
-                type="text" 
-                id="ddc" 
-                name="ddc" 
-                value={ddc}
-                onChange={(e) => setDdc(e.target.value)}
-                placeholder="e.g. 800"
-                className="flex-1 px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
-              />
-              <button 
-                type="button" 
-                onClick={suggestDdc}
-                disabled={suggestingDdc}
-                className="flex-shrink-0 px-4 py-2.5 bg-indigo-100 hover:bg-indigo-200 disabled:bg-slate-100 text-indigo-700 disabled:text-slate-400 rounded-lg font-medium transition shadow-sm flex items-center gap-2 border border-indigo-200"
-                title="Suggest DDC with AI"
-              >
-                <Wand2 size={18} />
-                {suggestingDdc ? "Thinking..." : "Suggest"}
-              </button>
-            </div>
-            
-            <div className="space-y-2">
-              <label htmlFor="itemType" className="block text-sm font-medium text-slate-700">Item Type (ද්‍රව්‍ය වර්ගය)</label>
-              <select 
-                id="itemType" 
-                name="itemType" 
-                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
-              >
-                <option value="LENDING">Lending (බැහැර දෙන)</option>
-                <option value="REFERENCE">Reference (විමර්ශන)</option>
-                <option value="MAGAZINE">Magazine / Journal (සඟරා)</option>
-                <option value="MEDIA">Media / CD / DVD (මාධ්‍ය)</option>
-              </select>
-            </div>
-            
-            <div className="space-y-2">
-              <label htmlFor="category" className="block text-sm font-medium text-slate-700">Category / Genre (කාණ්ඩය)</label>
-              <input 
-                type="text" 
-                id="category" 
-                name="category" 
-                placeholder="e.g. Fiction, Science, Kids"
-                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
-              />
-            </div>
+            <label htmlFor="itemType" className="block text-sm font-medium text-slate-700">Item Type (ද්‍රව්‍ය වර්ගය)</label>
+            <select 
+              id="itemType" 
+              name="itemType" 
+              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+            >
+              <option value="LENDING">Lending (බැහැර දෙන)</option>
+              <option value="REFERENCE">Reference (විමර්ශන)</option>
+              <option value="MAGAZINE">Magazine / Journal (සඟරා)</option>
+              <option value="MEDIA">Media / CD / DVD (මාධ්‍ය)</option>
+            </select>
+          </div>
+        </div>
 
-            <div className="space-y-2">
-              <label htmlFor="shelfLoc" className="block text-sm font-medium text-slate-700">Shelf Location (රාක්ක අංකය)</label>
-              <input 
-                type="text" 
-                id="shelfLoc" 
-                name="shelfLoc" 
-                placeholder="e.g. A3, Row 2"
-                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
-              />
-            </div>
-            
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-2">
+            <label htmlFor="category" className="block text-sm font-medium text-slate-700">Category / Genre (කාණ්ඩය)</label>
+            <input 
+              type="text" 
+              id="category" 
+              name="category" 
+              placeholder="e.g. Fiction, Science, Kids"
+              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label htmlFor="shelfLoc" className="block text-sm font-medium text-slate-700">Shelf Location (රාක්ක අංකය)</label>
+            <input 
+              type="text" 
+              id="shelfLoc" 
+              name="shelfLoc" 
+              placeholder="e.g. A3, Row 2"
+              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+            />
           </div>
         </div>
 
@@ -236,9 +210,7 @@ export default function NewBookForm() {
               className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
             />
           </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          
           <div className="space-y-2">
             <label htmlFor="price" className="block text-sm font-medium text-slate-700">Price (Rs.)</label>
             <input 
@@ -250,7 +222,9 @@ export default function NewBookForm() {
               className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
             />
           </div>
-          
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2">
             <label htmlFor="billNo" className="block text-sm font-medium text-slate-700">Bill Number</label>
             <input 
@@ -258,6 +232,21 @@ export default function NewBookForm() {
               id="billNo" 
               name="billNo" 
               placeholder="Receipt / Bill No..."
+              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label htmlFor="ddc" className="block text-sm font-medium text-slate-700">
+              Dewey Decimal (DDC) {suggestingDdc && <span className="text-indigo-600 font-normal text-xs ml-2 animate-pulse">Auto-suggesting...</span>}
+            </label>
+            <input 
+              type="text" 
+              id="ddc" 
+              name="ddc" 
+              value={ddc}
+              onChange={(e) => setDdc(e.target.value)}
+              placeholder="e.g. 800"
               className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
             />
           </div>
