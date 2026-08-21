@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -29,6 +30,7 @@ export async function GET(request: Request) {
     }
 
     if (!isName) {
+      // ... existing code for ISBN fallback ...
       // 2. Try OpenLibrary API as a fallback (Only for ISBNs)
       res = await fetch(`https://openlibrary.org/api/books?bibkeys=ISBN:${isbn}&format=json&jscmd=data`);
       const olData = await res.json();
@@ -64,6 +66,39 @@ export async function GET(request: Request) {
         }
       } catch (e) {
         console.log("Grantha scrape failed:", e);
+      }
+    } else {
+      // 4. Use AI Fallback for Name Searches
+      try {
+        const apiKey = process.env.GEMINI_API_KEY;
+        if (apiKey) {
+          const genAI = new GoogleGenerativeAI(apiKey);
+          const model = genAI.getGenerativeModel({ model: 'gemini-3.5-flash' });
+          const prompt = `Provide the details for the book "${isbn}". 
+Respond ONLY in this exact JSON format, nothing else:
+{"title": "Book Name", "author": "Author Name", "publisher": "Publisher Name", "year": "YYYY"}
+If you don't know the exact year or publisher, leave them blank. Make sure the author is accurate.`;
+          
+          const result = await model.generateContent(prompt);
+          const response = await result.response;
+          let text = response.text().trim();
+          
+          // clean up markdown json blocks if any
+          text = text.replace(/```json/gi, '').replace(/```/g, '').trim();
+          const aiData = JSON.parse(text);
+          
+          if (aiData.title) {
+            return NextResponse.json({
+              title: aiData.title,
+              author: aiData.author || "",
+              publisher: aiData.publisher || "",
+              year: aiData.year || "",
+              source: "AI Knowledge Base"
+            });
+          }
+        }
+      } catch (e) {
+        console.log("AI Search failed:", e);
       }
     }
     
