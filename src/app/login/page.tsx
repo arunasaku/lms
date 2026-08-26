@@ -46,9 +46,9 @@ export default function LoginPage() {
             <Image src={logoPic} alt="Potha - by Brandspire" priority className="w-40 h-40 object-cover rounded-full shadow-2xl ring-4 ring-slate-800 bg-[#fbfbf9]" />
           </div>
         
-          <div className="bg-indigo-50 border-b border-indigo-100 p-4 text-center">
-            <p className="text-sm text-indigo-800 mb-1">Are you still not a member?</p>
-            <Link href="/opac" className="inline-flex items-center justify-center bg-indigo-600 text-white font-medium px-5 py-2 rounded-lg hover:bg-indigo-700 transition shadow-sm text-sm">
+          <div className="bg-indigo-50/80 border-b border-indigo-100 p-5 text-center">
+            <p className="text-base font-semibold text-indigo-700 mb-3">Are you still not a member?</p>
+            <Link href="/opac" className="inline-flex items-center justify-center bg-indigo-600 text-white font-medium px-6 py-2.5 rounded-lg hover:bg-indigo-700 transition shadow-md text-sm">
               Browse the Public Catalog
             </Link>
           </div>
