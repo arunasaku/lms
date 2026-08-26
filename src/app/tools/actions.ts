@@ -19,10 +19,11 @@ export async function updateSystemSettings(formData: FormData) {
       update: { dailyFineRate, borrowPeriodDays },
       create: { id: 1, dailyFineRate, borrowPeriodDays }
     });
-    revalidatePath("/settings");
+    revalidatePath("/tools");
     revalidatePath("/circulation/reports");
     return { success: true, message: "Settings updated successfully." };
   } catch (error: any) {
     return { success: false, error: error.message };
   }
 }
+
