@@ -18,6 +18,18 @@ export default async function SettingsPage() {
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+        <div className="px-8 py-5 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
+          <div>
+            <h3 className="text-xl font-semibold text-slate-800">Members Directory</h3>
+            <p className="text-sm text-slate-500 mt-1">View, search, edit and manage all registered members and staff.</p>
+          </div>
+          <a href="/members" className="px-5 py-2.5 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 rounded-lg font-medium transition shadow-sm">
+            Manage Members &rarr;
+          </a>
+        </div>
+      </div>
+
+      <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
         <div className="px-8 py-5 border-b border-slate-100 bg-slate-50">
           <h3 className="text-xl font-semibold text-slate-800">Circulation Settings</h3>
         </div>

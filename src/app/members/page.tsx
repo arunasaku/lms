@@ -43,8 +43,13 @@ export default async function MembersPage({
   return (
     <div className="max-w-6xl mx-auto space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-3xl font-bold text-slate-800">Members Directory</h2>
-        <Link href="/members/new" className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition shadow-sm">
+        <div>
+          <Link href="/settings" className="text-sm font-medium text-indigo-600 hover:text-indigo-800 transition mb-2 inline-block">
+            &larr; Back to Settings
+          </Link>
+          <h2 className="text-3xl font-bold text-slate-800">Members Directory</h2>
+        </div>
+        <Link href="/settings" className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition shadow-sm">
           + Add New Member
         </Link>
       </div>
