@@ -59,27 +59,6 @@ export default async function ToolsPage() {
           
           <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
             <div className="px-8 py-5 border-b border-slate-100 bg-slate-50">
-              <h4 className="text-lg font-semibold text-slate-800">Circulation Settings</h4>
-            </div>
-            <form action={updateSystemSettings as any} className="p-8 space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <label htmlFor="dailyFineRate" className="block text-sm font-medium text-slate-700">Daily Fine Rate (Rs.)</label>
-                  <input type="number" step="0.5" id="dailyFineRate" name="dailyFineRate" defaultValue={dailyFineRate} required className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition" />
-                </div>
-                <div className="space-y-2">
-                  <label htmlFor="borrowPeriodDays" className="block text-sm font-medium text-slate-700">Borrow Period (Days)</label>
-                  <input type="number" id="borrowPeriodDays" name="borrowPeriodDays" defaultValue={borrowPeriodDays} required className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition" />
-                </div>
-              </div>
-              <div className="flex justify-end">
-                <button type="submit" className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition shadow-sm">Save Settings</button>
-              </div>
-            </form>
-          </div>
-
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <div className="px-8 py-5 border-b border-slate-100 bg-slate-50">
               <h4 className="text-lg font-semibold text-slate-800">Add Staff / Librarian</h4>
               <p className="text-sm text-slate-500 mt-1">Register new administrative users with elevated privileges.</p>
             </div>
@@ -113,6 +92,27 @@ export default async function ToolsPage() {
               </div>
               <div className="pt-4 flex justify-end gap-3 border-t border-slate-100">
                 <button type="submit" className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition shadow-sm">Register User</button>
+              </div>
+            </form>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+            <div className="px-8 py-5 border-b border-slate-100 bg-slate-50">
+              <h4 className="text-lg font-semibold text-slate-800">Circulation Settings</h4>
+            </div>
+            <form action={updateSystemSettings as any} className="p-8 space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <label htmlFor="dailyFineRate" className="block text-sm font-medium text-slate-700">Daily Fine Rate (Rs.)</label>
+                  <input type="number" step="0.5" id="dailyFineRate" name="dailyFineRate" defaultValue={dailyFineRate} required className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition" />
+                </div>
+                <div className="space-y-2">
+                  <label htmlFor="borrowPeriodDays" className="block text-sm font-medium text-slate-700">Borrow Period (Days)</label>
+                  <input type="number" id="borrowPeriodDays" name="borrowPeriodDays" defaultValue={borrowPeriodDays} required className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition" />
+                </div>
+              </div>
+              <div className="flex justify-end">
+                <button type="submit" className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition shadow-sm">Save Settings</button>
               </div>
             </form>
           </div>
