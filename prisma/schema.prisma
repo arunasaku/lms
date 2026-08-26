@@ -72,7 +72,9 @@ model Loan {
 }
 
 model SystemConfig {
-  id               Int   @id @default(1)
-  dailyFineRate    Float @default(5.0)
-  borrowPeriodDays Int   @default(14)
+  id               Int     @id @default(1)
+  dailyFineRate    Float   @default(5.0)
+  borrowPeriodDays Int     @default(14)
+  smtpEmail        String?
+  smtpPassword     String?
 }

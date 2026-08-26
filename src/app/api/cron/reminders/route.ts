@@ -45,11 +45,15 @@ export async function GET(request: Request) {
 
     // Configure Nodemailer
     // NOTE: For Gmail, you must use an App Password, not your regular password.
+    const config = await prisma.systemConfig.findUnique({ where: { id: 1 } });
+    const smtpEmail = config?.smtpEmail || process.env.EMAIL_USER;
+    const smtpPassword = config?.smtpPassword || process.env.EMAIL_PASS;
+
     const transporter = nodemailer.createTransport({
-      service: 'gmail',
+      service: "gmail",
       auth: {
-        user: process.env.EMAIL_USER || 'your-library-email@gmail.com',
-        pass: process.env.EMAIL_PASS || 'your-app-password',
+        user: smtpEmail,
+        pass: smtpPassword,
       },
     });
 
@@ -59,15 +63,12 @@ export async function GET(request: Request) {
       if (!loan.user.email) continue;
       
       const isOverdue = loan.dueDate < today;
-      const subject = isOverdue ? 
-        `URGENT: Library Book Overdue - ${loan.book.title}` : 
-        `Reminder: Library Book Due Tomorrow - ${loan.book.title}`;
-        
+      const subject = isOverdue ? `OVERDUE: Return "${loan.book.title}"` : `Reminder: "${loan.book.title}" is due soon`;
+      
       const html = `
-        <div style="font-family: Arial, sans-serif; max-w: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 10px;">
-          <h2 style="color: #4f46e5;">Library Notification</h2>
+        <div style="font-family: Arial, sans-serif; padding: 20px; color: #333;">
+          <h2 style="color: #4f46e5;">Library Notice</h2>
           <p>Dear ${loan.user.name},</p>
-          <p>This is a reminder regarding the book you borrowed from our library:</p>
           
           <div style="background-color: #f8fafc; padding: 15px; border-radius: 8px; margin: 20px 0;">
             <p><strong>Book Title:</strong> ${loan.book.title}</p>
@@ -85,10 +86,10 @@ export async function GET(request: Request) {
       `;
 
       try {
-        // Only attempt to send if environment variables are configured
-        if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+        // Only attempt to send if environment variables or db config are configured
+        if (smtpEmail && smtpPassword) {
           await transporter.sendMail({
-            from: `"Library System" <${process.env.EMAIL_USER}>`,
+            from: `"Library System" <${smtpEmail}>`,
             to: loan.user.email,
             subject: subject,
             html: html,
@@ -112,7 +113,7 @@ export async function GET(request: Request) {
     return NextResponse.json({ 
       success: true, 
       message: `Sent ${sentCount} reminders.`,
-      simulated: !(process.env.EMAIL_USER && process.env.EMAIL_PASS)
+      simulated: !(smtpEmail && smtpPassword)
     });
 
   } catch (error: any) {

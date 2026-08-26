@@ -98,7 +98,7 @@ export default async function ToolsPage() {
 
           <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
             <div className="px-8 py-5 border-b border-slate-100 bg-slate-50">
-              <h4 className="text-lg font-semibold text-slate-800">Circulation Settings</h4>
+              <h4 className="text-lg font-semibold text-slate-800">System Configuration</h4>
             </div>
             <form action={updateSystemSettings as any} className="p-8 space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -111,7 +111,22 @@ export default async function ToolsPage() {
                   <input type="number" id="borrowPeriodDays" name="borrowPeriodDays" defaultValue={borrowPeriodDays} required className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition" />
                 </div>
               </div>
-              <div className="flex justify-end">
+
+              <div className="pt-4 border-t border-slate-100">
+                <h5 className="text-md font-semibold text-slate-700 mb-4">Email Notifications (Cron)</h5>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label htmlFor="smtpEmail" className="block text-sm font-medium text-slate-700">Gmail Address</label>
+                    <input type="email" id="smtpEmail" name="smtpEmail" defaultValue={config?.smtpEmail || ""} placeholder="e.g. library@gmail.com" className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition" />
+                  </div>
+                  <div className="space-y-2">
+                    <label htmlFor="smtpPassword" className="block text-sm font-medium text-slate-700">Gmail App Password</label>
+                    <input type="password" id="smtpPassword" name="smtpPassword" defaultValue={config?.smtpPassword || ""} placeholder="16-character app password" className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition" />
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex justify-end pt-4">
                 <button type="submit" className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition shadow-sm">Save Settings</button>
               </div>
             </form>
