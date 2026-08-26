@@ -1,9 +1,11 @@
-﻿import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 import { updateSystemSettings } from "./actions";
 import { createMember } from "../members/actions";
 import { RoleSelector } from "@/components/RoleSelector";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+
+export const dynamic = 'force-dynamic';
 
 const prisma = new PrismaClient();
 
