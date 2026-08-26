@@ -164,8 +164,8 @@ export async function markFineAsPaid(loanId: string) {
         finePaidDate: new Date()
       }
     });
-    revalidatePath("/circulation");
-    revalidatePath("/inventory/reports/fines");
+    revalidatePath("/circulation/fines");
+    revalidatePath("/circulation/reports");
     return { success: true };
   } catch (error: any) {
     return { success: false, error: error.message };

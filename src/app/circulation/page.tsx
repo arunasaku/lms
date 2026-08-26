@@ -140,8 +140,19 @@ export default function CirculationPage() {
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-3xl font-bold text-slate-800">Circulation Desk</h2>
+      <div className="flex justify-between items-end mb-8">
+        <div>
+          <h2 className="text-3xl font-bold text-slate-800">Circulation Desk</h2>
+          <p className="text-slate-500 mt-1">Issue and return books, and manage circulation.</p>
+        </div>
+        <div className="flex gap-3">
+          <a href="/circulation/fines" className="px-4 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 rounded-lg text-sm font-medium transition">
+            Unpaid Fines
+          </a>
+          <a href="/circulation/reports" className="px-4 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 rounded-lg text-sm font-medium transition">
+            Fines Report
+          </a>
+        </div>
       </div>
 
       {showScanner !== "NONE" && (
