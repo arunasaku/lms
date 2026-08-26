@@ -43,8 +43,8 @@ export default async function OpacPage({
           <h2 className="text-2xl font-semibold text-slate-800">
             {query ? `Search Results for "${query}"` : "Search to find books"}
           </h2>
-          <Link href="/login" className="text-indigo-600 font-medium hover:underline">
-            Staff Login &rarr;
+          <Link href="/login" className="bg-indigo-50 text-indigo-700 border border-indigo-200 hover:bg-indigo-100 px-5 py-2 rounded-lg font-medium transition shadow-sm text-sm">
+            Staff Login
           </Link>
         </div>
 
