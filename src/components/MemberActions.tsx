@@ -4,7 +4,7 @@ import { useTransition } from "react";
 import Link from "next/link";
 import { deleteMember } from "@/app/members/actions";
 
-export function MemberActions({ memberId, userRole }: { memberId: string, userRole?: string }) {
+export function MemberActions({ memberId, userRole, targetRole, currentUserId }: { memberId: string, userRole?: string, targetRole?: string, currentUserId?: string }) {
   const [isPending, startTransition] = useTransition();
 
   const handleDelete = () => {
@@ -15,12 +15,21 @@ export function MemberActions({ memberId, userRole }: { memberId: string, userRo
     }
   };
 
+  // STAFF cannot edit other STAFF or LIBRARIAN
+  // They can edit MEMBER, or themselves
+  const canEdit = 
+    userRole === 'ADMIN' || 
+    userRole === 'LIBRARIAN' || 
+    (userRole === 'STAFF' && (targetRole === 'MEMBER' || currentUserId === memberId));
+
   return (
     <>
-      <Link href={`/members/edit/${memberId}`} className="text-indigo-600 hover:text-indigo-900 font-medium mr-3">
-        Edit
-      </Link>
-      {userRole === 'ADMIN' && (
+      {canEdit && (
+        <Link href={`/members/edit/${memberId}`} className="text-indigo-600 hover:text-indigo-900 font-medium mr-3">
+          Edit
+        </Link>
+      )}
+      {(userRole === 'ADMIN' || userRole === 'LIBRARIAN') && (
         <button 
           onClick={handleDelete} 
           disabled={isPending}

@@ -19,9 +19,19 @@ export default async function EditMemberPage({ params }: { params: Promise<{ id:
 
   const session = await getServerSession(authOptions);
   const userRole = (session?.user as any)?.role;
+  const currentUserId = (session?.user as any)?.id || (session?.user as any)?.memberId;
 
   if (userRole !== 'ADMIN' && member.role === 'ADMIN') {
     redirect('/members')
+  }
+  
+  if (userRole === 'STAFF') {
+    if (member.role === 'STAFF' && member.id !== currentUserId) {
+      redirect('/members')
+    }
+    if (member.role === 'LIBRARIAN') {
+      redirect('/members')
+    }
   }
 
   return (

@@ -31,6 +31,9 @@ export async function createMember(formData: FormData) {
   if (userRole !== 'ADMIN' && role === 'ADMIN') {
     throw new Error("Unauthorized: Only admins can create admin users");
   }
+  if (userRole === 'STAFF' && (role === 'LIBRARIAN' || role === 'STAFF')) {
+    throw new Error("Unauthorized: Staff can only create regular members");
+  }
 
   if (!memberId || !name || !passwordRaw) {
     throw new Error("Member ID, Name, and Password are required");
@@ -90,6 +93,7 @@ export async function updateMember(formData: FormData) {
   const { authOptions } = await import("@/lib/auth");
   const session = await getServerSession(authOptions);
   const userRole = (session?.user as any)?.role;
+  const currentUserId = (session?.user as any)?.id || (session?.user as any)?.memberId;
 
   const targetMember = await prisma.user.findUnique({ where: { id } });
   if (userRole !== 'ADMIN' && targetMember?.role === 'ADMIN') {
@@ -97,6 +101,14 @@ export async function updateMember(formData: FormData) {
   }
   if (userRole !== 'ADMIN' && role === 'ADMIN') {
     throw new Error("Unauthorized: Cannot change role to ADMIN");
+  }
+  if (userRole === 'STAFF') {
+    if (targetMember?.role === 'STAFF' && targetMember.id !== currentUserId) {
+      throw new Error("Unauthorized: Staff cannot edit other Staff");
+    }
+    if (targetMember?.role === 'LIBRARIAN' || role === 'LIBRARIAN') {
+      throw new Error("Unauthorized: Staff cannot edit Librarian");
+    }
   }
 
   if (!id || !name) {
@@ -134,9 +146,15 @@ export async function deleteMember(id: string) {
   const { getServerSession } = await import("next-auth");
   const { authOptions } = await import("@/lib/auth");
   const session = await getServerSession(authOptions);
+  const userRole = (session?.user as any)?.role;
 
-  if ((session?.user as any)?.role !== 'ADMIN') {
-    throw new Error("Unauthorized: Only admins can delete members");
+  if (userRole !== 'ADMIN' && userRole !== 'LIBRARIAN') {
+    throw new Error("Unauthorized: Only admins and librarians can delete members");
+  }
+
+  const targetMember = await prisma.user.findUnique({ where: { id } });
+  if (userRole === 'LIBRARIAN' && targetMember?.role === 'ADMIN') {
+    throw new Error("Unauthorized: Librarians cannot delete admins");
   }
 
   await prisma.user.delete({

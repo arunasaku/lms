@@ -33,6 +33,8 @@ export default async function MembersPage({
     where = { ...where, role: { not: "ADMIN" } }
   }
 
+  const currentUserId = (session?.user as any)?.id || (session?.user as any)?.memberId; // We need to check what id is in session
+
   const [members, total] = await Promise.all([
     prisma.user.findMany({
       where,
@@ -54,7 +56,7 @@ export default async function MembersPage({
           </Link>
           <h2 className="text-3xl font-bold text-slate-800">Members Directory</h2>
         </div>
-        <Link href="/tools" className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition shadow-sm">
+        <Link href="/members/new" className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition shadow-sm">
           + Add New Member
         </Link>
       </div>
@@ -97,7 +99,12 @@ export default async function MembersPage({
                   </td>
                   <td className="p-4 text-sm text-slate-600">{member.department || '-'}</td>
                   <td className="p-4 text-right text-sm">
-                    <MemberActions memberId={member.id} userRole={userRole} />
+                    <MemberActions 
+                      memberId={member.id} 
+                      userRole={userRole} 
+                      targetRole={member.role}
+                      currentUserId={currentUserId}
+                    />
                   </td>
                 </tr>
               ))}
