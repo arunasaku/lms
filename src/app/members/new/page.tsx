@@ -1,3 +1,4 @@
+
 import { createMember } from "../actions";
 import Link from "next/link";
 import { RoleSelector } from "@/components/RoleSelector";
@@ -88,25 +89,52 @@ export default function NewMemberPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
-              <label htmlFor="department" className="block text-sm font-medium text-slate-700">Department / Class</label>
+              <label htmlFor="nic" className="block text-sm font-medium text-slate-700">NIC / Guardian's NIC</label>
               <input 
                 type="text" 
-                id="department" 
-                name="department" 
+                id="nic" 
+                name="nic" 
                 autoComplete="off"
-                placeholder="e.g. Grade 10 / IT Dept"
+                placeholder="e.g. 199012345678"
                 className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
               />
             </div>
-            
             <div className="space-y-2">
-              <label htmlFor="address" className="block text-sm font-medium text-slate-700">Home Address</label>
+              <label htmlFor="homeAddress" className="block text-sm font-medium text-slate-700">Home Address</label>
               <input 
                 type="text" 
-                id="address" 
+                id="homeAddress" 
                 name="address" 
                 autoComplete="off"
                 placeholder="Full address..."
+                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <label htmlFor="occupation" className="block text-sm font-medium text-slate-700">Occupation</label>
+              <select 
+                id="occupation" 
+                name="occupation" 
+                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+              >
+                <option value="">Please Select</option>
+                <option value="Student">Student</option>
+                <option value="Government">Government</option>
+                <option value="Other">Other</option>
+                <option value="Custom">Custom</option>
+              </select>
+            </div>
+            <div className="space-y-2">
+              <label htmlFor="customOccupation" className="block text-sm font-medium text-slate-700">If Custom, specify here:</label>
+              <input 
+                type="text" 
+                id="customOccupation" 
+                name="customOccupation" 
+                autoComplete="off"
+                placeholder="e.g. Engineer"
                 className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
               />
             </div>

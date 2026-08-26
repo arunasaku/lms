@@ -14,7 +14,14 @@ export async function createMember(formData: FormData) {
   const email = formData.get("email") as string | null;
   const passwordRaw = formData.get("password") as string;
   const phone = formData.get("phone") as string | null;
-  const department = formData.get("department") as string | null;
+  const nic = formData.get("nic") as string | null;
+  
+  let occupation = formData.get("occupation") as string | null;
+  const customOccupation = formData.get("customOccupation") as string | null;
+  if (occupation === "Custom" && customOccupation) {
+    occupation = customOccupation;
+  }
+  
   const address = formData.get("address") as string | null;
 
   const permCirculation = formData.get("permCirculation") === "on";
@@ -59,7 +66,8 @@ export async function createMember(formData: FormData) {
       email: email?.trim() || null,
       password,
       phone: phone?.trim() || null,
-      department: department?.trim() || null,
+      nic: nic?.trim() || null,
+      occupation: occupation?.trim() || null,
       address: address?.trim() || null,
       permCirculation,
       permCatalog,
@@ -79,7 +87,14 @@ export async function updateMember(formData: FormData) {
   const role = formData.get("role") as string;
   const email = formData.get("email") as string | null;
   const phone = formData.get("phone") as string | null;
-  const department = formData.get("department") as string | null;
+  const nic = formData.get("nic") as string | null;
+  
+  let occupation = formData.get("occupation") as string | null;
+  const customOccupation = formData.get("customOccupation") as string | null;
+  if (occupation === "Custom" && customOccupation) {
+    occupation = customOccupation;
+  }
+  
   const address = formData.get("address") as string | null;
   const passwordRaw = formData.get("password") as string | null;
 
@@ -120,7 +135,8 @@ export async function updateMember(formData: FormData) {
     role: role || "MEMBER",
     email: email?.trim() || null,
     phone: phone?.trim() || null,
-    department: department?.trim() || null,
+    nic: nic?.trim() || null,
+    occupation: occupation?.trim() || null,
     address: address?.trim() || null,
     permCirculation,
     permCatalog,

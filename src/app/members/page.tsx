@@ -26,7 +26,7 @@ export default async function MembersPage({
   const skip = (page - 1) * limit
 
   // Query database
-  let where: any = query ? buildSearchConditions(query, ['name', 'memberId', 'department']) : {}
+  let where: any = query ? buildSearchConditions(query, ['name', 'memberId', 'nic']) : {}
   const userRole = (session?.user as any)?.role;
   
   if (userRole !== "ADMIN") {
@@ -74,7 +74,7 @@ export default async function MembersPage({
                 <th className="p-4 font-semibold">Member ID</th>
                 <th className="p-4 font-semibold">Name</th>
                 <th className="p-4 font-semibold">Role</th>
-                <th className="p-4 font-semibold">Department</th>
+                <th className="p-4 font-semibold">NIC</th>
                 <th className="p-4 font-semibold text-right">Actions</th>
               </tr>
             </thead>
@@ -97,7 +97,7 @@ export default async function MembersPage({
                       {member.role}
                     </span>
                   </td>
-                  <td className="p-4 text-sm text-slate-600">{member.department || '-'}</td>
+                  <td className="p-4 text-sm text-slate-600">{member.nic || '-'}</td>
                   <td className="p-4 text-right text-sm">
                     <MemberActions 
                       memberId={member.id} 
