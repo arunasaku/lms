@@ -76,10 +76,14 @@ export default async function ProfilePage() {
               </div>
             </div>
             <div className="p-6 space-y-4">
-              <div>
-                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Department / Grade</p>
-                <p className="text-slate-800 font-medium">{user.department || "Not specified"}</p>
-              </div>
+                <div>
+                  <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">NIC</p>
+                  <p className="text-slate-800 font-medium">{user.nic || "Not specified"}</p>
+                </div>
+                <div>
+                  <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Occupation</p>
+                  <p className="text-slate-800 font-medium">{user.occupation || "Not specified"}</p>
+                </div>
               <div>
                 <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Email</p>
                 <p className="text-slate-800 font-medium">{user.email || "Not specified"}</p>

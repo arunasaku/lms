@@ -18,7 +18,7 @@ export default function MemberSearchBar({ initialQuery }: { initialQuery: string
     <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
       <SinglishSearchInput 
         initialQuery={initialQuery}
-        placeholder="Search by Name, Member ID, or Department..."
+        placeholder="Search by Name, Member ID, or NIC..."
         onSearch={handleSearch}
       />
     </div>
