@@ -19,6 +19,7 @@
     "next-auth": "^4.24.15",
     "nodemailer": "^7.0.13",
     "react": "19.2.8",
+    "react-barcode": "^1.6.1",
     "react-dom": "19.2.8",
     "recharts": "^3.10.1",
     "sinhala-unicode-coverter": "^1.0.2",
