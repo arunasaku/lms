@@ -1,4 +1,4 @@
-﻿import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 import { updateSystemSettings } from "./actions";
 import { createMember } from "../members/actions";
 import { RoleSelector } from "@/components/RoleSelector";
@@ -21,7 +21,7 @@ export default async function SettingsPage() {
         <div className="px-8 py-5 border-b border-slate-100 bg-slate-50">
           <h3 className="text-xl font-semibold text-slate-800">Circulation Settings</h3>
         </div>
-        <form action={updateSystemSettings} className="p-8 space-y-6">
+        <form action={updateSystemSettings as any} className="p-8 space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
               <label htmlFor="dailyFineRate" className="block text-sm font-medium text-slate-700">Daily Fine Rate (Rs.)</label>
@@ -42,7 +42,7 @@ export default async function SettingsPage() {
         <div className="px-8 py-5 border-b border-slate-100 bg-slate-50">
           <h3 className="text-xl font-semibold text-slate-800">Add New User / Member</h3>
         </div>
-        <form action={createMember} className="p-8 space-y-6">
+        <form action={createMember as any} className="p-8 space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
               <label htmlFor="memberId" className="block text-sm font-medium text-slate-700">Member ID *</label>
