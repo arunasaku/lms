@@ -4,6 +4,9 @@ import { redirect } from 'next/navigation'
 import { updateMember } from '@/app/members/actions'
 import { RoleSelector } from '@/components/RoleSelector'
 
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+
 const prisma = new PrismaClient()
 
 export default async function EditMemberPage({ params }: { params: Promise<{ id: string }> }) {
@@ -11,6 +14,13 @@ export default async function EditMemberPage({ params }: { params: Promise<{ id:
   const member = await prisma.user.findUnique({ where: { id } })
 
   if (!member) {
+    redirect('/members')
+  }
+
+  const session = await getServerSession(authOptions);
+  const userRole = (session?.user as any)?.role;
+
+  if (userRole !== 'ADMIN' && member.role === 'ADMIN') {
     redirect('/members')
   }
 

@@ -23,6 +23,15 @@ export async function createMember(formData: FormData) {
   const permInventory = formData.get("permInventory") === "on";
   const permDashboard = formData.get("permDashboard") === "on";
 
+  const { getServerSession } = await import("next-auth");
+  const { authOptions } = await import("@/lib/auth");
+  const session = await getServerSession(authOptions);
+  const userRole = (session?.user as any)?.role;
+
+  if (userRole !== 'ADMIN' && role === 'ADMIN') {
+    throw new Error("Unauthorized: Only admins can create admin users");
+  }
+
   if (!memberId || !name || !passwordRaw) {
     throw new Error("Member ID, Name, and Password are required");
   }
@@ -77,6 +86,19 @@ export async function updateMember(formData: FormData) {
   const permInventory = formData.get("permInventory") === "on";
   const permDashboard = formData.get("permDashboard") === "on";
 
+  const { getServerSession } = await import("next-auth");
+  const { authOptions } = await import("@/lib/auth");
+  const session = await getServerSession(authOptions);
+  const userRole = (session?.user as any)?.role;
+
+  const targetMember = await prisma.user.findUnique({ where: { id } });
+  if (userRole !== 'ADMIN' && targetMember?.role === 'ADMIN') {
+    throw new Error("Unauthorized: Cannot edit ADMIN");
+  }
+  if (userRole !== 'ADMIN' && role === 'ADMIN') {
+    throw new Error("Unauthorized: Cannot change role to ADMIN");
+  }
+
   if (!id || !name) {
     throw new Error("ID and Name are required");
   }
@@ -109,6 +131,14 @@ export async function updateMember(formData: FormData) {
 }
 
 export async function deleteMember(id: string) {
+  const { getServerSession } = await import("next-auth");
+  const { authOptions } = await import("@/lib/auth");
+  const session = await getServerSession(authOptions);
+
+  if ((session?.user as any)?.role !== 'ADMIN') {
+    throw new Error("Unauthorized: Only admins can delete members");
+  }
+
   await prisma.user.delete({
     where: { id }
   });

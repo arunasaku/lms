@@ -1,4 +1,4 @@
-﻿import { PrismaClient } from '@prisma/client'
+import { PrismaClient } from '@prisma/client'
 import Link from 'next/link'
 import { MemberActions } from '@/components/MemberActions'
 import { getServerSession } from "next-auth";
@@ -26,7 +26,12 @@ export default async function MembersPage({
   const skip = (page - 1) * limit
 
   // Query database
-  const where = query ? buildSearchConditions(query, ['name', 'memberId', 'department']) : {}
+  let where: any = query ? buildSearchConditions(query, ['name', 'memberId', 'department']) : {}
+  const userRole = (session?.user as any)?.role;
+  
+  if (userRole !== "ADMIN") {
+    where = { ...where, role: { not: "ADMIN" } }
+  }
 
   const [members, total] = await Promise.all([
     prisma.user.findMany({
@@ -92,7 +97,7 @@ export default async function MembersPage({
                   </td>
                   <td className="p-4 text-sm text-slate-600">{member.department || '-'}</td>
                   <td className="p-4 text-right text-sm">
-                    <MemberActions memberId={member.id} />
+                    <MemberActions memberId={member.id} userRole={userRole} />
                   </td>
                 </tr>
               ))}
