@@ -4,6 +4,7 @@ import { signIn } from "next-auth/react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function LoginPage() {
   const [memberId, setMemberId] = useState("");
@@ -41,10 +42,17 @@ export default function LoginPage() {
     <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
       <div className="w-full max-w-md bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-100">
           <div className="bg-slate-900 p-8 text-center flex flex-col items-center border-b border-slate-800">
-            <Image src="/logo.jpg" alt="පොත by Brandspire" width={160} height={160} priority className="w-40 h-40 object-cover rounded-full shadow-2xl ring-4 ring-slate-800 bg-[#fbfbf9]" />
+            <Image src="/logo.jpg" alt="Potha - by Brandspire" width={160} height={160} priority className="w-40 h-40 object-cover rounded-full shadow-2xl ring-4 ring-slate-800 bg-[#fbfbf9]" />
             <p className="text-slate-400 mt-6 text-sm font-medium">Sign in to your account</p>
           </div>
         
+          <div className="bg-indigo-50 border-b border-indigo-100 p-4 text-center">
+            <p className="text-sm text-indigo-800 mb-1">Are you still not a member?</p>
+            <Link href="/opac" className="inline-flex items-center justify-center bg-indigo-600 text-white font-medium px-5 py-2 rounded-lg hover:bg-indigo-700 transition shadow-sm text-sm">
+              Browse the Public Catalog
+            </Link>
+          </div>
+
         <div className="p-8">
           {error && (
             <div className="mb-6 p-4 bg-rose-50 border-l-4 border-rose-500 text-rose-700 text-sm rounded">
