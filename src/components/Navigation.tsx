@@ -15,7 +15,7 @@ export function Navigation({ session, children }: { session: any, children: Reac
   return (
     <>
       {/* Mobile Header */}
-      <div className="md:hidden flex items-center justify-between bg-slate-900 text-white h-14 px-4 shrink-0 shadow-md">
+      <div className="md:hidden print:hidden flex items-center justify-between bg-slate-900 text-white h-14 px-4 shrink-0 shadow-md">
         <div className="flex flex-col items-center ml-2">
           <Image src="/logo.jpg" alt="පොත by Brandspire" width={40} height={40} priority className="w-10 h-10 object-cover rounded-full shadow-sm ring-1 ring-slate-700 bg-[#fbfbf9]" />
         </div>
@@ -43,7 +43,7 @@ export function Navigation({ session, children }: { session: any, children: Reac
 
       <div className="flex flex-1 w-full h-full overflow-hidden relative">
         {/* Sidebar Navigation */}
-        <aside className={`${isOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0 transition-transform duration-300 absolute md:relative z-40 w-64 bg-slate-900 text-slate-300 flex flex-col h-full shrink-0 shadow-xl`}>
+        <aside className={`${isOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0 print:hidden transition-transform duration-300 absolute md:relative z-40 w-64 bg-slate-900 text-slate-300 flex flex-col h-full shrink-0 shadow-xl`}>
           <div className="hidden md:flex flex-col p-6 border-b border-slate-800 items-center justify-center">
             <Image src="/logo.jpg" alt="පොත by Brandspire" width={112} height={112} priority className="w-28 h-28 object-cover rounded-full shadow-lg ring-2 ring-slate-700/50 bg-[#fbfbf9]" />
           </div>
@@ -57,9 +57,16 @@ export function Navigation({ session, children }: { session: any, children: Reac
             )}
             
             {((session.user as any)?.role === 'MEMBER' || (session.user as any)?.role === 'ADMIN' || (session.user as any)?.role === 'LIBRARIAN' || (session.user as any)?.permCatalog) && (
-              <Link onClick={closeMenu} href="/catalog" className={`flex items-center px-3 py-2.5 rounded-lg group transition font-medium ${pathname?.startsWith('/catalog') ? 'bg-indigo-500/10 text-indigo-400' : 'text-slate-300 hover:bg-slate-800 hover:text-white'}`}>
+              <Link onClick={closeMenu} href="/catalog" className={`flex items-center px-3 py-2.5 rounded-lg group transition font-medium ${pathname?.startsWith('/catalog') && pathname !== '/catalog/labels' ? 'bg-indigo-500/10 text-indigo-400' : 'text-slate-300 hover:bg-slate-800 hover:text-white'}`}>
                 <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
                 Catalog
+              </Link>
+            )}
+
+            {((session.user as any)?.role === 'ADMIN' || (session.user as any)?.role === 'LIBRARIAN' || (session.user as any)?.permCatalog) && (
+              <Link onClick={closeMenu} href="/catalog/labels" className={`flex items-center px-3 py-2.5 rounded-lg group transition font-medium ${pathname === '/catalog/labels' ? 'bg-indigo-500/10 text-indigo-400' : 'text-slate-300 hover:bg-slate-800 hover:text-white'}`}>
+                <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4h18v4H3V4zm0 6h18v4H3v-4zm0 6h18v4H3v-4z" /></svg>
+                Print Labels
               </Link>
             )}
 
@@ -88,6 +95,13 @@ export function Navigation({ session, children }: { session: any, children: Reac
               <Link onClick={closeMenu} href="/members" className={`flex items-center px-3 py-2.5 rounded-lg group transition font-medium ${pathname?.startsWith('/members') ? 'bg-indigo-500/10 text-indigo-400' : 'text-slate-300 hover:bg-slate-800 hover:text-white'}`}>
                 <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
                 Members
+              </Link>
+            )}
+
+            {((session.user as any)?.role === 'ADMIN') && (
+              <Link onClick={closeMenu} href="/settings" className={`flex items-center px-3 py-2.5 rounded-lg group transition font-medium ${pathname?.startsWith('/settings') ? 'bg-indigo-500/10 text-indigo-400' : 'text-slate-300 hover:bg-slate-800 hover:text-white'}`}>
+                <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                Settings
               </Link>
             )}
           </nav>
@@ -124,12 +138,12 @@ export function Navigation({ session, children }: { session: any, children: Reac
         )}
 
         {/* Main Content Area */}
-        <main className="flex-1 flex flex-col h-full overflow-hidden w-full bg-slate-50">
+        <main className="flex-1 flex flex-col h-full overflow-hidden w-full bg-slate-50 print:bg-white print:overflow-visible">
           {/* Desktop Header */}
-          <header className="hidden md:flex h-16 bg-white border-b border-slate-200 items-center px-8 shrink-0 justify-end">
+          <header className="hidden md:flex print:hidden h-16 bg-white border-b border-slate-200 items-center px-8 shrink-0 justify-end">
             <LogoutButton />
           </header>
-          <div className="flex-1 overflow-auto p-4 md:p-8">
+          <div className="flex-1 overflow-auto p-4 md:p-8 print:p-0 print:overflow-visible">
             {children}
           </div>
         </main>

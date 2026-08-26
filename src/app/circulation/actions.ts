@@ -29,6 +29,29 @@ export async function issueBook(formData: FormData) {
     const user = await prisma.user.findUnique({ where: { memberId } });
     if (!user) return { success: false, error: "Member not found." };
 
+    // Check 1: Prevent borrowing if there are unpaid fines
+    const unpaidFinesCount = await prisma.loan.count({
+      where: {
+        userId: user.id,
+        fine: { gt: 0 },
+        finePaid: false
+      }
+    });
+    if (unpaidFinesCount > 0) {
+      return { success: false, error: "සාමාජිකයාට ගෙවීමට ඇති දඩ මුදල් (Unpaid fines) පවතී. දඩ මුදල් ගෙවා අවසන් වනතුරු පොත් ලබාගත නොහැක." };
+    }
+
+    // Check 2: Max 2 books per member
+    const activeLoansCount = await prisma.loan.count({
+      where: {
+        userId: user.id,
+        status: "ACTIVE"
+      }
+    });
+    if (activeLoansCount >= 2) {
+      return { success: false, error: "සාමාජිකයා දැනටමත් පොත් 2ක් ලබාගෙන ඇත. උපරිම ලබාගත හැක්කේ පොත් 2ක් පමණි." };
+    }
+
     const book = await prisma.book.findUnique({ where: { accNo } });
     if (!book) return { success: false, error: "Book not found." };
 
@@ -36,8 +59,11 @@ export async function issueBook(formData: FormData) {
       return { success: false, error: `Book is currently ${book.status}.` };
     }
 
+    const config = await prisma.systemConfig.findUnique({ where: { id: 1 } });
+    const borrowDays = config?.borrowPeriodDays || 14;
+
     const dueDate = new Date();
-    dueDate.setDate(dueDate.getDate() + 14); // 14 days loan period
+    dueDate.setDate(dueDate.getDate() + borrowDays);
 
     // Transaction to update book and create loan
     await prisma.$transaction([
@@ -86,11 +112,22 @@ export async function returnBook(formData: FormData) {
     const returnDate = new Date();
     let fine = 0;
     
-    // Calculate Fine (e.g. Rs. 5 per day)
+    // Calculate Fine using adjustable rate
     if (returnDate > activeLoan.dueDate) {
+      let dailyFineRate = 5.0;
+      try {
+        let config = await prisma.systemConfig.findUnique({ where: { id: 1 } });
+        if (!config) {
+          config = await prisma.systemConfig.create({ data: { id: 1, dailyFineRate: 5.0 } });
+        }
+        dailyFineRate = config.dailyFineRate;
+      } catch (e) {
+        // Fallback
+      }
+
       const diffTime = Math.abs(returnDate.getTime() - activeLoan.dueDate.getTime());
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
-      fine = diffDays * 5; 
+      fine = diffDays * dailyFineRate; 
     }
 
     await prisma.$transaction([
@@ -116,4 +153,73 @@ export async function returnBook(formData: FormData) {
   } catch (error: any) {
     return { success: false, error: error.message };
   }
+}
+
+export async function markFineAsPaid(loanId: string) {
+  try {
+    await prisma.loan.update({
+      where: { id: loanId },
+      data: {
+        finePaid: true,
+        finePaidDate: new Date()
+      }
+    });
+    revalidatePath("/circulation");
+    revalidatePath("/inventory/reports/fines");
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}
+
+export async function updateDailyFineRate(rate: number) {
+  try {
+    await prisma.systemConfig.upsert({
+      where: { id: 1 },
+      update: { dailyFineRate: rate },
+      create: { id: 1, dailyFineRate: rate }
+    });
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}
+
+export async function getUnpaidFines() {
+  const loans = await prisma.loan.findMany({
+    where: {
+      fine: { gt: 0 },
+      finePaid: false,
+    },
+    include: {
+      book: { select: { title: true, accNo: true } },
+      user: { select: { name: true, memberId: true } }
+    },
+    orderBy: { returnDate: 'desc' }
+  });
+  return loans;
+}
+
+export async function getFineReports(startDateStr: string, endDateStr: string) {
+  const startDate = new Date(startDateStr);
+  const endDate = new Date(endDateStr);
+  // Add 1 day to endDate to make it inclusive
+  endDate.setDate(endDate.getDate() + 1);
+
+  const loans = await prisma.loan.findMany({
+    where: {
+      fine: { gt: 0 },
+      finePaid: true,
+      finePaidDate: {
+        gte: startDate,
+        lt: endDate
+      }
+    },
+    include: {
+      book: { select: { title: true, accNo: true } },
+      user: { select: { name: true, memberId: true } }
+    },
+    orderBy: { finePaidDate: 'desc' }
+  });
+  return loans;
 }

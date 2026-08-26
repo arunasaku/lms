@@ -62,9 +62,17 @@ model Loan {
   dueDate    DateTime
   returnDate DateTime?
   fine       Float    @default(0)
+  finePaid   Boolean  @default(false)
+  finePaidDate DateTime?
   status     String   @default("ACTIVE") // ACTIVE, RETURNED
   lastReminded DateTime?
 
   book       Book     @relation(fields: [bookId], references: [id])
   user       User     @relation(fields: [userId], references: [id])
+}
+
+model SystemConfig {
+  id               Int   @id @default(1)
+  dailyFineRate    Float @default(5.0)
+  borrowPeriodDays Int   @default(14)
 }
