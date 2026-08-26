@@ -21,7 +21,7 @@ export default async function SettingsPage() {
         <div className="px-8 py-5 border-b border-slate-100 bg-slate-50">
           <h3 className="text-xl font-semibold text-slate-800">Circulation Settings</h3>
         </div>
-        <form action>{updateSystemSettings} className="p-8 space-y-6">
+        <form action={updateSystemSettings} className="p-8 space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
               <label htmlFor="dailyFineRate" className="block text-sm font-medium text-slate-700">Daily Fine Rate (Rs.)</label>
@@ -42,7 +42,7 @@ export default async function SettingsPage() {
         <div className="px-8 py-5 border-b border-slate-100 bg-slate-50">
           <h3 className="text-xl font-semibold text-slate-800">Add New User / Member</h3>
         </div>
-        <form action>{createMember} className="p-8 space-y-6">
+        <form action={createMember} className="p-8 space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
               <label htmlFor="memberId" className="block text-sm font-medium text-slate-700">Member ID *</label>
@@ -66,7 +66,7 @@ export default async function SettingsPage() {
               <input type="email" id="email" name="email" autoComplete="off" placeholder="email@example.com" className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition" />
             </div>
             <div className="space-y-2">
-              <label htmlFor="phone" className="bloci/text-sm font-medium text-slate-700">Phone Number</label>
+              <label htmlFor="phone" className="block text-sm font-medium text-slate-700">Phone Number</label>
               <input type="text" id="phone" name="phone" autoComplete="off" placeholder="e.g. 0771234567" className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition" />
             </div>
           </div>

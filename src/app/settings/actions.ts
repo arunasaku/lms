@@ -1,1 +1,28 @@
-"use server"`n`nimport { PrismaClient } from "@prisma/client";`nimport { revalidatePath } from "next/cache";`n`nconst prisma = new PrismaClient();`n`nexport async function updateSystemSettings(formData: FormData) {`n  const dailyFineRate = parseFloat(formData.get("dailyFineRate") as string);`n  const borrowPeriodDays = parseInt(formData.get("borrowPeriodDays") as string, 10);`n`n  if (isNaN(dailyFineRate) || isNaN(borrowPeriodDays)) {`n    return { success: false, error: "Invalid values provided." };`n  }`n`n  try {`n    await prisma.systemConfig.upsert({`n      where: { id: 1 },`n      update: { dailyFineRate, borrowPeriodDays },`n      create: { id: 1, dailyFineRate, borrowPeriodDays }`n    });`n    revalidatePath("/settings");`n    revalidatePath("/circulation/reports");`n    return { success: true, message: "Settings updated successfully." };`n  } catch (error: any) {`n    return { success: false, error: error.message };`n  }`n}
+﻿"use server"
+
+import { PrismaClient } from "@prisma/client";
+import { revalidatePath } from "next/cache";
+
+const prisma = new PrismaClient();
+
+export async function updateSystemSettings(formData: FormData) {
+  const dailyFineRate = parseFloat(formData.get("dailyFineRate") as string);
+  const borrowPeriodDays = parseInt(formData.get("borrowPeriodDays") as string, 10);
+
+  if (isNaN(dailyFineRate) || isNaN(borrowPeriodDays)) {
+    return { success: false, error: "invalid values provided." };
+  }
+
+  try {
+    await prisma.systemConfig.upsert({
+      where: { id: 1 },
+      update: { dailyFineRate, borrowPeriodDays },
+      create: { id: 1, dailyFineRate, borrowPeriodDays }
+    });
+    revalidatePath("/settings");
+    revalidatePath("/circulation/reports");
+    return { success: true, message: "Settings updated successfully." };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}
