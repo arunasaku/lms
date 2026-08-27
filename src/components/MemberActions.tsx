@@ -24,6 +24,9 @@ export function MemberActions({ memberId, userRole, targetRole, currentUserId }:
 
   return (
     <>
+      <Link href={`/members/${memberId}`} className="text-slate-600 hover:text-slate-900 font-medium mr-3">
+        View
+      </Link>
       {canEdit && (
         <Link href={`/members/edit/${memberId}`} className="text-indigo-600 hover:text-indigo-900 font-medium mr-3">
           Edit

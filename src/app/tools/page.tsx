@@ -111,6 +111,12 @@ export default async function ToolsPage() {
                   <input type="number" id="borrowPeriodDays" name="borrowPeriodDays" defaultValue={borrowPeriodDays} required className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition" />
                 </div>
               </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <label htmlFor="reminderDaysBeforeDue" className="block text-sm font-medium text-slate-700">Send Email Reminder (Days Before Due)</label>
+                  <input type="number" id="reminderDaysBeforeDue" name="reminderDaysBeforeDue" defaultValue={config?.reminderDaysBeforeDue || 1} required className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition" />
+                </div>
+              </div>
 
               <div className="pt-4 border-t border-slate-100">
                 <h5 className="text-md font-semibold text-slate-700 mb-4">Email Notifications (Cron)</h5>

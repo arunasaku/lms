@@ -16,13 +16,16 @@ export async function GET(request: Request) {
   }
 
   try {
+    const config = await prisma.systemConfig.findUnique({ where: { id: 1 } });
+    const reminderDaysBeforeDue = config?.reminderDaysBeforeDue || 1;
+    
     const today = new Date();
-    // Get active loans where dueDate is past or today, and user has an email
+    // Get active loans where dueDate is past or within the reminder window, and user has an email
     const overdueLoans = await prisma.loan.findMany({
       where: {
         status: "ACTIVE",
         dueDate: {
-          lte: new Date(today.getTime() + 24 * 60 * 60 * 1000) // Due within next 24 hours or already overdue
+          lte: new Date(today.getTime() + reminderDaysBeforeDue * 24 * 60 * 60 * 1000)
         },
         user: {
           email: { not: null }
@@ -45,7 +48,6 @@ export async function GET(request: Request) {
 
     // Configure Nodemailer
     // NOTE: For Gmail, you must use an App Password, not your regular password.
-    const config = await prisma.systemConfig.findUnique({ where: { id: 1 } });
     const smtpEmail = config?.smtpEmail || process.env.EMAIL_USER;
     const smtpPassword = config?.smtpPassword || process.env.EMAIL_PASS;
 
