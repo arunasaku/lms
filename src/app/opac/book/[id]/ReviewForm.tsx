@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { addReview } from "../actions";
+import { addReview } from "../../actions";
 
 export default function ReviewForm({ bookId }: { bookId: string }) {
   const [rating, setRating] = useState(5);

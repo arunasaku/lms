@@ -1,7 +1,7 @@
 "use client";
 
 import { useTransition } from "react";
-import { reserveBook } from "../actions";
+import { reserveBook } from "../../actions";
 
 export default function ActionButtons({ bookId, status, isLoggedIn }: { bookId: string, status: string, isLoggedIn: boolean }) {
   const [isPending, startTransition] = useTransition();
