@@ -223,3 +223,44 @@ export async function getFineReports(startDateStr: string, endDateStr: string) {
   });
   return loans;
 }
+
+export async function renewLoan(loanId: string) {
+  try {
+    const loan = await prisma.loan.findUnique({
+      where: { id: loanId },
+      include: { book: true, user: true }
+    });
+
+    if (!loan) return { success: false, error: "Loan not found." };
+    if (loan.status !== "ACTIVE") return { success: false, error: "Only active loans can be renewed." };
+    if (loan.renewalsCount >= 2) return { success: false, error: "Maximum renewal limit (2 times) reached." };
+
+    // Check if there's a reservation for this book
+    const reservation = await prisma.reservation.findFirst({
+      where: { bookId: loan.bookId, status: "PENDING" }
+    });
+    if (reservation) {
+      return { success: false, error: "Cannot renew this book because another member has reserved it." };
+    }
+
+    const config = await prisma.systemConfig.findUnique({ where: { id: 1 } });
+    const renewalDays = config?.renewalPeriodDays || 14;
+
+    const newDueDate = new Date(loan.dueDate);
+    newDueDate.setDate(newDueDate.getDate() + renewalDays);
+
+    await prisma.loan.update({
+      where: { id: loanId },
+      data: {
+        dueDate: newDueDate,
+        renewalsCount: loan.renewalsCount + 1
+      }
+    });
+
+    revalidatePath("/profile");
+    revalidatePath("/circulation");
+    return { success: true, message: `Successfully renewed '${loan.book.title}'. New due date is ${newDueDate.toLocaleDateString()}` };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}

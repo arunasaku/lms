@@ -4,6 +4,8 @@ import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 
+import RenewButton from "./RenewButton";
+
 const prisma = new PrismaClient();
 
 export default async function ProfilePage() {
@@ -24,6 +26,10 @@ export default async function ProfilePage() {
         orderBy: {
           borrowDate: 'desc'
         }
+      },
+      reservations: {
+        include: { book: true },
+        orderBy: { createdAt: 'desc' }
       }
     }
   });
@@ -130,16 +136,62 @@ export default async function ProfilePage() {
                           Borrowed on: <span className="font-medium">{new Date(loan.borrowDate).toLocaleDateString()}</span>
                         </p>
                       </div>
-                      <div className="text-left sm:text-right">
-                        <p className="text-sm text-slate-500 mb-1">Due Date</p>
-                        <p className="font-bold text-slate-800 mb-2">{new Date(loan.dueDate).toLocaleDateString()}</p>
-                        <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold border ${status.color}`}>
-                          {status.text}
-                        </span>
+                      <div className="text-left sm:text-right flex flex-col sm:items-end gap-2">
+                        <div>
+                          <p className="text-sm text-slate-500 mb-1">Due Date</p>
+                          <p className="font-bold text-slate-800 mb-2">{new Date(loan.dueDate).toLocaleDateString()}</p>
+                          <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold border ${status.color}`}>
+                            {status.text}
+                          </span>
+                        </div>
+                        <RenewButton 
+                          loanId={loan.id} 
+                          renewalsCount={loan.renewalsCount} 
+                          canRenew={loan.renewalsCount < 2 && loan.dueDate >= today} 
+                        />
                       </div>
                     </div>
                   );
                 })
+              )}
+            </div>
+          </div>
+
+          {/* My Reservations */}
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+            <div className="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50">
+              <h3 className="text-lg font-bold text-slate-800 flex items-center">
+                <svg className="w-5 h-5 mr-2 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" /></svg>
+                My Reservations ({user.reservations.length})
+              </h3>
+            </div>
+            
+            <div className="divide-y divide-slate-100">
+              {user.reservations.length === 0 ? (
+                <div className="p-8 text-center text-slate-500">
+                  <p>You haven't reserved any books.</p>
+                </div>
+              ) : (
+                user.reservations.map(res => (
+                  <div key={res.id} className="p-6 hover:bg-slate-50 transition flex justify-between items-center gap-4">
+                    <div>
+                      <h4 className="font-bold text-slate-800 text-lg">{res.book.title}</h4>
+                      <p className="text-sm text-slate-500 mt-1">Acc No: <span className="font-mono">{res.book.accNo}</span> • By {res.book.author || 'Unknown'}</p>
+                      <p className="text-sm text-slate-600 mt-2">
+                        Reserved on: <span className="font-medium">{new Date(res.createdAt).toLocaleDateString()}</span>
+                      </p>
+                    </div>
+                    <div>
+                      <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold border ${
+                        res.status === 'PENDING' ? 'text-amber-600 bg-amber-100 border-amber-200' :
+                        res.status === 'FULFILLED' ? 'text-emerald-700 bg-emerald-100 border-emerald-200' :
+                        'text-slate-500 bg-slate-100 border-slate-200'
+                      }`}>
+                        {res.status}
+                      </span>
+                    </div>
+                  </div>
+                ))
               )}
             </div>
           </div>

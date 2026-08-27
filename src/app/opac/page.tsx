@@ -56,7 +56,7 @@ export default async function OpacPage({
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {books.map((book) => (
-            <div key={book.id} className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition">
+            <Link href={`/opac/book/${book.id}`} key={book.id} className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition block group">
               <div className="flex justify-between items-start mb-4">
                 <span className={`px-3 py-1 rounded-full text-xs font-bold tracking-wider ${
                   book.status === 'AVAILABLE' ? 'bg-emerald-100 text-emerald-700' : 
@@ -65,17 +65,17 @@ export default async function OpacPage({
                 }`}>
                   {book.status}
                 </span>
-                <span className="text-xs text-slate-400 font-mono">{book.accNo}</span>
+                <span className="text-xs text-slate-400 font-mono group-hover:text-indigo-500 transition">{book.accNo}</span>
               </div>
               
-              <h3 className="text-xl font-bold text-slate-800 mb-1 line-clamp-2" title={book.title}>{book.title}</h3>
+              <h3 className="text-xl font-bold text-slate-800 mb-1 line-clamp-2 group-hover:text-indigo-600 transition" title={book.title}>{book.title}</h3>
               <p className="text-slate-600 mb-4">{book.author || "Unknown Author"}</p>
               
               <div className="text-sm text-slate-500 space-y-1">
                 <p>Publisher: <span className="text-slate-700">{book.publisher || "-"}</span></p>
                 <p>Year: <span className="text-slate-700">{book.year || "-"}</span></p>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </div>

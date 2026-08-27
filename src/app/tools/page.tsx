@@ -113,6 +113,10 @@ export default async function ToolsPage() {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
+                  <label htmlFor="renewalPeriodDays" className="block text-sm font-medium text-slate-700">Renewal Period (Days)</label>
+                  <input type="number" id="renewalPeriodDays" name="renewalPeriodDays" defaultValue={config?.renewalPeriodDays || 14} required className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition" />
+                </div>
+                <div className="space-y-2">
                   <label htmlFor="reminderDaysBeforeDue" className="block text-sm font-medium text-slate-700">Send Email Reminder (Days Before Due)</label>
                   <input type="number" id="reminderDaysBeforeDue" name="reminderDaysBeforeDue" defaultValue={config?.reminderDaysBeforeDue || 1} required className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition" />
                 </div>

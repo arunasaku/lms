@@ -29,6 +29,8 @@ model User {
   createdAt     DateTime @default(now())
   
   loans         Loan[]
+  reservations  Reservation[]
+  reviews       Review[]
 }
 
 model Book {
@@ -53,20 +55,46 @@ model Book {
   lastVerified  DateTime?
   
   loans         Loan[]
+  reservations  Reservation[]
+  reviews       Review[]
 }
 
 model Loan {
+  id            String   @id @default(uuid())
+  bookId        String
+  userId        String
+  borrowDate    DateTime @default(now())
+  dueDate       DateTime
+  returnDate    DateTime?
+  fine          Float    @default(0)
+  finePaid      Boolean  @default(false)
+  finePaidDate  DateTime?
+  status        String   @default("ACTIVE") // ACTIVE, RETURNED
+  lastReminded  DateTime?
+  renewalsCount Int      @default(0)
+
+  book       Book     @relation(fields: [bookId], references: [id])
+  user       User     @relation(fields: [userId], references: [id])
+}
+
+model Reservation {
   id         String   @id @default(uuid())
   bookId     String
   userId     String
-  borrowDate DateTime @default(now())
-  dueDate    DateTime
-  returnDate DateTime?
-  fine       Float    @default(0)
-  finePaid   Boolean  @default(false)
-  finePaidDate DateTime?
-  status     String   @default("ACTIVE") // ACTIVE, RETURNED
-  lastReminded DateTime?
+  status     String   @default("PENDING") // PENDING, FULFILLED, CANCELLED
+  createdAt  DateTime @default(now())
+
+  book       Book     @relation(fields: [bookId], references: [id])
+  user       User     @relation(fields: [userId], references: [id])
+}
+
+model Review {
+  id         String   @id @default(uuid())
+  bookId     String
+  userId     String
+  rating     Int
+  comment    String?
+  createdAt  DateTime @default(now())
 
   book       Book     @relation(fields: [bookId], references: [id])
   user       User     @relation(fields: [userId], references: [id])
@@ -76,6 +104,7 @@ model SystemConfig {
   id                    Int     @id @default(1)
   dailyFineRate         Float   @default(5.0)
   borrowPeriodDays      Int     @default(14)
+  renewalPeriodDays     Int     @default(14)
   reminderDaysBeforeDue Int     @default(1)
   smtpEmail             String?
   smtpPassword          String?
