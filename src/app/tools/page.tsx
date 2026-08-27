@@ -51,6 +51,18 @@ export default async function ToolsPage() {
             </a>
           </div>
         </div>
+
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+          <div className="px-8 py-5 flex justify-between items-center hover:bg-slate-50 transition">
+            <div>
+              <h4 className="text-lg font-semibold text-slate-800">Reports & Analytics</h4>
+              <p className="text-sm text-slate-500 mt-1">View advanced reports like Weeding, Popular Books, and Inactive Members.</p>
+            </div>
+            <a href="/reports" className="px-5 py-2.5 bg-emerald-50 border border-emerald-100 hover:bg-emerald-100 text-emerald-700 rounded-lg font-medium transition shadow-sm">
+              Open Reports &rarr;
+            </a>
+          </div>
+        </div>
       </div>
 
       {isAdmin && (
