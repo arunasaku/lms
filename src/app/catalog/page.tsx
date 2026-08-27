@@ -7,6 +7,7 @@ import { buildSearchConditions } from '@/lib/searchUtils'
 
 import SearchBar from './SearchBar'
 import BookActions from '@/components/BookActions'
+import BookCover from '@/components/BookCover'
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 
@@ -69,6 +70,7 @@ export default async function CatalogPage({
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 text-sm">
+                <th className="p-4 font-semibold w-16">Cover</th>
                 <th className="p-4 font-semibold">Acc No</th>
                 <th className="p-4 font-semibold">Title</th>
                 <th className="p-4 font-semibold">Author</th>
@@ -79,6 +81,9 @@ export default async function CatalogPage({
             <tbody className="divide-y divide-slate-100">
               {books.map(book => (
                 <tr key={book.id} className="hover:bg-slate-50 transition">
+                  <td className="p-4">
+                    <BookCover title={book.title} author={book.author} isbn={book.isbn} />
+                  </td>
                   <td className="p-4 text-sm font-mono text-slate-600">{book.accNo}</td>
                   <td className="p-4 font-medium text-slate-800">{book.title}</td>
                   <td className="p-4 text-sm text-slate-600">{book.author || '-'}</td>
@@ -98,7 +103,7 @@ export default async function CatalogPage({
               ))}
               {books.length === 0 && (
                 <tr>
-                  <td colSpan={canManageCatalog ? 5 : 4} className="p-8 text-center text-slate-500">
+                  <td colSpan={canManageCatalog ? 6 : 5} className="p-8 text-center text-slate-500">
                     No books found matching your search.
                   </td>
                 </tr>
