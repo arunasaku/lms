@@ -111,7 +111,7 @@ export function Navigation({ session, children }: { session: any, children: Reac
                 rel="noopener noreferrer"
                 className="text-xs font-medium text-yellow-400 hover:text-yellow-300 drop-shadow-[0_0_5px_rgba(250,204,21,0.5)] transition-all"
               >
-                Powered by Brandspire <br/> 076-8363831
+                Powered by Brandspire
               </a>
             </div>
           </div>
