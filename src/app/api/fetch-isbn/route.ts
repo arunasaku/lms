@@ -67,9 +67,6 @@ export async function GET(request: Request) {
       } catch (e) {
         console.log("Grantha scrape failed:", e);
       }
-      } catch (e) {
-        console.log("Grantha scrape failed:", e);
-      }
     }
     
     // 4. Use AI Fallback for both Name and ISBN searches as a last resort
