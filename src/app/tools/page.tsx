@@ -149,6 +149,15 @@ export default async function ToolsPage() {
                 </div>
               </div>
 
+              <div className="pt-4 border-t border-slate-100">
+                <h5 className="text-md font-semibold text-slate-700 mb-4">WhatsApp Notifications</h5>
+                <div className="space-y-2">
+                  <label htmlFor="whatsappTemplate" className="block text-sm font-medium text-slate-700">Preloaded WhatsApp Message</label>
+                  <p className="text-xs text-slate-500 mb-2">Use these placeholders: {'{name}'} for member name, {'{title}'} for book title, {'{due_date}'} for due date.</p>
+                  <textarea id="whatsappTemplate" name="whatsappTemplate" defaultValue={config?.whatsappTemplate || "Hi {name}, your borrowed book '{title}' is overdue (Due: {due_date}). Please return it as soon as possible."} rows={3} className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition" />
+                </div>
+              </div>
+
               <div className="flex justify-end pt-4">
                 <button type="submit" className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition shadow-sm">Save Settings</button>
               </div>

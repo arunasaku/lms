@@ -108,4 +108,5 @@ model SystemConfig {
   reminderDaysBeforeDue Int     @default(1)
   smtpEmail             String?
   smtpPassword          String?
+  whatsappTemplate      String?
 }
