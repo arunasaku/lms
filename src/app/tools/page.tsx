@@ -12,6 +12,7 @@ const prisma = new PrismaClient();
 export default async function ToolsPage() {
   const session = await getServerSession(authOptions);
   const userRole = (session?.user as any)?.role || 'MEMBER';
+  const isAdminOrLibrarian = userRole === 'ADMIN' || userRole === 'LIBRARIAN';
   const isAdmin = userRole === 'ADMIN';
 
   const config = await prisma.systemConfig.findUnique({ where: { id: 1 } });
@@ -65,7 +66,7 @@ export default async function ToolsPage() {
         </div>
       </div>
 
-      {isAdmin && (
+      {isAdminOrLibrarian && (
         <div className="space-y-6 pt-6">
           <h3 className="text-xl font-semibold text-slate-800 border-b pb-2">Admin Settings</h3>
           
@@ -139,11 +140,11 @@ export default async function ToolsPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <label htmlFor="smtpEmail" className="block text-sm font-medium text-slate-700">Gmail Address</label>
-                    <input type="email" id="smtpEmail" name="smtpEmail" defaultValue={config?.smtpEmail || ""} placeholder="e.g. library@gmail.com" className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition" />
+                    <input type="email" id="smtpEmail" name="smtpEmail" defaultValue={config?.smtpEmail || ""} placeholder="e.g. library@gmail.com" className={`w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition ${!isAdmin ? 'opacity-60 cursor-not-allowed' : ''}`} readOnly={!isAdmin} />
                   </div>
                   <div className="space-y-2">
                     <label htmlFor="smtpPassword" className="block text-sm font-medium text-slate-700">Gmail App Password</label>
-                    <input type="password" id="smtpPassword" name="smtpPassword" defaultValue={config?.smtpPassword || ""} placeholder="16-character app password" className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition" />
+                    <input type="password" id="smtpPassword" name="smtpPassword" defaultValue={config?.smtpPassword || ""} placeholder={isAdmin ? "16-character app password" : "••••••••••••••••"} className={`w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition ${!isAdmin ? 'opacity-60 cursor-not-allowed' : ''}`} readOnly={!isAdmin} />
                   </div>
                 </div>
               </div>

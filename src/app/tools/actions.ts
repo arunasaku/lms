@@ -13,15 +13,30 @@ export async function updateSystemSettings(formData: FormData) {
   const smtpEmail = formData.get("smtpEmail") as string | null;
   const smtpPassword = formData.get("smtpPassword") as string | null;
 
+  const { getServerSession } = await import("next-auth");
+  const { authOptions } = await import("@/lib/auth");
+  const session = await getServerSession(authOptions);
+  const userRole = (session?.user as any)?.role;
+
+  if (userRole !== 'ADMIN' && userRole !== 'LIBRARIAN') {
+    return { success: false, error: "Unauthorized" };
+  }
+
   if (isNaN(dailyFineRate) || isNaN(borrowPeriodDays) || isNaN(renewalPeriodDays) || isNaN(reminderDaysBeforeDue)) {
     return { success: false, error: "invalid values provided." };
   }
 
   try {
+    const existingConfig = await prisma.systemConfig.findUnique({ where: { id: 1 } });
+    
+    // Only admins can update SMTP settings. For others, keep existing values.
+    const finalSmtpEmail = userRole === 'ADMIN' ? smtpEmail : existingConfig?.smtpEmail;
+    const finalSmtpPassword = userRole === 'ADMIN' ? smtpPassword : existingConfig?.smtpPassword;
+
     await prisma.systemConfig.upsert({
       where: { id: 1 },
-      update: { dailyFineRate, borrowPeriodDays, renewalPeriodDays, reminderDaysBeforeDue, smtpEmail, smtpPassword },
-      create: { id: 1, dailyFineRate, borrowPeriodDays, renewalPeriodDays, reminderDaysBeforeDue, smtpEmail, smtpPassword }
+      update: { dailyFineRate, borrowPeriodDays, renewalPeriodDays, reminderDaysBeforeDue, smtpEmail: finalSmtpEmail, smtpPassword: finalSmtpPassword },
+      create: { id: 1, dailyFineRate, borrowPeriodDays, renewalPeriodDays, reminderDaysBeforeDue, smtpEmail: finalSmtpEmail, smtpPassword: finalSmtpPassword }
     });
     revalidatePath("/tools");
     revalidatePath("/circulation/reports");
