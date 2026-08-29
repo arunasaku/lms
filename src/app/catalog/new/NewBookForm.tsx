@@ -161,23 +161,23 @@ export default function NewBookForm() {
           </div>
           
           <div className="space-y-2">
-            <label htmlFor="itemType" className="block text-sm font-medium text-slate-700">Item Type (ද්‍රව්‍ය වර්ගය)</label>
+            <label htmlFor="itemType" className="block text-sm font-medium text-slate-700">Item Type</label>
             <select 
               id="itemType" 
               name="itemType" 
               className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
             >
-              <option value="LENDING">Lending (බැහැර දෙන)</option>
-              <option value="REFERENCE">Reference (විමර්ශන)</option>
-              <option value="MAGAZINE">Magazine / Journal (සඟරා)</option>
-              <option value="MEDIA">Media / CD / DVD (මාධ්‍ය)</option>
+              <option value="LENDING">Lending</option>
+              <option value="REFERENCE">Reference</option>
+              <option value="MAGAZINE">Magazine / Journal</option>
+              <option value="MEDIA">Media / CD / DVD</option>
             </select>
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2">
-            <label htmlFor="category" className="block text-sm font-medium text-slate-700">Category / Genre (කාණ්ඩය)</label>
+            <label htmlFor="category" className="block text-sm font-medium text-slate-700">Category / Genre</label>
             <input 
               type="text" 
               id="category" 
@@ -188,7 +188,7 @@ export default function NewBookForm() {
           </div>
 
           <div className="space-y-2">
-            <label htmlFor="shelfLoc" className="block text-sm font-medium text-slate-700">Shelf Location (රාක්ක අංකය)</label>
+            <label htmlFor="shelfLoc" className="block text-sm font-medium text-slate-700">Shelf Location</label>
             <input 
               type="text" 
               id="shelfLoc" 
