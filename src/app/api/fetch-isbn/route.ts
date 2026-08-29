@@ -67,43 +67,46 @@ export async function GET(request: Request) {
       } catch (e) {
         console.log("Grantha scrape failed:", e);
       }
-    } else {
-      // 4. Use AI Fallback for Name Searches
-      try {
-        const apiKey = process.env.GEMINI_API_KEY;
-        if (apiKey) {
-          const genAI = new GoogleGenerativeAI(apiKey);
-          const model = genAI.getGenerativeModel({ model: 'gemini-3.5-flash' });
-          const prompt = `Provide the details for the book "${isbn}". 
+      } catch (e) {
+        console.log("Grantha scrape failed:", e);
+      }
+    }
+    
+    // 4. Use AI Fallback for both Name and ISBN searches as a last resort
+    try {
+      const apiKey = process.env.GEMINI_API_KEY;
+      if (apiKey) {
+        const genAI = new GoogleGenerativeAI(apiKey);
+        const model = genAI.getGenerativeModel({ model: 'gemini-3.5-flash' });
+        const prompt = `Provide the details for the book with ISBN or Name "${isbn}". If it is an ISBN of a Sri Lankan / Sinhala book, provide its Sinhala or transliterated details.
 Respond ONLY in this exact JSON format, nothing else:
 {"title": "Book Name", "author": "Author Name", "publisher": "Publisher Name", "year": "YYYY"}
-If you don't know the exact year or publisher, leave them blank. Make sure the author is accurate.`;
-          
-          const result = await model.generateContent(prompt);
-          const response = await result.response;
-          let text = response.text().trim();
-          
-          // Extract JSON block in case AI added extra text
-          const jsonMatch = text.match(/\{[\s\S]*\}/);
-          if (jsonMatch) {
-            text = jsonMatch[0];
-          }
-          
-          const aiData = JSON.parse(text);
-          
-          if (aiData.title) {
-            return NextResponse.json({
-              title: aiData.title,
-              author: aiData.author || "",
-              publisher: aiData.publisher || "",
-              year: aiData.year || "",
-              source: "AI Knowledge Base"
-            });
-          }
+If you don't know the exact year or publisher, leave them blank. Make sure the author is accurate. If you absolutely cannot find it, respond with {"error": "not found"}.`;
+        
+        const result = await model.generateContent(prompt);
+        const response = await result.response;
+        let text = response.text().trim();
+        
+        // Extract JSON block in case AI added extra text
+        const jsonMatch = text.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+          text = jsonMatch[0];
         }
-      } catch (e) {
-        console.log("AI Search failed:", e);
+        
+        const aiData = JSON.parse(text);
+        
+        if (aiData.title && !aiData.error) {
+          return NextResponse.json({
+            title: aiData.title,
+            author: aiData.author || "",
+            publisher: aiData.publisher || "",
+            year: aiData.year || "",
+            source: "AI Knowledge Base"
+          });
+        }
       }
+    } catch (e) {
+      console.log("AI Search failed:", e);
     }
     
     return NextResponse.json({ error: "Book not found" }, { status: 404 });
