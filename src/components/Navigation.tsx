@@ -95,11 +95,11 @@ export function Navigation({ session, children }: { session: any, children: Reac
           </nav>
           
           <div className="p-4 border-t border-slate-800">
-            <div className="flex items-center mb-4">
+            <div className="flex items-center justify-center mb-4">
               <div className="w-8 h-8 rounded-full bg-indigo-500 flex items-center justify-center text-white font-bold text-sm">
                 {session.user?.name?.substring(0,2).toUpperCase() || 'U'}
               </div>
-              <div className="ml-3">
+              <div className="ml-3 text-left">
                 <p className="text-sm font-medium text-white">{session.user?.name}</p>
                 <p className="text-xs text-slate-500">{(session.user as any)?.role || 'Member'}</p>
               </div>
