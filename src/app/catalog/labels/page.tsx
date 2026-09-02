@@ -55,7 +55,7 @@ export default function LabelCreatorPage() {
         }
         return {
           id: crypto.randomUUID(),
-          type: type === 'books' ? 'book' : 'member',
+          type: (type === 'books' ? 'book' : 'member') as 'book' | 'member',
           accessionNo: num,
           title: title,
           ddc,
