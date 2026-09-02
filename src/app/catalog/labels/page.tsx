@@ -1,13 +1,15 @@
-﻿'use client';
+'use client';
 
 import React, { useState } from 'react';
 import Link from 'next/link';
 import BarcodeLabel from '@/components/BarcodeLabel';
+import CompositeLabel from '@/components/CompositeLabel';
 import { Printer, Plus, Trash2 } from 'lucide-react';
 
 export default function LabelCreatorPage() {
   const [accessionInputs, setAccessionInputs] = useState<string>('');
-  const [labels, setLabels] = useState<{ id: string; accessionNo: string; title: string }[]>([]);
+  const [labels, setLabels] = useState<{ id: string; type: 'book'|'member'; accessionNo: string; title: string; ddc?: string; author?: string; year?: string; category?: string }[]>([]);
+  const [labelStyle, setLabelStyle] = useState<'standard' | 'composite'>('standard');
 
   const handleGenerate = async (type: 'books' | 'members') => {
     if (!accessionInputs.trim()) return;
@@ -34,17 +36,32 @@ export default function LabelCreatorPage() {
 
       const newLabels = newNumbers.map(num => {
         let title = '';
+        let ddc = '';
+        let author = '';
+        let year = '';
+        let category = '';
         if (type === 'books') {
           const book = fetchedItems.find((b: any) => b.accNo === num);
-          title = book ? book.title : '';
+          if (book) {
+            title = book.title;
+            ddc = book.ddc;
+            author = book.author;
+            year = book.year;
+            category = book.category;
+          }
         } else {
           const member = fetchedItems.find((m: any) => m.memberId === num);
           title = member ? member.name : '';
         }
         return {
           id: crypto.randomUUID(),
+          type: type === 'books' ? 'book' : 'member',
           accessionNo: num,
           title: title,
+          ddc,
+          author,
+          year,
+          category,
         };
       });
 
@@ -84,6 +101,17 @@ export default function LabelCreatorPage() {
             value={accessionInputs}
             onChange={(e) => setAccessionInputs(e.target.value)}
           />
+          <div className="flex flex-col gap-2 w-full md:w-64">
+            <label className="text-sm font-semibold text-gray-700">Label Style:</label>
+            <select 
+              value={labelStyle}
+              onChange={(e) => setLabelStyle(e.target.value as 'standard' | 'composite')}
+              className="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="standard">Standard Barcode (50x35mm)</option>
+              <option value="composite">Composite / Spine (70x35mm)</option>
+            </select>
+          </div>
         </div>
         
         <div className="flex flex-wrap gap-3">
@@ -137,7 +165,17 @@ export default function LabelCreatorPage() {
           <div className="flex flex-wrap gap-4 print:gap-1 print:justify-start">
             {labels.map((label) => (
               <div key={label.id} className="relative group">
-                <BarcodeLabel accessionNo={label.accessionNo} bookTitle={label.title} />
+                {labelStyle === 'composite' && label.type === 'book' ? (
+                  <CompositeLabel 
+                    accessionNo={label.accessionNo} 
+                    ddc={label.ddc} 
+                    author={label.author} 
+                    year={label.year} 
+                    category={label.category} 
+                  />
+                ) : (
+                  <BarcodeLabel accessionNo={label.accessionNo} bookTitle={label.title} />
+                )}
                 <button 
                   onClick={() => removeLabel(label.id)}
                   className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity print:hidden"

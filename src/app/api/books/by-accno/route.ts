@@ -20,6 +20,10 @@ export async function POST(request: Request) {
       select: {
         accNo: true,
         title: true,
+        ddc: true,
+        author: true,
+        year: true,
+        category: true,
       },
     });
 
