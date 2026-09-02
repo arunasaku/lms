@@ -25,6 +25,7 @@ export default async function RootLayout({
   const session = await getServerSession(authOptions);
   let libraryName = "Library";
   let instituteName = "My Institute";
+  let headerFontSize = 18;
 
   if (session) {
     try {
@@ -32,6 +33,7 @@ export default async function RootLayout({
       if (config) {
         libraryName = config.libraryName || libraryName;
         instituteName = config.instituteName || instituteName;
+        headerFontSize = config.headerFontSize || headerFontSize;
       }
     } catch (e) {}
   }
@@ -44,7 +46,7 @@ export default async function RootLayout({
         <Providers>
           {session ? (
             <>
-              <Navigation session={session} libraryName={libraryName} instituteName={instituteName}>
+              <Navigation session={session} libraryName={libraryName} instituteName={instituteName} headerFontSize={headerFontSize}>
                 {children}
               </Navigation>
             </>

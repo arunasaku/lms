@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { LogoutButton } from "./LogoutButton";
 import Image from "next/image";
 
-export function Navigation({ session, libraryName, instituteName, children }: { session: any, libraryName?: string, instituteName?: string, children: React.ReactNode }) {
+export function Navigation({ session, libraryName, instituteName, headerFontSize = 18, children }: { session: any, libraryName?: string, instituteName?: string, headerFontSize?: number, children: React.ReactNode }) {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
 
@@ -129,9 +129,9 @@ export function Navigation({ session, libraryName, instituteName, children }: { 
         <main className="flex-1 flex flex-col h-full overflow-hidden w-full bg-slate-50 print:bg-white print:overflow-visible">
           {/* Desktop Header */}
           <header className="hidden md:flex print:hidden h-16 bg-white border-b border-slate-200 items-center px-8 shrink-0 justify-between">
-            <div className="flex flex-col">
-              <span className="text-xs font-bold tracking-wider text-slate-500 uppercase">{instituteName || 'My Institute'}</span>
-              <span className="text-lg font-semibold text-slate-800 leading-tight">{libraryName || 'Library'}</span>
+            <div className="flex flex-col flex-1 items-center justify-center">
+              <span className="font-bold tracking-wider text-slate-500 uppercase" style={{ fontSize: `${Math.max(10, headerFontSize - 6)}px` }}>{instituteName || 'My Institute'}</span>
+              <span className="font-semibold text-slate-800 leading-tight" style={{ fontSize: `${headerFontSize}px` }}>{libraryName || 'Library'}</span>
             </div>
             <LogoutButton />
           </header>

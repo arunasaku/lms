@@ -111,4 +111,5 @@ model SystemConfig {
   whatsappTemplate      String?
   libraryName           String?  @default("Library")
   instituteName         String?  @default("My Institute")
+  headerFontSize        Int?     @default(18)
 }

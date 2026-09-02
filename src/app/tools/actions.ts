@@ -15,6 +15,8 @@ export async function updateSystemSettings(formData: FormData) {
   const whatsappTemplate = formData.get("whatsappTemplate") as string | null;
   const libraryName = formData.get("libraryName") as string | null;
   const instituteName = formData.get("instituteName") as string | null;
+  const headerFontSizeStr = formData.get("headerFontSize");
+  const headerFontSize = headerFontSizeStr ? parseInt(headerFontSizeStr as string, 10) : 18;
 
   const { getServerSession } = await import("next-auth");
   const { authOptions } = await import("@/lib/auth");
@@ -25,7 +27,7 @@ export async function updateSystemSettings(formData: FormData) {
     return { success: false, error: "Unauthorized" };
   }
 
-  if (isNaN(dailyFineRate) || isNaN(borrowPeriodDays) || isNaN(renewalPeriodDays) || isNaN(reminderDaysBeforeDue)) {
+  if (isNaN(dailyFineRate) || isNaN(borrowPeriodDays) || isNaN(renewalPeriodDays) || isNaN(reminderDaysBeforeDue) || isNaN(headerFontSize)) {
     return { success: false, error: "invalid values provided." };
   }
 
@@ -38,8 +40,8 @@ export async function updateSystemSettings(formData: FormData) {
 
     await prisma.systemConfig.upsert({
       where: { id: 1 },
-      update: { dailyFineRate, borrowPeriodDays, renewalPeriodDays, reminderDaysBeforeDue, smtpEmail: finalSmtpEmail, smtpPassword: finalSmtpPassword, whatsappTemplate, libraryName, instituteName },
-      create: { id: 1, dailyFineRate, borrowPeriodDays, renewalPeriodDays, reminderDaysBeforeDue, smtpEmail: finalSmtpEmail, smtpPassword: finalSmtpPassword, whatsappTemplate, libraryName, instituteName }
+      update: { dailyFineRate, borrowPeriodDays, renewalPeriodDays, reminderDaysBeforeDue, smtpEmail: finalSmtpEmail, smtpPassword: finalSmtpPassword, whatsappTemplate, libraryName, instituteName, headerFontSize },
+      create: { id: 1, dailyFineRate, borrowPeriodDays, renewalPeriodDays, reminderDaysBeforeDue, smtpEmail: finalSmtpEmail, smtpPassword: finalSmtpPassword, whatsappTemplate, libraryName, instituteName, headerFontSize }
     });
     revalidatePath("/tools");
     revalidatePath("/");

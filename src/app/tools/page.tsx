@@ -114,7 +114,7 @@ export default async function ToolsPage() {
               <h4 className="text-lg font-semibold text-slate-800">System Configuration</h4>
             </div>
             <form action={updateSystemSettings as any} className="p-8 space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-6 border-b border-slate-100">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pb-6 border-b border-slate-100">
                 <div className="space-y-2">
                   <label htmlFor="instituteName" className="block text-sm font-medium text-slate-700">Institute Name</label>
                   <input type="text" id="instituteName" name="instituteName" defaultValue={config?.instituteName || "My Institute"} required placeholder="e.g. Royal College" className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition" />
@@ -122,6 +122,10 @@ export default async function ToolsPage() {
                 <div className="space-y-2">
                   <label htmlFor="libraryName" className="block text-sm font-medium text-slate-700">Library Name</label>
                   <input type="text" id="libraryName" name="libraryName" defaultValue={config?.libraryName || "Library"} required placeholder="e.g. Main Library" className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition" />
+                </div>
+                <div className="space-y-2">
+                  <label htmlFor="headerFontSize" className="block text-sm font-medium text-slate-700">Header Font Size (px)</label>
+                  <input type="number" id="headerFontSize" name="headerFontSize" defaultValue={config?.headerFontSize || 18} required min="10" max="40" className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition" />
                 </div>
               </div>
               
