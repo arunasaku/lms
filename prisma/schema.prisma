@@ -109,4 +109,6 @@ model SystemConfig {
   smtpEmail             String?
   smtpPassword          String?
   whatsappTemplate      String?
+  libraryName           String?  @default("Library")
+  instituteName         String?  @default("My Institute")
 }

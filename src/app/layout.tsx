@@ -7,8 +7,10 @@ import { Navigation } from "@/components/Navigation";
 import { LogoutButton } from "@/components/LogoutButton";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
+import { PrismaClient } from "@prisma/client";
 
 const inter = Inter({ subsets: ['latin'] })
+const prisma = new PrismaClient();
 
 export const metadata: Metadata = {
   title: "Library Management System",
@@ -21,6 +23,18 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const session = await getServerSession(authOptions);
+  let libraryName = "Library";
+  let instituteName = "My Institute";
+
+  if (session) {
+    try {
+      const config = await prisma.systemConfig.findUnique({ where: { id: 1 } });
+      if (config) {
+        libraryName = config.libraryName || libraryName;
+        instituteName = config.instituteName || instituteName;
+      }
+    } catch (e) {}
+  }
   
   return (
     <html lang="en">
@@ -30,7 +44,7 @@ export default async function RootLayout({
         <Providers>
           {session ? (
             <>
-              <Navigation session={session}>
+              <Navigation session={session} libraryName={libraryName} instituteName={instituteName}>
                 {children}
               </Navigation>
             </>

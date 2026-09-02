@@ -13,6 +13,8 @@ export async function updateSystemSettings(formData: FormData) {
   const smtpEmail = formData.get("smtpEmail") as string | null;
   const smtpPassword = formData.get("smtpPassword") as string | null;
   const whatsappTemplate = formData.get("whatsappTemplate") as string | null;
+  const libraryName = formData.get("libraryName") as string | null;
+  const instituteName = formData.get("instituteName") as string | null;
 
   const { getServerSession } = await import("next-auth");
   const { authOptions } = await import("@/lib/auth");
@@ -36,8 +38,8 @@ export async function updateSystemSettings(formData: FormData) {
 
     await prisma.systemConfig.upsert({
       where: { id: 1 },
-      update: { dailyFineRate, borrowPeriodDays, renewalPeriodDays, reminderDaysBeforeDue, smtpEmail: finalSmtpEmail, smtpPassword: finalSmtpPassword, whatsappTemplate },
-      create: { id: 1, dailyFineRate, borrowPeriodDays, renewalPeriodDays, reminderDaysBeforeDue, smtpEmail: finalSmtpEmail, smtpPassword: finalSmtpPassword, whatsappTemplate }
+      update: { dailyFineRate, borrowPeriodDays, renewalPeriodDays, reminderDaysBeforeDue, smtpEmail: finalSmtpEmail, smtpPassword: finalSmtpPassword, whatsappTemplate, libraryName, instituteName },
+      create: { id: 1, dailyFineRate, borrowPeriodDays, renewalPeriodDays, reminderDaysBeforeDue, smtpEmail: finalSmtpEmail, smtpPassword: finalSmtpPassword, whatsappTemplate, libraryName, instituteName }
     });
     revalidatePath("/tools");
     revalidatePath("/");

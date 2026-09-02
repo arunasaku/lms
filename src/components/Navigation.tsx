@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { LogoutButton } from "./LogoutButton";
 import Image from "next/image";
 
-export function Navigation({ session, children }: { session: any, children: React.ReactNode }) {
+export function Navigation({ session, libraryName, instituteName, children }: { session: any, libraryName?: string, instituteName?: string, children: React.ReactNode }) {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
 
@@ -128,7 +128,11 @@ export function Navigation({ session, children }: { session: any, children: Reac
         {/* Main Content Area */}
         <main className="flex-1 flex flex-col h-full overflow-hidden w-full bg-slate-50 print:bg-white print:overflow-visible">
           {/* Desktop Header */}
-          <header className="hidden md:flex print:hidden h-16 bg-white border-b border-slate-200 items-center px-8 shrink-0 justify-end">
+          <header className="hidden md:flex print:hidden h-16 bg-white border-b border-slate-200 items-center px-8 shrink-0 justify-between">
+            <div className="flex flex-col">
+              <span className="text-xs font-bold tracking-wider text-slate-500 uppercase">{instituteName || 'My Institute'}</span>
+              <span className="text-lg font-semibold text-slate-800 leading-tight">{libraryName || 'Library'}</span>
+            </div>
             <LogoutButton />
           </header>
           <div className="flex-1 overflow-auto p-4 md:p-8 print:p-0 print:overflow-visible">
