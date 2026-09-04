@@ -2,9 +2,11 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import BarcodeLabel from '@/components/BarcodeLabel';
-import CompositeLabel from '@/components/CompositeLabel';
+import dynamic from 'next/dynamic';
 import { Printer, Plus, Trash2 } from 'lucide-react';
+
+const BarcodeLabel = dynamic(() => import('@/components/BarcodeLabel'), { ssr: false });
+const CompositeLabel = dynamic(() => import('@/components/CompositeLabel'), { ssr: false });
 
 export default function LabelCreatorPage() {
   const [accessionInputs, setAccessionInputs] = useState<string>('');

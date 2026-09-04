@@ -1,5 +1,7 @@
 import React from 'react';
-import Barcode from 'react-barcode';
+import dynamic from 'next/dynamic';
+
+const Barcode = dynamic(() => import('react-barcode'), { ssr: false });
 
 interface BarcodeLabelProps {
   accessionNo: string;

@@ -1,5 +1,7 @@
-﻿import React from 'react';
-import Barcode from 'react-barcode';
+import React from 'react';
+import dynamic from 'next/dynamic';
+
+const Barcode = dynamic(() => import('react-barcode'), { ssr: false });
 
 interface CompositeLabelProps {
   accessionNo: string;
