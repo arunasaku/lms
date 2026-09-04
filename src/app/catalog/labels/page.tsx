@@ -111,7 +111,7 @@ export default function LabelCreatorPage() {
               className="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="standard">Standard Barcode (50x35mm)</option>
-              <option value="composite">Composite / Spine (70x35mm)</option>
+              <option value="composite">Composite / Spine (45x45mm)</option>
             </select>
           </div>
         </div>

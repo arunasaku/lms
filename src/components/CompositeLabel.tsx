@@ -37,8 +37,8 @@ export default function CompositeLabel({
   }
 
   return (
-    <div className="flex border border-gray-400 bg-white m-1" style={{ width: '70mm', height: '35mm' }}>
-      <div className="flex flex-col justify-between w-2/3 border-r border-gray-300 p-1">
+    <div className="flex border border-gray-400 bg-white m-1" style={{ width: '45mm', height: '45mm' }}>
+      <div className="flex flex-col justify-between w-1/2 border-r border-gray-300 p-1">
         <div className="text-[7px] text-center uppercase text-gray-700 font-medium border-b border-gray-200 pb-[1px] overflow-hidden text-ellipsis whitespace-nowrap">
           {category || 'General Collection'}
         </div>
@@ -52,13 +52,13 @@ export default function CompositeLabel({
           {libraryName}
         </div>
       </div>
-      <div className="w-1/3 flex items-center justify-center relative overflow-hidden">
+      <div className="w-1/2 flex items-center justify-center relative overflow-hidden">
         <div className="absolute flex items-center justify-center" style={{ transform: 'rotate(-90deg)' }}>
           <Barcode 
             value={accessionNo} 
             format="CODE128"
-            width={1.2}
-            height={30}
+            width={1.1}
+            height={32}
             fontSize={10}
             margin={0}
             displayValue={true}

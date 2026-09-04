@@ -1,6 +1,64 @@
 import { NextResponse } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
+async function fetchFromUnionCatalogue(isbnOrQuery: string) {
+  try {
+    const cleanQuery = isbnOrQuery.replace(/[- ]/g, '');
+    const searchUrl = `https://unioncatalogue.dlp.gov.lk/Search/Results?lookfor=${encodeURIComponent(cleanQuery)}&type=AllFields`;
+    const res = await fetch(searchUrl, { headers: { 'User-Agent': 'Mozilla/5.0' } });
+    if (!res.ok) return null;
+    const html = await res.text();
+
+    const recordHrefs = [...html.matchAll(/href="([^"]+)"/g)]
+      .map(m => m[1].replace(/&#x2F;/g, '/').replace(/&#x3F;/g, '?').replace(/&#x3D;/g, '=').replace(/&amp;/g, '&'))
+      .filter(h => h.startsWith('/Record/') && !h.includes('/Save'));
+
+    const uniqueRecords = [...new Set(recordHrefs.map(h => h.split('?')[0]))];
+    if (uniqueRecords.length === 0) return null;
+
+    const recordId = uniqueRecords[0].replace('/Record/', '');
+    const marcUrl = `https://unioncatalogue.dlp.gov.lk/Record/${recordId}/Export?style=MARCXML`;
+    const marcRes = await fetch(marcUrl);
+    if (!marcRes.ok) return null;
+    const marcXml = await marcRes.text();
+
+    const titleMatch = marcXml.match(/<datafield tag="245"[\s\S]*?<subfield code="a">([\s\S]*?)<\/subfield>/i);
+    const authorMatch = marcXml.match(/<datafield tag="100"[\s\S]*?<subfield code="a">([\s\S]*?)<\/subfield>/i);
+    const ddcMatch = marcXml.match(/<datafield tag="082"[\s\S]*?<subfield code="a">([\s\S]*?)<\/subfield>/i);
+    const publisherMatch = marcXml.match(/<datafield tag="260"[\s\S]*?<subfield code="b">([\s\S]*?)<\/subfield>/i);
+    const yearMatch = marcXml.match(/<datafield tag="260"[\s\S]*?<subfield code="c">([\s\S]*?)<\/subfield>/i);
+    const priceMatch = marcXml.match(/<datafield tag="300"[\s\S]*?<subfield code="b">([\s\S]*?)<\/subfield>/i);
+
+    let title = titleMatch ? titleMatch[1].replace(/\s*\/\s*$/, '').trim() : '';
+    let author = authorMatch ? authorMatch[1].trim() : '';
+    let publisher = publisherMatch ? publisherMatch[1].replace(/[,:]\s*$/, '').trim() : '';
+    let year = yearMatch ? yearMatch[1].replace(/[^0-9]/g, '').trim() : '';
+    let ddc = ddcMatch ? ddcMatch[1].trim() : '';
+    
+    let price = '';
+    if (priceMatch) {
+      const priceText = priceMatch[1];
+      const pMatch = priceText.match(/Rs\.?\s*([0-9]+(?:\.[0-9]{2})?)/i);
+      if (pMatch) price = pMatch[1];
+    }
+
+    if (title) {
+      return {
+        title,
+        author,
+        publisher,
+        year,
+        ddc,
+        price,
+        source: "National Union Catalogue (Sri Lanka)"
+      };
+    }
+  } catch (e) {
+    console.error("Union Catalogue fetch error:", e);
+  }
+  return null;
+}
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const isbn = searchParams.get("isbn");
@@ -10,10 +68,16 @@ export async function GET(request: Request) {
   }
 
   try {
+    // 0. Try National Virtual Union Catalogue of Sri Lanka First
+    const unionCatData = await fetchFromUnionCatalogue(isbn);
+    if (unionCatData) {
+      return NextResponse.json(unionCatData);
+    }
+
     // Determine if the input is an ISBN or a Book Name
     const isName = /[a-zA-Z]{3,}/.test(isbn);
     
-    // 1. Try Google Books API First
+    // 1. Try Google Books API
     const googleQuery = isName ? `intitle:${encodeURIComponent(isbn)}` : `isbn:${isbn}`;
     let res = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${googleQuery}&maxResults=1`);
     let data = await res.json();

@@ -12,6 +12,7 @@ export default function NewBookForm() {
   const [publisher, setPublisher] = useState("");
   const [year, setYear] = useState("");
   const [ddc, setDdc] = useState("");
+  const [price, setPrice] = useState("");
   const [loading, setLoading] = useState(false);
   const [suggestingDdc, setSuggestingDdc] = useState(false);
 
@@ -26,9 +27,11 @@ export default function NewBookForm() {
         if (data.author) setAuthor(data.author);
         if (data.publisher) setPublisher(data.publisher);
         if (data.year) setYear(data.year);
+        if (data.ddc) setDdc(data.ddc);
+        if (data.price) setPrice(data.price);
         
-        // Auto suggest DDC
-        if (data.title) {
+        // Auto suggest DDC if not provided by source
+        if (data.title && !data.ddc) {
           suggestDdc(data.title, data.author, data.publisher);
         }
       } else {
@@ -218,6 +221,8 @@ export default function NewBookForm() {
               id="price" 
               name="price" 
               step="0.01"
+              value={price}
+              onChange={(e) => setPrice(e.target.value)}
               placeholder="0.00"
               className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
             />
