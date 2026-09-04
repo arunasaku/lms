@@ -18,7 +18,7 @@ export default function CompositeLabel({
   author = '', 
   year = '', 
   category = 'General Collection',
-  libraryName = 'My Library'
+  libraryName = 'Library'
 }: CompositeLabelProps) {
   
   if (!accessionNo) return null;

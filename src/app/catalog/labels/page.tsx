@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { Printer, Plus, Trash2 } from 'lucide-react';
@@ -12,6 +12,16 @@ export default function LabelCreatorPage() {
   const [accessionInputs, setAccessionInputs] = useState<string>('');
   const [labels, setLabels] = useState<{ id: string; type: 'book'|'member'; accessionNo: string; title: string; ddc?: string; author?: string; year?: string; category?: string }[]>([]);
   const [labelStyle, setLabelStyle] = useState<'standard' | 'composite'>('standard');
+  const [libraryName, setLibraryName] = useState<string>('Library');
+
+  useEffect(() => {
+    fetch('/api/system-config')
+      .then(res => res.json())
+      .then(data => {
+        if (data.libraryName) setLibraryName(data.libraryName);
+      })
+      .catch(console.error);
+  }, []);
 
   const handleGenerate = async (type: 'books' | 'members') => {
     if (!accessionInputs.trim()) return;
@@ -174,6 +184,7 @@ export default function LabelCreatorPage() {
                     author={label.author} 
                     year={label.year} 
                     category={label.category} 
+                    libraryName={libraryName}
                   />
                 ) : (
                   <BarcodeLabel accessionNo={label.accessionNo} bookTitle={label.title} />
