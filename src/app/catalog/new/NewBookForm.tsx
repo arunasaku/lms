@@ -6,6 +6,7 @@ import { useState } from "react";
 import { Search, Wand2 } from "lucide-react";
 
 export default function NewBookForm() {
+  const [isbnSearch, setIsbnSearch] = useState("");
   const [isbn, setIsbn] = useState("");
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
@@ -13,14 +14,16 @@ export default function NewBookForm() {
   const [year, setYear] = useState("");
   const [ddc, setDdc] = useState("");
   const [price, setPrice] = useState("");
+  const [pages, setPages] = useState("");
+  const [height, setHeight] = useState("");
   const [loading, setLoading] = useState(false);
   const [suggestingDdc, setSuggestingDdc] = useState(false);
 
   const fetchIsbnInfo = async () => {
-    if (!isbn) return;
+    if (!isbnSearch) return;
     setLoading(true);
     try {
-      const res = await fetch(`/api/fetch-isbn?isbn=${isbn}`);
+      const res = await fetch(`/api/fetch-isbn?isbn=${encodeURIComponent(isbnSearch)}`);
       if (res.ok) {
         const data = await res.json();
         if (data.title) setTitle(data.title);
@@ -29,6 +32,10 @@ export default function NewBookForm() {
         if (data.year) setYear(data.year);
         if (data.ddc) setDdc(data.ddc);
         if (data.price) setPrice(data.price);
+        if (data.pages) setPages(data.pages);
+        if (data.height) setHeight(data.height);
+        if (data.isbn) setIsbn(data.isbn);
+        else if (!/[a-zA-Z]{3,}/.test(isbnSearch)) setIsbn(isbnSearch);
         
         // Auto suggest DDC if not provided by source
         if (data.title && !data.ddc) {
@@ -71,13 +78,12 @@ export default function NewBookForm() {
         {/* ISBN Fetch Section */}
         <div className="bg-indigo-50 p-4 rounded-lg border border-indigo-100 flex flex-col sm:flex-row gap-4 items-end">
           <div className="flex-1 space-y-2 w-full">
-            <label htmlFor="isbn" className="block text-sm font-medium text-indigo-900">ISBN / Book Name (Auto-fill)</label>
+            <label htmlFor="isbnSearch" className="block text-sm font-medium text-indigo-900">ISBN / Book Name (Auto-fill)</label>
             <input 
               type="text" 
-              id="isbn" 
-              name="isbn" 
-              value={isbn}
-              onChange={(e) => setIsbn(e.target.value)}
+              id="isbnSearch" 
+              value={isbnSearch}
+              onChange={(e) => setIsbnSearch(e.target.value)}
               placeholder="Enter ISBN or Book Name..."
               className="w-full px-4 py-2.5 bg-white border border-indigo-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
             />
@@ -144,6 +150,47 @@ export default function NewBookForm() {
               value={publisher}
               onChange={(e) => setPublisher(e.target.value)}
               placeholder="Publisher..."
+              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="space-y-2">
+            <label htmlFor="isbn" className="block text-sm font-medium text-slate-700">ISBN Number</label>
+            <input 
+              type="text" 
+              id="isbn" 
+              name="isbn" 
+              value={isbn}
+              onChange={(e) => setIsbn(e.target.value)}
+              placeholder="e.g. 9789556583359"
+              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label htmlFor="pages" className="block text-sm font-medium text-slate-700">Pages / Physical Details</label>
+            <input 
+              type="text" 
+              id="pages" 
+              name="pages" 
+              value={pages}
+              onChange={(e) => setPages(e.target.value)}
+              placeholder="e.g. 138 p."
+              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label htmlFor="height" className="block text-sm font-medium text-slate-700">Book Height / Size</label>
+            <input 
+              type="text" 
+              id="height" 
+              name="height" 
+              value={height}
+              onChange={(e) => setHeight(e.target.value)}
+              placeholder="e.g. 18 cm"
               className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
             />
           </div>

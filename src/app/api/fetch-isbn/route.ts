@@ -27,6 +27,8 @@ async function fetchFromUnionCatalogue(isbnOrQuery: string) {
     const ddcMatch = marcXml.match(/<datafield tag="082"[\s\S]*?<subfield code="a">([\s\S]*?)<\/subfield>/i);
     const publisherMatch = marcXml.match(/<datafield tag="260"[\s\S]*?<subfield code="b">([\s\S]*?)<\/subfield>/i);
     const yearMatch = marcXml.match(/<datafield tag="260"[\s\S]*?<subfield code="c">([\s\S]*?)<\/subfield>/i);
+    const pagesMatch = marcXml.match(/<datafield tag="300"[\s\S]*?<subfield code="a">([\s\S]*?)<\/subfield>/i);
+    const heightMatch = marcXml.match(/<datafield tag="300"[\s\S]*?<subfield code="c">([\s\S]*?)<\/subfield>/i);
     const priceMatch = marcXml.match(/<datafield tag="300"[\s\S]*?<subfield code="b">([\s\S]*?)<\/subfield>/i);
 
     let title = titleMatch ? titleMatch[1].replace(/\s*\/\s*$/, '').trim() : '';
@@ -34,6 +36,8 @@ async function fetchFromUnionCatalogue(isbnOrQuery: string) {
     let publisher = publisherMatch ? publisherMatch[1].replace(/[,:]\s*$/, '').trim() : '';
     let year = yearMatch ? yearMatch[1].replace(/[^0-9]/g, '').trim() : '';
     let ddc = ddcMatch ? ddcMatch[1].trim() : '';
+    let pages = pagesMatch ? pagesMatch[1].replace(/[^0-9]/g, '').trim() : '';
+    let height = heightMatch ? heightMatch[1].trim() : '';
     
     let price = '';
     if (priceMatch) {
@@ -50,6 +54,9 @@ async function fetchFromUnionCatalogue(isbnOrQuery: string) {
         year,
         ddc,
         price,
+        pages,
+        height,
+        isbn: cleanQuery,
         source: "National Union Catalogue (Sri Lanka)"
       };
     }

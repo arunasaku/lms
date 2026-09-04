@@ -100,6 +100,44 @@ export default function EditBookForm({ book }: { book: any }) {
           </div>
         </div>
 
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="space-y-2">
+            <label htmlFor="isbn" className="block text-sm font-medium text-slate-700">ISBN Number</label>
+            <input 
+              type="text" 
+              id="isbn" 
+              name="isbn" 
+              defaultValue={book.isbn || ""}
+              placeholder="e.g. 9789556583359"
+              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label htmlFor="pages" className="block text-sm font-medium text-slate-700">Pages / Physical Details</label>
+            <input 
+              type="text" 
+              id="pages" 
+              name="pages" 
+              defaultValue={book.pages || ""}
+              placeholder="e.g. 138 p."
+              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label htmlFor="height" className="block text-sm font-medium text-slate-700">Book Height / Size</label>
+            <input 
+              type="text" 
+              id="height" 
+              name="height" 
+              defaultValue={book.height || ""}
+              placeholder="e.g. 18 cm"
+              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+            />
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2">
             <label htmlFor="year" className="block text-sm font-medium text-slate-700">Publication Year</label>

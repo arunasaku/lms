@@ -47,6 +47,8 @@ model Book {
   billNo        String?
   isbn          String?
   ddc           String?
+  pages         String?
+  height        String?
   itemType      String?  @default("LENDING") // LENDING, REFERENCE, MAGAZINE, MEDIA
   category      String?
   shelfLoc      String?

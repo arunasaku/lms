@@ -17,6 +17,8 @@ export async function createBook(formData: FormData) {
   const billNo = formData.get("billNo") as string | null;
   const isbn = formData.get("isbn") as string | null;
   const ddc = formData.get("ddc") as string | null;
+  const pages = formData.get("pages") as string | null;
+  const height = formData.get("height") as string | null;
   const itemType = formData.get("itemType") as string | null;
   const category = formData.get("category") as string | null;
   const shelfLoc = formData.get("shelfLoc") as string | null;
@@ -44,6 +46,8 @@ export async function createBook(formData: FormData) {
       billNo,
       isbn,
       ddc,
+      pages,
+      height,
       itemType: itemType || "LENDING",
       category,
       shelfLoc,
@@ -66,7 +70,10 @@ export async function updateBook(formData: FormData) {
   const vendor = formData.get("vendor") as string | null;
   const priceStr = formData.get("price") as string | null;
   const billNo = formData.get("billNo") as string | null;
+  const isbn = formData.get("isbn") as string | null;
   const ddc = formData.get("ddc") as string | null;
+  const pages = formData.get("pages") as string | null;
+  const height = formData.get("height") as string | null;
   const itemType = formData.get("itemType") as string | null;
   const category = formData.get("category") as string | null;
   const shelfLoc = formData.get("shelfLoc") as string | null;
@@ -91,7 +98,10 @@ export async function updateBook(formData: FormData) {
       vendor: vendor || null,
       price: isNaN(price as number) ? null : price,
       billNo: billNo || null,
+      isbn: isbn || null,
       ddc: ddc || null,
+      pages: pages || null,
+      height: height || null,
       itemType: itemType || "LENDING",
       category: category || null,
       shelfLoc: shelfLoc || null,
