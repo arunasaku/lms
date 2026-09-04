@@ -16,6 +16,7 @@ export default function NewBookForm() {
   const [price, setPrice] = useState("");
   const [pages, setPages] = useState("");
   const [height, setHeight] = useState("");
+  const [category, setCategory] = useState("");
   const [loading, setLoading] = useState(false);
   const [suggestingDdc, setSuggestingDdc] = useState(false);
 
@@ -232,9 +233,27 @@ export default function NewBookForm() {
               type="text" 
               id="category" 
               name="category" 
-              placeholder="e.g. Fiction, Science, Kids"
+              list="category-list"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              placeholder="Select or type category (e.g. Fiction, Science)..."
               className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
             />
+            <datalist id="category-list">
+              <option value="General Collection" />
+              <option value="Novels / Fiction" />
+              <option value="Short Stories" />
+              <option value="Children's Collection" />
+              <option value="Translations" />
+              <option value="Science & Technology" />
+              <option value="History & Biography" />
+              <option value="Religion & Philosophy" />
+              <option value="Language & Literature" />
+              <option value="Arts & Culture" />
+              <option value="Social Sciences" />
+              <option value="Reference Collection" />
+              <option value="Magazines & Periodicals" />
+            </datalist>
           </div>
 
           <div className="space-y-2">

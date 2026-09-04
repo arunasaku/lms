@@ -16,6 +16,7 @@ export default function EditBookForm({ book }: { book: any }) {
   const [price, setPrice] = useState(book.price ? String(book.price) : "");
   const [pages, setPages] = useState(book.pages || "");
   const [height, setHeight] = useState(book.height || "");
+  const [category, setCategory] = useState(book.category || "");
   const [loading, setLoading] = useState(false);
   const [suggestingDdc, setSuggestingDdc] = useState(false);
 
@@ -241,10 +242,27 @@ export default function EditBookForm({ book }: { book: any }) {
               type="text" 
               id="category" 
               name="category" 
-              defaultValue={book.category || ""}
-              placeholder="e.g. Fiction, Science, Kids"
+              list="category-edit-list"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              placeholder="Select or type category (e.g. Fiction, Science)..."
               className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
             />
+            <datalist id="category-edit-list">
+              <option value="General Collection" />
+              <option value="Novels / Fiction" />
+              <option value="Short Stories" />
+              <option value="Children's Collection" />
+              <option value="Translations" />
+              <option value="Science & Technology" />
+              <option value="History & Biography" />
+              <option value="Religion & Philosophy" />
+              <option value="Language & Literature" />
+              <option value="Arts & Culture" />
+              <option value="Social Sciences" />
+              <option value="Reference Collection" />
+              <option value="Magazines & Periodicals" />
+            </datalist>
           </div>
 
           <div className="space-y-2">
