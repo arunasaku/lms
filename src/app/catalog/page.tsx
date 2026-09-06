@@ -118,16 +118,26 @@ export default async function CatalogPage({
             <span className="text-sm text-slate-500">
               Showing page <span className="font-medium">{page}</span> of <span className="font-medium">{totalPages}</span> ({total} results)
             </span>
-            <div className="flex gap-2">
+            <div className="flex gap-2 items-center">
               {page > 1 && (
-                <Link href={`/catalog?q=${query}&page=${page - 1}`} className="px-3 py-1 bg-white border border-slate-200 rounded text-sm hover:bg-slate-50">
-                  Previous
-                </Link>
+                <>
+                  <Link href={`/catalog?q=${query}&page=1`} className="px-3 py-1 bg-white border border-slate-200 rounded text-sm hover:bg-slate-50 transition">
+                    First
+                  </Link>
+                  <Link href={`/catalog?q=${query}&page=${page - 1}`} className="px-3 py-1 bg-white border border-slate-200 rounded text-sm hover:bg-slate-50 transition">
+                    Previous
+                  </Link>
+                </>
               )}
               {page < totalPages && (
-                <Link href={`/catalog?q=${query}&page=${page + 1}`} className="px-3 py-1 bg-white border border-slate-200 rounded text-sm hover:bg-slate-50">
-                  Next
-                </Link>
+                <>
+                  <Link href={`/catalog?q=${query}&page=${page + 1}`} className="px-3 py-1 bg-white border border-slate-200 rounded text-sm hover:bg-slate-50 transition">
+                    Next
+                  </Link>
+                  <Link href={`/catalog?q=${query}&page=${totalPages}`} className="px-3 py-1 bg-white border border-slate-200 rounded text-sm hover:bg-slate-50 transition">
+                    Last
+                  </Link>
+                </>
               )}
             </div>
           </div>
