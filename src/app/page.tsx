@@ -55,12 +55,20 @@ export default async function Home() {
   
   const waTemplate = config?.whatsappTemplate || "Hi {name}, your borrowed book '{title}' is overdue (Due: {due_date}). Please return it as soon as possible.";
 
+  const formatDate = (date: Date | string) => {
+    const d = new Date(date);
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
   const getWaLink = (phone: string | null, name: string, title: string, dueDate: Date) => {
     if (!phone) return null;
     let text = waTemplate
       .replace(/{name}/g, name)
       .replace(/{title}/g, title)
-      .replace(/{due_date}/g, new Date(dueDate).toLocaleDateString());
+      .replace(/{due_date}/g, formatDate(dueDate));
     let cleanPhone = phone.trim().replace(/^0/, '94');
     return `https://wa.me/${cleanPhone}?text=${encodeURIComponent(text)}`;
   };
@@ -169,7 +177,7 @@ export default async function Home() {
                       </a>
                     )}
                   </td>
-                  <td className="p-4 text-sm font-bold text-rose-600">{new Date(loan.dueDate).toLocaleDateString()}</td>
+                  <td className="p-4 text-sm font-bold text-rose-600">{formatDate(loan.dueDate)}</td>
                 </tr>
               ))}
               {overdueLoans.length === 0 && (
@@ -208,8 +216,8 @@ export default async function Home() {
                 <tr key={loan.id} className="hover:bg-slate-50 transition">
                   <td className="p-4 font-medium text-slate-800">{loan.user.name} <span className="text-slate-400 text-xs font-normal">({loan.user.memberId})</span></td>
                   <td className="p-4 text-sm text-slate-700">{loan.book.title}</td>
-                  <td className="p-4 text-sm text-slate-600">{new Date(loan.borrowDate).toLocaleDateString()}</td>
-                  <td className="p-4 text-sm text-slate-600">{new Date(loan.dueDate).toLocaleDateString()}</td>
+                  <td className="p-4 text-sm text-slate-600">{formatDate(loan.borrowDate)}</td>
+                  <td className="p-4 text-sm text-slate-600">{formatDate(loan.dueDate)}</td>
                   <td className="p-4 text-sm">
                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                       loan.status === 'ACTIVE' ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800'
