@@ -20,6 +20,7 @@ export async function getBookTitle(accNo: string) {
 export async function issueBook(formData: FormData) {
   const memberId = formData.get("memberId") as string;
   const accNo = formData.get("accNo") as string;
+  const customBorrowDate = formData.get("borrowDate") as string;
 
   if (!memberId || !accNo) {
     return { success: false, error: "Member ID and Accession No are required." };
@@ -62,7 +63,8 @@ export async function issueBook(formData: FormData) {
     const config = await prisma.systemConfig.findUnique({ where: { id: 1 } });
     const borrowDays = config?.borrowPeriodDays || 14;
 
-    const dueDate = new Date();
+    const borrowDate = customBorrowDate ? new Date(customBorrowDate) : new Date();
+    const dueDate = new Date(borrowDate);
     dueDate.setDate(dueDate.getDate() + borrowDays);
 
     // Transaction to update book and create loan
@@ -71,6 +73,7 @@ export async function issueBook(formData: FormData) {
         data: {
           bookId: book.id,
           userId: user.id,
+          borrowDate,
           dueDate,
         }
       }),
@@ -81,7 +84,7 @@ export async function issueBook(formData: FormData) {
     ]);
 
     revalidatePath("/circulation");
-    return { success: true, message: `Book '${book.title}' successfully issued to ${user.name}. Due Date: ${dueDate.toLocaleDateString()}` };
+    return { success: true, message: `Book '${book.title}' successfully issued to ${user.name}. Borrow Date: ${borrowDate.toISOString().split('T')[0]}, Due Date: ${dueDate.toISOString().split('T')[0]}` };
   } catch (error: any) {
     return { success: false, error: error.message };
   }

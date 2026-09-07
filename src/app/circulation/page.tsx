@@ -29,6 +29,7 @@ export default function CirculationPage() {
   const [issueAccNo, setIssueAccNo] = useState("");
   const [issueBookTitle, setIssueBookTitle] = useState<string | null>(null);
   
+  const [issueBorrowDate, setIssueBorrowDate] = useState("");
   const [issueLoading, setIssueLoading] = useState(false);
   const [issueResult, setIssueResult] = useState<{success?: boolean, message?: string} | null>(null);
 
@@ -88,6 +89,9 @@ export default function CirculationPage() {
     const formData = new FormData();
     formData.append("memberId", issueMemberId);
     formData.append("accNo", issueAccNo);
+    if (issueBorrowDate) {
+      formData.append("borrowDate", issueBorrowDate);
+    }
 
     const res = await issueBook(formData);
     setIssueResult({
@@ -98,6 +102,7 @@ export default function CirculationPage() {
     if (res.success) {
       setIssueAccNo("");
       setIssueMemberId("");
+      setIssueBorrowDate("");
       setIssueMemberName(null);
       setIssueBookTitle(null);
     }
@@ -239,6 +244,19 @@ export default function CirculationPage() {
                     <Camera size={24} />
                   </button>
                 </div>
+              </div>
+
+              <div className="space-y-2 relative">
+                <div className="flex justify-between">
+                   <label htmlFor="borrowDate" className="block text-sm font-medium text-slate-700">Borrow Date <span className="text-slate-400 font-normal text-xs">(Optional - Leave blank for Today)</span></label>
+                </div>
+                <input 
+                  type="date" 
+                  id="borrowDate" 
+                  value={issueBorrowDate}
+                  onChange={(e) => setIssueBorrowDate(e.target.value)}
+                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition text-base text-slate-800"
+                />
               </div>
 
               <button 
