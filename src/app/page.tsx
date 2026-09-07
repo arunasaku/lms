@@ -1,11 +1,10 @@
-import { PrismaClient } from '@prisma/client'
 import Link from 'next/link'
+import { prisma } from "@/lib/prisma"
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import DashboardCharts from "@/components/DashboardCharts";
 
-const prisma = new PrismaClient()
 
 export default async function Home() {
   const session = await getServerSession(authOptions);
