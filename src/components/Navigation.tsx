@@ -128,10 +128,10 @@ export function Navigation({ session, libraryName, instituteName, headerFontSize
         {/* Main Content Area */}
         <main className="flex-1 flex flex-col h-full overflow-hidden w-full bg-slate-50 print:bg-white print:overflow-visible">
           {/* Desktop Header */}
-          <header className="hidden md:flex print:hidden h-16 bg-white border-b border-slate-200 items-center px-8 shrink-0 justify-between">
+          <header className="hidden md:flex print:hidden h-16 bg-slate-900 border-b border-slate-800 items-center px-8 shrink-0 justify-between shadow-md">
             <div className="flex flex-col flex-1 items-center justify-center">
-              <span className="font-bold tracking-wider text-slate-500 uppercase" style={{ fontSize: `${Math.max(10, headerFontSize - 6)}px` }}>{instituteName || 'My Institute'}</span>
-              <span className="font-semibold text-slate-800 leading-tight" style={{ fontSize: `${headerFontSize}px` }}>{libraryName || 'Library'}</span>
+              <span className="font-medium tracking-wider text-slate-300 uppercase" style={{ fontSize: `${Math.max(10, headerFontSize - 6)}px` }}>{instituteName || 'My Institute'}</span>
+              <span className="font-bold text-white leading-tight tracking-wide" style={{ fontSize: `${headerFontSize}px` }}>{libraryName || 'Library'}</span>
             </div>
             <LogoutButton />
           </header>
