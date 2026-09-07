@@ -9,8 +9,12 @@ const prisma = new PrismaClient();
 export async function createBook(formData: FormData) {
   const accNo = formData.get("accNo") as string;
   const title = formData.get("title") as string;
+  const title2 = formData.get("title2") as string | null;
   const author = formData.get("author") as string | null;
+  const author2 = formData.get("author2") as string | null;
+  const author3 = formData.get("author3") as string | null;
   const publisher = formData.get("publisher") as string | null;
+  const pubPlace = formData.get("pubPlace") as string | null;
   const year = formData.get("year") as string | null;
   const vendor = formData.get("vendor") as string | null;
   const priceStr = formData.get("price") as string | null;
@@ -19,6 +23,7 @@ export async function createBook(formData: FormData) {
   const ddc = formData.get("ddc") as string | null;
   const pages = formData.get("pages") as string | null;
   const height = formData.get("height") as string | null;
+  const acquisitionType = formData.get("acquisitionType") as string | null;
   const itemType = formData.get("itemType") as string | null;
   const category = formData.get("category") as string | null;
   const shelfLoc = formData.get("shelfLoc") as string | null;
@@ -38,19 +43,24 @@ export async function createBook(formData: FormData) {
       accNo,
       accNoInt: isNaN(accNoInt) ? null : accNoInt,
       title,
-      author,
-      publisher,
-      year,
-      vendor,
+      title2: title2 || null,
+      author: author || null,
+      author2: author2 || null,
+      author3: author3 || null,
+      publisher: publisher || null,
+      pubPlace: pubPlace || null,
+      year: year || null,
+      vendor: vendor || null,
       price: isNaN(price as number) ? null : price,
-      billNo,
-      isbn,
-      ddc,
-      pages,
-      height,
+      billNo: billNo || null,
+      isbn: isbn || null,
+      ddc: ddc || null,
+      pages: pages || null,
+      height: height || null,
+      acquisitionType: acquisitionType || "PURCHASED",
       itemType: itemType || "LENDING",
-      category,
-      shelfLoc,
+      category: category || null,
+      shelfLoc: shelfLoc || null,
       dateAdded,
       status: "AVAILABLE",
     },
@@ -64,8 +74,12 @@ export async function updateBook(formData: FormData) {
   const id = formData.get("id") as string;
   const accNo = formData.get("accNo") as string;
   const title = formData.get("title") as string;
+  const title2 = formData.get("title2") as string | null;
   const author = formData.get("author") as string | null;
+  const author2 = formData.get("author2") as string | null;
+  const author3 = formData.get("author3") as string | null;
   const publisher = formData.get("publisher") as string | null;
+  const pubPlace = formData.get("pubPlace") as string | null;
   const year = formData.get("year") as string | null;
   const vendor = formData.get("vendor") as string | null;
   const priceStr = formData.get("price") as string | null;
@@ -74,6 +88,7 @@ export async function updateBook(formData: FormData) {
   const ddc = formData.get("ddc") as string | null;
   const pages = formData.get("pages") as string | null;
   const height = formData.get("height") as string | null;
+  const acquisitionType = formData.get("acquisitionType") as string | null;
   const itemType = formData.get("itemType") as string | null;
   const category = formData.get("category") as string | null;
   const shelfLoc = formData.get("shelfLoc") as string | null;
@@ -92,8 +107,12 @@ export async function updateBook(formData: FormData) {
       accNo,
       accNoInt: isNaN(accNoInt) ? null : accNoInt,
       title,
+      title2: title2 || null,
       author: author || null,
+      author2: author2 || null,
+      author3: author3 || null,
       publisher: publisher || null,
+      pubPlace: pubPlace || null,
       year: year || null,
       vendor: vendor || null,
       price: isNaN(price as number) ? null : price,
@@ -102,13 +121,13 @@ export async function updateBook(formData: FormData) {
       ddc: ddc || null,
       pages: pages || null,
       height: height || null,
+      acquisitionType: acquisitionType || "PURCHASED",
       itemType: itemType || "LENDING",
       category: category || null,
       shelfLoc: shelfLoc || null,
       status: status || "AVAILABLE",
     },
   });
-
   revalidatePath("/catalog");
   redirect("/catalog");
 }

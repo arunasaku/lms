@@ -39,8 +39,12 @@ model Book {
   accNoInt      Int?
   dateAdded     String?
   title         String
+  title2        String?
   author        String?
+  author2       String?
+  author3       String?
   publisher     String?
+  pubPlace      String?
   year          String?
   vendor        String?
   price         Float?
@@ -49,6 +53,7 @@ model Book {
   ddc           String?
   pages         String?
   height        String?
+  acquisitionType String? @default("PURCHASED") // PURCHASED, GIFT, DONATION
   itemType      String?  @default("LENDING") // LENDING, REFERENCE, MAGAZINE, MEDIA
   category      String?
   shelfLoc      String?

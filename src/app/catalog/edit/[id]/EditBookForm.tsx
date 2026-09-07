@@ -9,14 +9,19 @@ export default function EditBookForm({ book }: { book: any }) {
   const [isbnSearch, setIsbnSearch] = useState(book.isbn || "");
   const [isbn, setIsbn] = useState(book.isbn || "");
   const [title, setTitle] = useState(book.title || "");
+  const [title2, setTitle2] = useState(book.title2 || "");
   const [author, setAuthor] = useState(book.author || "");
+  const [author2, setAuthor2] = useState(book.author2 || "");
+  const [author3, setAuthor3] = useState(book.author3 || "");
   const [publisher, setPublisher] = useState(book.publisher || "");
+  const [pubPlace, setPubPlace] = useState(book.pubPlace || "");
   const [year, setYear] = useState(book.year || "");
   const [ddc, setDdc] = useState(book.ddc || "");
   const [price, setPrice] = useState(book.price ? String(book.price) : "");
   const [pages, setPages] = useState(book.pages || "");
   const [height, setHeight] = useState(book.height || "");
   const [category, setCategory] = useState(book.category || "");
+  const [acquisitionType, setAcquisitionType] = useState(book.acquisitionType || "PURCHASED");
   const [loading, setLoading] = useState(false);
   const [suggestingDdc, setSuggestingDdc] = useState(false);
 
@@ -108,7 +113,7 @@ export default function EditBookForm({ book }: { book: any }) {
           </button>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="space-y-2">
             <label htmlFor="accNo" className="block text-sm font-medium text-slate-700">Accession Number *</label>
             <input 
@@ -134,11 +139,25 @@ export default function EditBookForm({ book }: { book: any }) {
               className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
             />
           </div>
+
+          <div className="space-y-2">
+            <label htmlFor="acquisitionType" className="block text-sm font-medium text-slate-700">Acquisition Source (Buy / Gift) *</label>
+            <select 
+              id="acquisitionType" 
+              name="acquisitionType" 
+              value={acquisitionType}
+              onChange={(e) => setAcquisitionType(e.target.value)}
+              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition font-medium text-slate-800"
+            >
+              <option value="PURCHASED">🛒 මිලදී ගත් පොතක් (Purchased)</option>
+              <option value="GIFT">🎁 තෑගි / පරිත්‍යාගයක් (Gift / Donation)</option>
+            </select>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2">
-            <label htmlFor="title" className="block text-sm font-medium text-slate-700">Title *</label>
+            <label htmlFor="title" className="block text-sm font-medium text-slate-700">Title 1 *</label>
             <input 
               type="text" 
               id="title" 
@@ -146,20 +165,102 @@ export default function EditBookForm({ book }: { book: any }) {
               required 
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="Book title..."
+              placeholder="Main Book title..."
               className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
             />
           </div>
 
           <div className="space-y-2">
-            <label htmlFor="author" className="block text-sm font-medium text-slate-700">Author</label>
+            <label htmlFor="title2" className="block text-sm font-medium text-slate-700">Title 2 (Parallel / Sub Title)</label>
+            <input 
+              type="text" 
+              id="title2" 
+              name="title2" 
+              value={title2}
+              onChange={(e) => setTitle2(e.target.value)}
+              placeholder="Secondary title or Subtitle..."
+              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="space-y-2">
+            <label htmlFor="author" className="block text-sm font-medium text-slate-700">Author 1</label>
             <input 
               type="text" 
               id="author" 
               name="author" 
               value={author}
               onChange={(e) => setAuthor(e.target.value)}
-              placeholder="Author name..."
+              placeholder="Main Author name..."
+              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label htmlFor="author2" className="block text-sm font-medium text-slate-700">Author 2</label>
+            <input 
+              type="text" 
+              id="author2" 
+              name="author2" 
+              value={author2}
+              onChange={(e) => setAuthor2(e.target.value)}
+              placeholder="Second Author name..."
+              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label htmlFor="author3" className="block text-sm font-medium text-slate-700">Author 3</label>
+            <input 
+              type="text" 
+              id="author3" 
+              name="author3" 
+              value={author3}
+              onChange={(e) => setAuthor3(e.target.value)}
+              placeholder="Third Author name..."
+              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="space-y-2">
+            <label htmlFor="publisher" className="block text-sm font-medium text-slate-700">Publisher</label>
+            <input 
+              type="text" 
+              id="publisher" 
+              name="publisher" 
+              value={publisher}
+              onChange={(e) => setPublisher(e.target.value)}
+              placeholder="Publisher name..."
+              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label htmlFor="pubPlace" className="block text-sm font-medium text-slate-700">Publication Place</label>
+            <input 
+              type="text" 
+              id="pubPlace" 
+              name="pubPlace" 
+              value={pubPlace}
+              onChange={(e) => setPubPlace(e.target.value)}
+              placeholder="e.g. Colombo, Kandy..."
+              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label htmlFor="year" className="block text-sm font-medium text-slate-700">Publication Year</label>
+            <input 
+              type="text" 
+              id="year" 
+              name="year" 
+              value={year}
+              onChange={(e) => setYear(e.target.value)}
+              placeholder="e.g. 2023"
               className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
             />
           </div>
