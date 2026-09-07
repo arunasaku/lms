@@ -122,7 +122,7 @@ export default function CustomReportPage() {
       return s;
     };
 
-    let csvStr = headers.join(',') + '\n';
+    let csvStr = '\uFEFF' + headers.join(',') + '\n';
     filteredBooks.forEach(b => {
       const row = activeColumns.map(c => {
         let val = b[c.key];
