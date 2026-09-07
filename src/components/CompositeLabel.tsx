@@ -23,16 +23,16 @@ export default function CompositeLabel({
   
   if (!accessionNo) return null;
 
-  let ddcLine1 = ddc;
+  let ddcLine1 = ddc || '';
   let ddcLine2 = '';
-  if (ddc.includes('.')) {
+  if (ddc && typeof ddc === 'string' && ddc.includes('.')) {
     const parts = ddc.split('.');
     ddcLine1 = parts[0] + '.';
     ddcLine2 = parts[1];
   }
 
   let authorMark = '';
-  if (author) {
+  if (author && typeof author === 'string') {
     authorMark = author.substring(0, 3).toUpperCase();
   }
 
