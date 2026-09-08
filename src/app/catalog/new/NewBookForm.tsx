@@ -287,19 +287,6 @@ export default function NewBookForm() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2">
-            <label htmlFor="year" className="block text-sm font-medium text-slate-700">Publication Year</label>
-            <input 
-              type="text" 
-              id="year" 
-              name="year" 
-              value={year}
-              onChange={(e) => setYear(e.target.value)}
-              placeholder="e.g. 2023"
-              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
-            />
-          </div>
-          
-          <div className="space-y-2">
             <label htmlFor="itemType" className="block text-sm font-medium text-slate-700">Item Type</label>
             <select 
               id="itemType" 
