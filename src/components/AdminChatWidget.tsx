@@ -289,15 +289,13 @@ export function AdminChatWidget() {
                     </div>
 
                     <div className="flex items-center space-x-1.5 max-w-[85%]">
-                      {isMe && (
-                        <button
-                          onClick={() => handleDeleteMessage(msg.id)}
-                          className="opacity-0 group-hover:opacity-100 text-slate-500 hover:text-red-400 p-1 transition"
-                          title="Delete message"
-                        >
-                          🗑️
-                        </button>
-                      )}
+                      <button
+                        onClick={() => handleDeleteMessage(msg.id)}
+                        className="opacity-0 group-hover:opacity-100 text-slate-500 hover:text-red-400 p-1 transition cursor-pointer"
+                        title="Delete message for everyone"
+                      >
+                        🗑️
+                      </button>
 
                       <div
                         className={`px-3 py-2 rounded-2xl text-xs relative ${

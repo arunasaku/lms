@@ -62,9 +62,9 @@ export async function DELETE(req: Request, props: { params: Promise<{ id: string
       return NextResponse.json({ error: "Message not found" }, { status: 404 });
     }
 
-    // Only allow sender or ADMIN to delete message
-    if (existing.senderId !== userId && userRole !== "ADMIN") {
-      return NextResponse.json({ error: "Forbidden. You can only delete your own messages." }, { status: 403 });
+    // Allow any ADMIN user to delete any message
+    if (userRole?.toUpperCase() !== "ADMIN") {
+      return NextResponse.json({ error: "Forbidden. Admin access required." }, { status: 403 });
     }
 
     await prisma.adminChatMessage.delete({ where: { id } });
