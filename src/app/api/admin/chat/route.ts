@@ -44,10 +44,14 @@ export async function GET() {
   try {
     const session = await getServerSession(authOptions);
     const userRole = (session?.user as any)?.role;
-    const userId = (session?.user as any)?.id;
+    const userId = (session?.user as any)?.id || (session?.user as any)?.sub;
 
-    if (!session || userRole !== "ADMIN") {
+    if (!session || userRole?.toUpperCase() !== "ADMIN") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+    }
+
+    if (!userId) {
+      return NextResponse.json({ error: "User ID not found" }, { status: 400 });
     }
 
     // Clean up expired messages
@@ -84,10 +88,14 @@ export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions);
     const userRole = (session?.user as any)?.role;
-    const userId = (session?.user as any)?.id;
+    const userId = (session?.user as any)?.id || (session?.user as any)?.sub;
 
-    if (!session || userRole !== "ADMIN") {
+    if (!session || userRole?.toUpperCase() !== "ADMIN") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+    }
+
+    if (!userId) {
+      return NextResponse.json({ error: "User ID not found" }, { status: 400 });
     }
 
     const { receiverId, message, disappearAfterSeconds } = await req.json();
@@ -96,10 +104,12 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Message cannot be empty" }, { status: 400 });
     }
 
+    const targetReceiverId = receiverId && String(receiverId).trim() !== "" ? String(receiverId) : null;
+
     const newMessage = await prisma.adminChatMessage.create({
       data: {
         senderId: userId,
-        receiverId: receiverId || null,
+        receiverId: targetReceiverId,
         message: message.trim(),
         disappearAfterSeconds: typeof disappearAfterSeconds === "number" ? disappearAfterSeconds : 0
       },

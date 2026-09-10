@@ -26,7 +26,7 @@ interface ChatMessage {
 
 export function AdminChatWidget() {
   const { data: session } = useSession();
-  const currentUserId = (session?.user as any)?.id;
+  const currentUserId = (session?.user as any)?.id || (session?.user as any)?.sub;
   const userRole = (session?.user as any)?.role;
 
   const [isOpen, setIsOpen] = useState(false);
@@ -56,7 +56,7 @@ export function AdminChatWidget() {
     return () => clearInterval(timer);
   }, []);
 
-  // Fetch Admin/Staff users list
+  // Fetch Admin users list
   useEffect(() => {
     if (!isAuthorized) return;
     fetch("/api/admin/chat/users")
@@ -115,9 +115,9 @@ export function AdminChatWidget() {
       if (elapsed >= msg.disappearAfterSeconds) return false;
     }
 
-    if (selectedReceiverId === null) {
-      // Group Chat: Messages where receiverId is null
-      return msg.receiverId === null;
+    if (!selectedReceiverId || selectedReceiverId === "") {
+      // Group Chat: Messages where receiverId is null or empty
+      return !msg.receiverId;
     } else {
       // 1-on-1 Chat: Messages between currentUserId and selectedReceiverId
       return (
@@ -146,7 +146,7 @@ export function AdminChatWidget() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          receiverId: selectedReceiverId,
+          receiverId: selectedReceiverId || null,
           message: textToSend,
           disappearAfterSeconds: disappearSeconds
         })
@@ -155,6 +155,10 @@ export function AdminChatWidget() {
       if (res.ok) {
         const newMsg = await res.json();
         setMessages((prev) => [...prev, newMsg]);
+        fetchMessages();
+      } else {
+        const errData = await res.json();
+        alert(errData.error || "Failed to send message");
       }
     } catch (err) {
       console.error("Failed to send message:", err);
