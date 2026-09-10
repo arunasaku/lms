@@ -29,6 +29,7 @@ export default function LoginPage() {
       if (res?.error) {
         setError("Invalid Member ID or Password");
       } else {
+        sessionStorage.setItem("admin_tab_active", "true");
         router.push("/");
         router.refresh();
       }

@@ -2,6 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import { updateSystemSettings } from "./actions";
 import { createMember } from "../members/actions";
 import { RoleSelector } from "@/components/RoleSelector";
+import { OpenChatButton } from "@/components/OpenChatButton";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 
@@ -64,6 +65,18 @@ export default async function ToolsPage() {
             </a>
           </div>
         </div>
+
+        {isAdmin && (
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+            <div className="px-8 py-5 flex justify-between items-center hover:bg-slate-50 transition">
+              <div>
+                <h4 className="text-lg font-semibold text-slate-800">System Communications</h4>
+                <p className="text-sm text-slate-500 mt-1">Private real-time messaging channel and internal logs for system administrators.</p>
+              </div>
+              <OpenChatButton label="Open Channel &rarr;" />
+            </div>
+          </div>
+        )}
       </div>
 
       {isAdminOrLibrarian && (
