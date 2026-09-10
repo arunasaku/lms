@@ -184,27 +184,6 @@ export function AdminChatWidget() {
 
   return (
     <div className="fixed bottom-4 right-4 z-50 print:hidden font-sans">
-      {/* Closed Button */}
-      {!isOpen && (
-        <button
-          onClick={() => {
-            setIsOpen(true);
-            fetchMessages();
-          }}
-          className="flex items-center space-x-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-3 rounded-full shadow-2xl transition-all transform hover:scale-105"
-        >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
-          </svg>
-          <span className="font-semibold text-sm">Admin Chat</span>
-          {unreadCount > 0 && (
-            <span className="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full font-bold animate-pulse">
-              {unreadCount}
-            </span>
-          )}
-        </button>
-      )}
-
       {/* Chat Drawer Window */}
       {isOpen && (
         <div className="w-[360px] sm:w-[400px] h-[520px] bg-slate-900 border border-slate-800 text-white rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-5 duration-200">
