@@ -292,7 +292,7 @@ export function AdminChatWidget() {
                     <div className="flex items-center space-x-1.5 max-w-[85%]">
                       <button
                         onClick={() => handleDeleteMessage(msg.id)}
-                        className="opacity-0 group-hover:opacity-100 text-slate-500 hover:text-red-400 p-1 transition cursor-pointer"
+                        className="text-slate-400 hover:text-red-400 p-1 transition cursor-pointer hover:scale-110"
                         title="Delete message for everyone"
                       >
                         🗑️
