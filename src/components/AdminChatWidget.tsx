@@ -34,7 +34,7 @@ export function AdminChatWidget() {
   const [selectedReceiverId, setSelectedReceiverId] = useState<string | null>(null); // null = Group Chat
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputText, setInputText] = useState("");
-  const [disappearSeconds, setDisappearSeconds] = useState<number>(0); // 0 = Never
+  const [disappearSeconds, setDisappearSeconds] = useState<number>(300); // 300 = 5 Minutes (Default)
   const [loading, setLoading] = useState(false);
   const [now, setNow] = useState(Date.now());
 
@@ -239,11 +239,12 @@ export function AdminChatWidget() {
                 disappearSeconds > 0 ? "border-amber-500 text-amber-300 font-medium" : "border-slate-700 text-slate-300"
               }`}
             >
-              <option value={0}>Off (Never)</option>
-              <option value={5}>🔥 5 Seconds after Read</option>
-              <option value={10}>🔥 10 Seconds after Read</option>
-              <option value={30}>🔥 30 Seconds after Read</option>
+              <option value={300}>🔥 5 Minutes after Read (Default)</option>
               <option value={60}>🔥 1 Minute after Read</option>
+              <option value={30}>🔥 30 Seconds after Read</option>
+              <option value={10}>🔥 10 Seconds after Read</option>
+              <option value={5}>🔥 5 Seconds after Read</option>
+              <option value={0}>Off (Never)</option>
             </select>
           </div>
 
@@ -317,7 +318,9 @@ export function AdminChatWidget() {
                           {/* Disappearing Timer Badge */}
                           {msg.disappearAfterSeconds && msg.disappearAfterSeconds > 0 ? (
                             <span className="bg-amber-500/20 text-amber-300 px-1 rounded font-mono border border-amber-500/40">
-                              🔥 {countdown !== null ? `${countdown}s` : `${msg.disappearAfterSeconds}s`}
+                              🔥 {countdown !== null 
+                                ? (countdown >= 60 ? `${Math.floor(countdown / 60)}m ${countdown % 60}s` : `${countdown}s`) 
+                                : (msg.disappearAfterSeconds >= 60 ? `${Math.floor(msg.disappearAfterSeconds / 60)}m` : `${msg.disappearAfterSeconds}s`)}
                             </span>
                           ) : null}
 
