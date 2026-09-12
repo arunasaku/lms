@@ -231,7 +231,23 @@ export async function deleteMember(id: string) {
     throw new Error("Unauthorized: Librarians cannot delete admins");
   }
 
-  // Transaction to clean up all related records before deleting user
+  // Security Check 1: Prevent deletion if member currently has active borrowed books
+  const activeLoansCount = await prisma.loan.count({
+    where: { userId: id, status: "ACTIVE" }
+  });
+  if (activeLoansCount > 0) {
+    throw new Error("මෙම සාමාජිකයා ලඟ දැනට ලබාගත් පොත් (Active Loans) පවතී. සාමාජිකයා ඉවත් කිරීමට පෙර පොත් ආපසු බාරදිය යුතුය.");
+  }
+
+  // Security Check 2: Prevent deletion if member has unpaid fines (prevents fine evasion/fraud)
+  const unpaidFinesCount = await prisma.loan.count({
+    where: { userId: id, fine: { gt: 0 }, finePaid: false }
+  });
+  if (unpaidFinesCount > 0) {
+    throw new Error("මෙම සාමාජිකයාට ගෙවීමට ඇති දඩ මුදල් (Unpaid Fines) පවතී. සාමාජිකයා ඉවත් කිරීමට පෙර දඩ මුදල් ගෙවා අවසන් කළ යුතුය.");
+  }
+
+  // Transaction to clean up user records safely once all books and fines are settled
   await prisma.$transaction([
     prisma.loan.deleteMany({ where: { userId: id } }),
     prisma.reservation.deleteMany({ where: { userId: id } }),
