@@ -85,17 +85,13 @@ export const authOptions: NextAuthOptions = {
   },
   cookies: {
     sessionToken: {
-      name: (() => {
-        const siteId = (
-          process.env.COOKIE_PREFIX ||
-          process.env.VERCEL_PROJECT_PRODUCTION_URL ||
-          process.env.VERCEL_URL ||
-          "lms"
-        ).replace(/[^a-zA-Z0-9]/g, "_");
-        return process.env.NODE_ENV === "production"
-          ? `__Secure-${siteId}-session-token`
-          : `${siteId}-session-token`;
-      })(),
+      name: process.env.COOKIE_PREFIX
+        ? (process.env.NODE_ENV === "production"
+            ? `__Secure-${process.env.COOKIE_PREFIX.replace(/[^a-zA-Z0-9]/g, "_")}-session-token`
+            : `${process.env.COOKIE_PREFIX.replace(/[^a-zA-Z0-9]/g, "_")}-session-token`)
+        : (process.env.NODE_ENV === "production"
+            ? "__Secure-next-auth.session-token"
+            : "next-auth.session-token"),
       options: {
         httpOnly: true,
         sameSite: "lax",
