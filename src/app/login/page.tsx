@@ -1,6 +1,6 @@
 "use client";
 
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -8,11 +8,19 @@ import Link from "next/link";
 import logoPic from "../../../public/logo.jpg";
 
 export default function LoginPage() {
+  const { status } = useSession();
   const [memberId, setMemberId] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+
+  // If already logged in, redirect away from /login to dashboard
+  useEffect(() => {
+    if (status === "authenticated") {
+      window.location.href = "/";
+    }
+  }, [status]);
 
   // Clean up any bad localhost callbackUrl in URL query string
   useEffect(() => {
