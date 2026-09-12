@@ -225,12 +225,24 @@ export async function deleteMember(id: string) {
   }
 
   const targetMember = await prisma.user.findUnique({ where: { id } });
-  if (userRole === 'LIBRARIAN' && targetMember?.role === 'ADMIN') {
+  if (!targetMember) return;
+
+  if (userRole === 'LIBRARIAN' && targetMember.role === 'ADMIN') {
     throw new Error("Unauthorized: Librarians cannot delete admins");
   }
 
-  await prisma.user.delete({
-    where: { id }
-  });
+  // Transaction to clean up all related records before deleting user
+  await prisma.$transaction([
+    prisma.loan.deleteMany({ where: { userId: id } }),
+    prisma.reservation.deleteMany({ where: { userId: id } }),
+    prisma.review.deleteMany({ where: { userId: id } }),
+    prisma.adminChatMessage.deleteMany({
+      where: {
+        OR: [{ senderId: id }, { receiverId: id }]
+      }
+    }),
+    prisma.user.delete({ where: { id } })
+  ]);
+
   revalidatePath("/members");
 }
