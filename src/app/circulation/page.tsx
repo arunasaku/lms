@@ -12,8 +12,10 @@ export default function CirculationPage() {
   const router = useRouter();
 
   useEffect(() => {
-    if (status === "unauthenticated" || (status === "authenticated" && (session?.user as any)?.role === "MEMBER")) {
-      router.push("/");
+    if (status === "unauthenticated") {
+      router.push("/login");
+    } else if (status === "authenticated" && (session?.user as any)?.role === "MEMBER") {
+      router.push("/catalog");
     }
   }, [status, session, router]);
 
