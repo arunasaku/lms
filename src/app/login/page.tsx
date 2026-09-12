@@ -1,7 +1,7 @@
 "use client";
 
 import { signIn } from "next-auth/react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -13,6 +13,13 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+
+  // Clean up any bad localhost callbackUrl in URL query string
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.location.search.includes("localhost")) {
+      window.history.replaceState({}, "", "/login");
+    }
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,8 +37,7 @@ export default function LoginPage() {
         setError("Invalid Member ID or Password");
       } else {
         sessionStorage.setItem("admin_tab_active", "true");
-        router.push("/");
-        router.refresh();
+        window.location.href = "/";
       }
     } catch (err) {
       setError("An unexpected error occurred");
