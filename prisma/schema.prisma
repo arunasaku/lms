@@ -16,9 +16,19 @@ model User {
   email      String?  @unique
   password   String
   phone      String?
+  mobileNo   String?
+  whatsappNo String?
+  homeNo     String?
   nic        String?
   occupation String?
   address    String?
+
+  memberType       String?   @default("ADULT") // ADULT, CHILDREN
+  registeredDate   DateTime? @default(now())
+  renewedDate      DateTime?
+  guarantorName    String?
+  guarantorAddress String?
+  guarantorPhone   String?
   // For STAFF permissions
   permCirculation Boolean  @default(false)
   permCatalog     Boolean  @default(false)

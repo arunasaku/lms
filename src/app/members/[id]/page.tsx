@@ -77,45 +77,90 @@ export default async function MemberProfileViewPage({ params }: { params: Promis
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
         {/* Profile Details Card */}
-        <div className="lg:col-span-1">
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden sticky top-6">
+        <div className="lg:col-span-1 space-y-6">
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
             <div className="p-8 text-center border-b border-slate-100 bg-slate-50">
               <div className="w-24 h-24 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold text-3xl mx-auto mb-4 border-4 border-white shadow-sm">
                 {user.name.substring(0, 2).toUpperCase()}
               </div>
               <h3 className="text-xl font-bold text-slate-800">{user.name}</h3>
               <p className="text-sm font-medium text-indigo-600 mt-1">{user.memberId}</p>
-              <div className="mt-3 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-200 text-slate-800">
-                {user.role}
+              <div className="mt-3 flex justify-center gap-2">
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-200 text-slate-800">
+                  {user.role}
+                </span>
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
+                  {user.memberType === 'CHILDREN' ? 'Child / Student' : 'Adult'}
+                </span>
               </div>
             </div>
-            <div className="p-6 space-y-4">
-                <div>
-                  <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">NIC</p>
-                  <p className="text-slate-800 font-medium">{user.nic || "Not specified"}</p>
-                </div>
-                <div>
-                  <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Occupation</p>
-                  <p className="text-slate-800 font-medium">{user.occupation || "Not specified"}</p>
-                </div>
+
+            <div className="p-6 space-y-4 text-sm">
+              <div>
+                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">NIC</p>
+                <p className="text-slate-800 font-medium">{user.nic || "Not specified"}</p>
+              </div>
+              <div>
+                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Occupation</p>
+                <p className="text-slate-800 font-medium">{user.occupation || "Not specified"}</p>
+              </div>
               <div>
                 <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Email</p>
                 <p className="text-slate-800 font-medium">{user.email || "Not specified"}</p>
               </div>
-              <div>
-                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Phone</p>
-                <p className="text-slate-800 font-medium">{user.phone || "Not specified"}</p>
+
+              {/* Phone Numbers Breakdown */}
+              <div className="bg-slate-50 p-3 rounded-lg border border-slate-100 space-y-2">
+                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Contact Numbers</p>
+                <p className="text-slate-800 font-medium"><span className="text-slate-400">Mobile:</span> {user.mobileNo || user.phone || "N/A"}</p>
+                <p className="text-slate-800 font-medium"><span className="text-slate-400">WhatsApp:</span> {user.whatsappNo || "N/A"}</p>
+                <p className="text-slate-800 font-medium"><span className="text-slate-400">Home:</span> {user.homeNo || "N/A"}</p>
               </div>
+
               <div>
                 <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Address</p>
                 <p className="text-slate-800 font-medium">{user.address || "Not specified"}</p>
               </div>
-              <div>
-                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Joined Date</p>
-                <p className="text-slate-800 font-medium">{new Date(user.createdAt).toLocaleDateString()}</p>
+
+              {/* Registration & Renewed Dates */}
+              <div className="pt-2 border-t border-slate-100 space-y-2">
+                <div>
+                  <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Registration Date</p>
+                  <p className="text-slate-800 font-medium">
+                    {user.registeredDate ? new Date(user.registeredDate).toLocaleDateString() : new Date(user.createdAt).toLocaleDateString()}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Renewal Date</p>
+                  <p className="text-slate-800 font-medium">
+                    {user.renewedDate ? new Date(user.renewedDate).toLocaleDateString() : "Not renewed"}
+                  </p>
+                </div>
               </div>
             </div>
           </div>
+
+          {/* Guarantor Details Box */}
+          {(user.guarantorName || user.guarantorPhone || user.guarantorAddress) && (
+            <div className="bg-amber-50/70 rounded-xl p-5 border border-amber-200 space-y-3 text-sm">
+              <h4 className="font-bold text-amber-900 flex items-center gap-2">
+                <svg className="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
+                Guarantor Information (ඇපකරුගේ තොරතුරු)
+              </h4>
+              <div>
+                <p className="text-xs font-semibold text-amber-800/70 uppercase">Name</p>
+                <p className="text-slate-900 font-medium">{user.guarantorName || "Not specified"}</p>
+              </div>
+              <div>
+                <p className="text-xs font-semibold text-amber-800/70 uppercase">Phone / WhatsApp</p>
+                <p className="text-slate-900 font-medium">{user.guarantorPhone || "Not specified"}</p>
+              </div>
+              <div>
+                <p className="text-xs font-semibold text-amber-800/70 uppercase">Address</p>
+                <p className="text-slate-900 font-medium">{user.guarantorAddress || "Not specified"}</p>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Books Information */}

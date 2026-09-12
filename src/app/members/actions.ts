@@ -13,7 +13,13 @@ export async function createMember(formData: FormData) {
   const role = formData.get("role") as string;
   const email = formData.get("email") as string | null;
   const passwordRaw = formData.get("password") as string;
-  const phone = formData.get("phone") as string | null;
+  
+  const memberType = (formData.get("memberType") as string) || "ADULT";
+  const mobileNo = formData.get("mobileNo") as string | null;
+  const whatsappNo = formData.get("whatsappNo") as string | null;
+  const homeNo = formData.get("homeNo") as string | null;
+  const phone = mobileNo?.trim() || whatsappNo?.trim() || (formData.get("phone") as string | null)?.trim() || null;
+  
   const nic = formData.get("nic") as string | null;
   
   let occupation = formData.get("occupation") as string | null;
@@ -23,6 +29,15 @@ export async function createMember(formData: FormData) {
   }
   
   const address = formData.get("address") as string | null;
+
+  const regDateRaw = formData.get("registeredDate") as string | null;
+  const renewDateRaw = formData.get("renewedDate") as string | null;
+  const registeredDate = regDateRaw ? new Date(regDateRaw) : new Date();
+  const renewedDate = renewDateRaw ? new Date(renewDateRaw) : null;
+
+  const guarantorName = formData.get("guarantorName") as string | null;
+  const guarantorAddress = formData.get("guarantorAddress") as string | null;
+  const guarantorPhone = formData.get("guarantorPhone") as string | null;
 
   const permCirculation = formData.get("permCirculation") === "on";
   const permCatalog = formData.get("permCatalog") === "on";
@@ -65,10 +80,19 @@ export async function createMember(formData: FormData) {
       role: role || "MEMBER",
       email: email?.trim() || null,
       password,
-      phone: phone?.trim() || null,
+      phone,
+      mobileNo: mobileNo?.trim() || null,
+      whatsappNo: whatsappNo?.trim() || null,
+      homeNo: homeNo?.trim() || null,
       nic: nic?.trim() || null,
       occupation: occupation?.trim() || null,
       address: address?.trim() || null,
+      memberType,
+      registeredDate,
+      renewedDate,
+      guarantorName: guarantorName?.trim() || null,
+      guarantorAddress: guarantorAddress?.trim() || null,
+      guarantorPhone: guarantorPhone?.trim() || null,
       permCirculation,
       permCatalog,
       permMembers,
@@ -86,7 +110,13 @@ export async function updateMember(formData: FormData) {
   const name = formData.get("name") as string;
   const role = formData.get("role") as string;
   const email = formData.get("email") as string | null;
-  const phone = formData.get("phone") as string | null;
+  
+  const memberType = (formData.get("memberType") as string) || "ADULT";
+  const mobileNo = formData.get("mobileNo") as string | null;
+  const whatsappNo = formData.get("whatsappNo") as string | null;
+  const homeNo = formData.get("homeNo") as string | null;
+  const phone = mobileNo?.trim() || whatsappNo?.trim() || (formData.get("phone") as string | null)?.trim() || null;
+  
   const nic = formData.get("nic") as string | null;
   
   let occupation = formData.get("occupation") as string | null;
@@ -97,6 +127,15 @@ export async function updateMember(formData: FormData) {
   
   const address = formData.get("address") as string | null;
   const passwordRaw = formData.get("password") as string | null;
+
+  const regDateRaw = formData.get("registeredDate") as string | null;
+  const renewDateRaw = formData.get("renewedDate") as string | null;
+  const registeredDate = regDateRaw ? new Date(regDateRaw) : undefined;
+  const renewedDate = renewDateRaw ? new Date(renewDateRaw) : null;
+
+  const guarantorName = formData.get("guarantorName") as string | null;
+  const guarantorAddress = formData.get("guarantorAddress") as string | null;
+  const guarantorPhone = formData.get("guarantorPhone") as string | null;
 
   const permCirculation = formData.get("permCirculation") === "on";
   const permCatalog = formData.get("permCatalog") === "on";
@@ -134,10 +173,19 @@ export async function updateMember(formData: FormData) {
     name: name.trim(),
     role: role || "MEMBER",
     email: email?.trim() || null,
-    phone: phone?.trim() || null,
+    phone,
+    mobileNo: mobileNo?.trim() || null,
+    whatsappNo: whatsappNo?.trim() || null,
+    homeNo: homeNo?.trim() || null,
     nic: nic?.trim() || null,
     occupation: occupation?.trim() || null,
     address: address?.trim() || null,
+    memberType,
+    ...(registeredDate ? { registeredDate } : {}),
+    renewedDate,
+    guarantorName: guarantorName?.trim() || null,
+    guarantorAddress: guarantorAddress?.trim() || null,
+    guarantorPhone: guarantorPhone?.trim() || null,
     permCirculation,
     permCatalog,
     permMembers,
