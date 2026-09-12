@@ -85,14 +85,22 @@ export const authOptions: NextAuthOptions = {
   },
   cookies: {
     sessionToken: {
-      name: process.env.NODE_ENV === "production" ? "__Secure-next-auth.session-token" : "next-auth.session-token",
+      name: (() => {
+        const siteId = (
+          process.env.COOKIE_PREFIX ||
+          process.env.VERCEL_PROJECT_PRODUCTION_URL ||
+          process.env.VERCEL_URL ||
+          "lms"
+        ).replace(/[^a-zA-Z0-9]/g, "_");
+        return process.env.NODE_ENV === "production"
+          ? `__Secure-${siteId}-session-token`
+          : `${siteId}-session-token`;
+      })(),
       options: {
         httpOnly: true,
         sameSite: "lax",
         path: "/",
         secure: process.env.NODE_ENV === "production"
-        // Omitting maxAge makes this a Browser Session Cookie.
-        // It automatically expires & deletes as soon as the browser is closed.
       }
     }
   },
