@@ -21,7 +21,7 @@ export default function NewMemberPage() {
         <form action={createMember} className="p-8 space-y-6">
           
           {/* Member Basic Info */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             <div className="space-y-2">
               <label htmlFor="memberId" className="block text-sm font-medium text-slate-700">Member ID *</label>
               <input 
@@ -32,6 +32,25 @@ export default function NewMemberPage() {
                 placeholder="e.g. M0015"
                 className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
               />
+            </div>
+
+            <div className="space-y-2">
+              <label htmlFor="salutation" className="block text-sm font-medium text-slate-700">Title / Salutation</label>
+              <select 
+                id="salutation" 
+                name="salutation" 
+                defaultValue="Mr."
+                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+              >
+                <option value="Mr.">Mr. (මහතා)</option>
+                <option value="Mrs.">Mrs. (මහත්මිය)</option>
+                <option value="Miss.">Miss. (මෙනෙවිය)</option>
+                <option value="Rev.">Rev. (පූජ්‍ය / පූජක)</option>
+                <option value="Dr.">Dr. (වෛද්‍ය / ආචාර්ය)</option>
+                <option value="Master.">Master. (ළමා)</option>
+                <option value="Hon.">Hon. (ගරු)</option>
+                <option value="Other">Other (වෙනත්)</option>
+              </select>
             </div>
             
             <div className="space-y-2">

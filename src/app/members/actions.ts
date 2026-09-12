@@ -15,6 +15,8 @@ export async function createMember(formData: FormData) {
   const passwordRaw = formData.get("password") as string;
   
   const memberType = (formData.get("memberType") as string) || "ADULT";
+  const salutation = (formData.get("salutation") as string) || null;
+  const civilStatus = (formData.get("civilStatus") as string) || null;
   const mobileNo = formData.get("mobileNo") as string | null;
   const whatsappNo = formData.get("whatsappNo") as string | null;
   const homeNo = formData.get("homeNo") as string | null;
@@ -88,6 +90,8 @@ export async function createMember(formData: FormData) {
       occupation: occupation?.trim() || null,
       address: address?.trim() || null,
       memberType,
+      salutation,
+      civilStatus,
       registeredDate,
       renewedDate,
       guarantorName: guarantorName?.trim() || null,
@@ -112,6 +116,8 @@ export async function updateMember(formData: FormData) {
   const email = formData.get("email") as string | null;
   
   const memberType = (formData.get("memberType") as string) || "ADULT";
+  const salutation = (formData.get("salutation") as string) || null;
+  const civilStatus = (formData.get("civilStatus") as string) || null;
   const mobileNo = formData.get("mobileNo") as string | null;
   const whatsappNo = formData.get("whatsappNo") as string | null;
   const homeNo = formData.get("homeNo") as string | null;
@@ -181,6 +187,8 @@ export async function updateMember(formData: FormData) {
     occupation: occupation?.trim() || null,
     address: address?.trim() || null,
     memberType,
+    salutation,
+    civilStatus,
     ...(registeredDate ? { registeredDate } : {}),
     renewedDate,
     guarantorName: guarantorName?.trim() || null,

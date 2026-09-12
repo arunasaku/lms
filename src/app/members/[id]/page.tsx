@@ -83,7 +83,9 @@ export default async function MemberProfileViewPage({ params }: { params: Promis
               <div className="w-24 h-24 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold text-3xl mx-auto mb-4 border-4 border-white shadow-sm">
                 {user.name.substring(0, 2).toUpperCase()}
               </div>
-              <h3 className="text-xl font-bold text-slate-800">{user.name}</h3>
+              <h3 className="text-xl font-bold text-slate-800">
+                {user.salutation ? `${user.salutation} ` : ''}{user.name}
+              </h3>
               <p className="text-sm font-medium text-indigo-600 mt-1">{user.memberId}</p>
               <div className="mt-3 flex justify-center gap-2">
                 <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-200 text-slate-800">
@@ -97,8 +99,16 @@ export default async function MemberProfileViewPage({ params }: { params: Promis
 
             <div className="p-6 space-y-4 text-sm">
               <div>
+                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Title / Salutation</p>
+                <p className="text-slate-800 font-medium">{user.salutation || "Not specified"}</p>
+              </div>
+              <div>
                 <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">NIC</p>
                 <p className="text-slate-800 font-medium">{user.nic || "Not specified"}</p>
+              </div>
+              <div>
+                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Civil Status</p>
+                <p className="text-slate-800 font-medium">{user.civilStatus || "Not specified"}</p>
               </div>
               <div>
                 <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Occupation</p>

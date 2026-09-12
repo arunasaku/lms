@@ -24,6 +24,8 @@ model User {
   address    String?
 
   memberType       String?   @default("ADULT") // ADULT, CHILDREN
+  salutation       String?   // Mr., Mrs., Miss., Rev., Dr., Master., Hon., Other
+  civilStatus      String?   // Single, Married, Divorced, Widowed, Other
   registeredDate   DateTime? @default(now())
   renewedDate      DateTime?
   guarantorName    String?
