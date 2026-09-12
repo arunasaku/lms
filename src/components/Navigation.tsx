@@ -22,7 +22,9 @@ export function Navigation({ session, libraryName, instituteName, headerFontSize
       if (!isTabActive) {
         // Tab was closed! Force instant signout to /login
         sessionStorage.clear();
-        signOut({ callbackUrl: "/login" });
+        signOut({ redirect: false }).then(() => {
+          window.location.href = "/login";
+        });
       } else {
         sessionStorage.setItem("admin_tab_active", "true");
       }
