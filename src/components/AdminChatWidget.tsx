@@ -232,20 +232,26 @@ export function AdminChatWidget() {
             <span className="flex items-center space-x-1">
               <span>⏱️ Auto-Delete:</span>
             </span>
-            <select
-              value={disappearSeconds}
-              onChange={(e) => setDisappearSeconds(Number(e.target.value))}
-              className={`bg-slate-800 text-xs px-2 py-0.5 rounded border ${
-                disappearSeconds > 0 ? "border-amber-500 text-amber-300 font-medium" : "border-slate-700 text-slate-300"
-              }`}
-            >
-              <option value={5}>🔥 5 Seconds after Read (Default)</option>
-              <option value={10}>🔥 10 Seconds after Read</option>
-              <option value={30}>🔥 30 Seconds after Read</option>
-              <option value={60}>🔥 1 Minute after Read</option>
-              <option value={300}>🔥 5 Minutes after Read</option>
-              <option value={0}>Off (Never)</option>
-            </select>
+            <div className="relative inline-flex items-center">
+              <select
+                value={disappearSeconds}
+                onChange={(e) => setDisappearSeconds(Number(e.target.value))}
+                title="Select auto-delete time"
+                className="opacity-0 absolute inset-0 w-full h-full cursor-pointer z-10"
+              >
+                <option value={5}>🔥 5 Seconds after Read (Default)</option>
+                <option value={10}>🔥 10 Seconds after Read</option>
+                <option value={30}>🔥 30 Seconds after Read</option>
+                <option value={60}>🔥 1 Minute after Read</option>
+                <option value={300}>🔥 5 Minutes after Read</option>
+                <option value={0}>Off (Never)</option>
+              </select>
+              <div className="bg-slate-800 hover:bg-slate-700 text-slate-300 p-1 px-1.5 rounded border border-slate-700 flex items-center justify-center">
+                <svg className="w-4 h-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </div>
+            </div>
           </div>
 
           {/* Messages Feed */}
@@ -346,11 +352,7 @@ export function AdminChatWidget() {
               type="text"
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
-              placeholder={
-                disappearSeconds > 0
-                  ? `Message (Auto-deletes ${disappearSeconds}s after read)...`
-                  : "Type a message..."
-              }
+              placeholder="Type a message..."
               className="flex-1 bg-slate-900 text-white text-xs px-3 py-2 rounded-xl border border-slate-700 focus:outline-none focus:border-indigo-500 placeholder:text-slate-500"
             />
             <button
