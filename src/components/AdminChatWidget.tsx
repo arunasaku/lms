@@ -228,10 +228,7 @@ export function AdminChatWidget() {
           </div>
 
           {/* Disappearing Timer Selector Toolbar */}
-          <div className="bg-slate-950/80 px-3 py-1.5 border-b border-slate-800/80 flex items-center justify-between text-[11px] text-slate-400">
-            <span className="flex items-center space-x-1">
-              <span>⏱️ Auto-Delete:</span>
-            </span>
+          <div className="bg-slate-950/80 px-3 py-1.5 border-b border-slate-800/80 flex items-center justify-end text-[11px] text-slate-400">
             <div className="relative inline-flex items-center">
               <select
                 value={disappearSeconds}
@@ -246,8 +243,9 @@ export function AdminChatWidget() {
                 <option value={300}>🔥 5 Minutes after Read</option>
                 <option value={0}>Off (Never)</option>
               </select>
-              <div className="bg-slate-800 hover:bg-slate-700 text-slate-300 p-1 px-1.5 rounded border border-slate-700 flex items-center justify-center">
-                <svg className="w-4 h-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="bg-slate-800 hover:bg-slate-700 text-slate-300 p-1 px-1.5 rounded border border-slate-700 flex items-center justify-center space-x-1">
+                <span className="text-xs">⏱️</span>
+                <svg className="w-3.5 h-3.5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
               </div>
