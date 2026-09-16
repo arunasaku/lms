@@ -83,6 +83,7 @@ export default async function FinesReportPage({ searchParams }: { searchParams: 
                 <thead>
                   <tr className="bg-slate-50 border-b border-slate-200">
                     <th className="p-3 text-sm font-semibold text-slate-600">Paid On</th>
+                    <th className="p-3 text-sm font-semibold text-slate-600">Receipt No</th>
                     <th className="p-3 text-sm font-semibold text-slate-600">Member</th>
                     <th className="p-3 text-sm font-semibold text-slate-600">Book</th>
                     <th className="p-3 text-sm font-semibold text-slate-600 text-right">Amount (Rs.)</th>
@@ -93,6 +94,15 @@ export default async function FinesReportPage({ searchParams }: { searchParams: 
                     <tr key={loan.id} className="hover:bg-slate-50">
                       <td className="p-3 text-sm text-slate-600">
                         {loan.finePaidDate ? new Date(loan.finePaidDate).toLocaleDateString() : 'N/A'}
+                      </td>
+                      <td className="p-3 text-sm font-medium text-slate-700">
+                        {loan.receiptNo ? (
+                          <span className="px-2 py-0.5 bg-slate-100 rounded border border-slate-200 text-xs font-mono text-slate-700">
+                            {loan.receiptNo}
+                          </span>
+                        ) : (
+                          <span className="text-slate-400 text-xs italic">-</span>
+                        )}
                       </td>
                       <td className="p-3">
                         <div className="font-medium text-slate-800">{loan.user?.name}</div>

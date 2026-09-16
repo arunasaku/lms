@@ -98,10 +98,12 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "User ID not found" }, { status: 400 });
     }
 
-    const { receiverId, message, disappearAfterSeconds } = await req.json();
+    const { receiverId, message, imageUrl, messageType, callSignal, disappearAfterSeconds } = await req.json();
 
-    if (!message || message.trim() === "") {
-      return NextResponse.json({ error: "Message cannot be empty" }, { status: 400 });
+    const isSignal = messageType && messageType !== "TEXT";
+
+    if (!isSignal && (!message || message.trim() === "") && (!imageUrl || imageUrl.trim() === "")) {
+      return NextResponse.json({ error: "Message or image cannot be empty" }, { status: 400 });
     }
 
     const targetReceiverId = receiverId && String(receiverId).trim() !== "" ? String(receiverId) : null;
@@ -110,7 +112,10 @@ export async function POST(req: Request) {
       data: {
         senderId: userId,
         receiverId: targetReceiverId,
-        message: message.trim(),
+        message: message ? message.trim() : (messageType || ""),
+        imageUrl: imageUrl ? imageUrl.trim() : null,
+        messageType: messageType || "TEXT",
+        callSignal: callSignal || null,
         disappearAfterSeconds: typeof disappearAfterSeconds === "number" ? disappearAfterSeconds : 0
       },
       include: {

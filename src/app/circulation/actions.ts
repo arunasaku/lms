@@ -156,13 +156,14 @@ export async function returnBook(formData: FormData) {
   }
 }
 
-export async function markFineAsPaid(loanId: string) {
+export async function markFineAsPaid(loanId: string, receiptNo?: string) {
   try {
     await prisma.loan.update({
       where: { id: loanId },
       data: {
         finePaid: true,
-        finePaidDate: new Date()
+        finePaidDate: new Date(),
+        receiptNo: receiptNo ? receiptNo.trim() : null
       }
     });
     revalidatePath("/circulation/fines");

@@ -16,6 +16,9 @@ interface ChatMessage {
   senderId: string;
   receiverId?: string | null;
   message: string;
+  imageUrl?: string | null;
+  messageType?: string | null;
+  callSignal?: string | null;
   isRead: boolean;
   readAt?: string | null;
   disappearAfterSeconds?: number;
@@ -34,11 +37,46 @@ export function AdminChatWidget() {
   const [selectedReceiverId, setSelectedReceiverId] = useState<string | null>(null); // null = Group Chat
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputText, setInputText] = useState("");
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [disappearSeconds, setDisappearSeconds] = useState<number>(5); // 5 = 5 Seconds (Default)
   const [loading, setLoading] = useState(false);
   const [now, setNow] = useState(Date.now());
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+
+  // WebRTC Audio/Video Call state
+  const [callState, setCallState] = useState<"IDLE" | "CALLING" | "RINGING" | "CONNECTED">("IDLE");
+  const [activePeer, setActivePeer] = useState<{ id: string; name: string; role?: string } | null>(null);
+  const [pendingSignal, setPendingSignal] = useState<any>(null);
+  const [isVideoCall, setIsVideoCall] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
+  const [isVideoOff, setIsVideoOff] = useState(false);
+  const [callDuration, setCallDuration] = useState(0);
+
+  const pcRef = useRef<RTCPeerConnection | null>(null);
+  const localStreamRef = useRef<MediaStream | null>(null);
+  const remoteAudioRef = useRef<HTMLAudioElement | null>(null);
+  const remoteVideoRef = useRef<HTMLVideoElement | null>(null);
+  const localVideoRef = useRef<HTMLVideoElement | null>(null);
+  const handledSignalIds = useRef<Set<string>>(new Set());
+
+  const EMOJIS = ["😊", "👍", "❤️", "📚", "🔥", "✅", "🙏", "🎉", "💡", "📌", "😄", "👏", "🎯", "🚀", "💬", "⚠️", "❌", "👋", "👌", "⭐"];
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      alert("Image size should be less than 5MB");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      setSelectedImage(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
 
   // Check if current user is Admin (case-insensitive)
   const isAuthorized = Boolean(session && userRole?.toUpperCase() === "ADMIN");
@@ -50,11 +88,21 @@ export function AdminChatWidget() {
     return () => window.removeEventListener("open-admin-chat", handleOpen);
   }, []);
 
-  // Timer tick for countdown rendering
+  // Timer tick for countdown rendering & call duration
   useEffect(() => {
     const timer = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(timer);
   }, []);
+
+  useEffect(() => {
+    let timer: any;
+    if (callState === "CONNECTED") {
+      timer = setInterval(() => setCallDuration((d) => d + 1), 1000);
+    } else {
+      setCallDuration(0);
+    }
+    return () => clearInterval(timer);
+  }, [callState]);
 
   // Fetch Admin users list
   useEffect(() => {
@@ -67,7 +115,202 @@ export function AdminChatWidget() {
       .catch((err) => console.error("Failed to load chat users:", err));
   }, [isAuthorized]);
 
-  // Fetch messages function
+  // Send Call Signaling Message
+  const sendSignalMessage = async (targetId: string, type: string, signalData?: any, textMsg?: string) => {
+    try {
+      await fetch("/api/admin/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          receiverId: targetId,
+          message: textMsg || `Call signal: ${type}`,
+          messageType: type,
+          callSignal: signalData ? JSON.stringify(signalData) : null,
+          disappearAfterSeconds: 0
+        })
+      });
+    } catch (err) {
+      console.error("Failed to send call signal:", err);
+    }
+  };
+
+  // Clean up media tracks & peer connection
+  const cleanupCall = () => {
+    if (localStreamRef.current) {
+      localStreamRef.current.getTracks().forEach((track) => track.stop());
+      localStreamRef.current = null;
+    }
+    if (pcRef.current) {
+      pcRef.current.close();
+      pcRef.current = null;
+    }
+    if (localVideoRef.current) localVideoRef.current.srcObject = null;
+    if (remoteVideoRef.current) remoteVideoRef.current.srcObject = null;
+    if (remoteAudioRef.current) remoteAudioRef.current.srcObject = null;
+
+    setCallState("IDLE");
+    setActivePeer(null);
+    setPendingSignal(null);
+    setIsMuted(false);
+    setIsVideoCall(false);
+    setIsVideoOff(false);
+    setCallDuration(0);
+  };
+
+  // Start outgoing Audio/Video call
+  const startCall = async (targetUser: { id: string; name: string; role?: string }, video: boolean = false) => {
+    try {
+      setIsOpen(true);
+      setCallState("CALLING");
+      setActivePeer(targetUser);
+      setIsVideoCall(video);
+
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video });
+      localStreamRef.current = stream;
+
+      setTimeout(() => {
+        if (video && localVideoRef.current) {
+          localVideoRef.current.srcObject = stream;
+        }
+      }, 100);
+
+      const pc = new RTCPeerConnection({
+        iceServers: [{ urls: "stun:stun.l.google.com:19302" }, { urls: "stun:stun1.l.google.com:19302" }]
+      });
+      pcRef.current = pc;
+
+      stream.getTracks().forEach((track) => pc.addTrack(track, stream));
+
+      pc.ontrack = (event) => {
+        if (event.streams[0]) {
+          if (remoteAudioRef.current) {
+            remoteAudioRef.current.srcObject = event.streams[0];
+            remoteAudioRef.current.play().catch(console.error);
+          }
+          if (remoteVideoRef.current) {
+            remoteVideoRef.current.srcObject = event.streams[0];
+            remoteVideoRef.current.play().catch(console.error);
+          }
+        }
+      };
+
+      pc.onicecandidate = (event) => {
+        if (event.candidate) {
+          sendSignalMessage(targetUser.id, "ICE_CANDIDATE", event.candidate);
+        }
+      };
+
+      const offer = await pc.createOffer();
+      await pc.setLocalDescription(offer);
+      const signalPayload = { offer, isVideo: video };
+      sendSignalMessage(
+        targetUser.id,
+        "CALL_OFFER",
+        signalPayload,
+        `${video ? "📹 Incoming Video Call" : "📞 Incoming Audio Call"} from ${session?.user?.name || "Admin"}`
+      );
+    } catch (err: any) {
+      console.error("Failed to start call:", err);
+      alert(err.message || "Microphone/Camera access denied or call failed.");
+      cleanupCall();
+    }
+  };
+
+  // Accept incoming call
+  const acceptIncomingCall = async () => {
+    if (!activePeer || !pendingSignal) return;
+    try {
+      const offerData = pendingSignal.offer || pendingSignal;
+      const isVid = Boolean(pendingSignal.isVideo);
+      setIsVideoCall(isVid);
+
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: isVid });
+      localStreamRef.current = stream;
+
+      setTimeout(() => {
+        if (isVid && localVideoRef.current) {
+          localVideoRef.current.srcObject = stream;
+        }
+      }, 100);
+
+      const pc = new RTCPeerConnection({
+        iceServers: [{ urls: "stun:stun.l.google.com:19302" }, { urls: "stun:stun1.l.google.com:19302" }]
+      });
+      pcRef.current = pc;
+
+      stream.getTracks().forEach((track) => pc.addTrack(track, stream));
+
+      pc.ontrack = (event) => {
+        if (event.streams[0]) {
+          if (remoteAudioRef.current) {
+            remoteAudioRef.current.srcObject = event.streams[0];
+            remoteAudioRef.current.play().catch(console.error);
+          }
+          if (remoteVideoRef.current) {
+            remoteVideoRef.current.srcObject = event.streams[0];
+            remoteVideoRef.current.play().catch(console.error);
+          }
+        }
+      };
+
+      pc.onicecandidate = (event) => {
+        if (event.candidate) {
+          sendSignalMessage(activePeer.id, "ICE_CANDIDATE", event.candidate);
+        }
+      };
+
+      await pc.setRemoteDescription(new RTCSessionDescription(offerData));
+      const answer = await pc.createAnswer();
+      await pc.setLocalDescription(answer);
+
+      sendSignalMessage(activePeer.id, "CALL_ANSWER", answer);
+      setCallState("CONNECTED");
+    } catch (err: any) {
+      console.error("Failed to accept call:", err);
+      alert(err.message || "Microphone/Camera access failed.");
+      cleanupCall();
+    }
+  };
+
+  // Reject incoming call
+  const rejectIncomingCall = () => {
+    if (activePeer) {
+      sendSignalMessage(activePeer.id, "CALL_REJECT");
+    }
+    cleanupCall();
+  };
+
+  // End active call
+  const endCall = () => {
+    if (activePeer) {
+      sendSignalMessage(activePeer.id, "CALL_END");
+    }
+    cleanupCall();
+  };
+
+  // Toggle Mute
+  const toggleMute = () => {
+    if (localStreamRef.current) {
+      const audioTrack = localStreamRef.current.getAudioTracks()[0];
+      if (audioTrack) {
+        audioTrack.enabled = !audioTrack.enabled;
+        setIsMuted(!audioTrack.enabled);
+      }
+    }
+  };
+
+  // Toggle Video
+  const toggleVideo = () => {
+    if (localStreamRef.current) {
+      const videoTrack = localStreamRef.current.getVideoTracks()[0];
+      if (videoTrack) {
+        videoTrack.enabled = !videoTrack.enabled;
+        setIsVideoOff(!videoTrack.enabled);
+      }
+    }
+  };
+
+  // Fetch messages function & signaling listener
   const fetchMessages = async () => {
     if (!isAuthorized) return;
     try {
@@ -75,6 +318,42 @@ export function AdminChatWidget() {
       if (res.ok) {
         const data: ChatMessage[] = await res.json();
         setMessages(data);
+
+        // Process WebRTC call signals
+        data.forEach((msg) => {
+          if (
+            msg.senderId !== currentUserId &&
+            msg.messageType &&
+            msg.messageType !== "TEXT" &&
+            !handledSignalIds.current.has(msg.id)
+          ) {
+            handledSignalIds.current.add(msg.id);
+
+            if (msg.messageType === "CALL_OFFER" && msg.callSignal) {
+              const sig = JSON.parse(msg.callSignal);
+              setPendingSignal(sig);
+              setIsVideoCall(Boolean(sig.isVideo));
+              setActivePeer({
+                id: msg.senderId,
+                name: msg.sender?.name || "Admin",
+                role: msg.sender?.role
+              });
+              setCallState("RINGING");
+              setIsOpen(true);
+            } else if (msg.messageType === "CALL_ANSWER" && msg.callSignal) {
+              if (pcRef.current) {
+                pcRef.current.setRemoteDescription(new RTCSessionDescription(JSON.parse(msg.callSignal)));
+                setCallState("CONNECTED");
+              }
+            } else if (msg.messageType === "ICE_CANDIDATE" && msg.callSignal) {
+              if (pcRef.current && pcRef.current.remoteDescription) {
+                pcRef.current.addIceCandidate(new RTCIceCandidate(JSON.parse(msg.callSignal))).catch(console.error);
+              }
+            } else if (msg.messageType === "CALL_END" || msg.messageType === "CALL_REJECT") {
+              cleanupCall();
+            }
+          }
+        });
 
         // Mark unread messages sent to me as read if drawer is open
         if (isOpen) {
@@ -109,6 +388,9 @@ export function AdminChatWidget() {
 
   // Filter messages for current chat target (Group Chat vs 1-on-1)
   const filteredMessages = messages.filter((msg) => {
+    // Hide signaling messages from text feed
+    if (msg.messageType && msg.messageType !== "TEXT") return false;
+
     // Exclude locally expired disappearing messages
     if (msg.isRead && msg.readAt && msg.disappearAfterSeconds && msg.disappearAfterSeconds > 0) {
       const elapsed = (now - new Date(msg.readAt).getTime()) / 1000;
@@ -129,16 +411,19 @@ export function AdminChatWidget() {
 
   // Calculate total unread messages count across all chats
   const unreadCount = messages.filter(
-    (msg) => !msg.isRead && msg.senderId !== currentUserId
+    (msg) => !msg.isRead && msg.senderId !== currentUserId && (!msg.messageType || msg.messageType === "TEXT")
   ).length;
 
   // Send message handler
   const handleSendMessage = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
-    if (!inputText.trim()) return;
+    if (!inputText.trim() && !selectedImage) return;
 
     const textToSend = inputText;
+    const imageToSend = selectedImage;
     setInputText("");
+    setSelectedImage(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
     setLoading(true);
 
     try {
@@ -148,6 +433,8 @@ export function AdminChatWidget() {
         body: JSON.stringify({
           receiverId: selectedReceiverId || null,
           message: textToSend,
+          imageUrl: imageToSend,
+          messageType: "TEXT",
           disappearAfterSeconds: disappearSeconds
         })
       });
@@ -182,11 +469,19 @@ export function AdminChatWidget() {
 
   const selectedUser = users.find((u) => u.id === selectedReceiverId);
 
+  const formatDuration = (sec: number) => {
+    const mins = Math.floor(sec / 60);
+    const secs = sec % 60;
+    return `${mins}:${secs.toString().padStart(2, "0")}`;
+  };
+
   return (
     <div className="fixed bottom-4 right-4 z-50 print:hidden font-sans">
+      <audio ref={remoteAudioRef} autoPlay className="hidden" />
+
       {/* Chat Drawer Window */}
       {isOpen && (
-        <div className="w-[360px] sm:w-[400px] h-[520px] bg-slate-900 border border-slate-800 text-white rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-5 duration-200">
+        <div className="w-[360px] sm:w-[400px] h-[540px] bg-slate-900 border border-slate-800 text-white rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-5 duration-200">
           {/* Header */}
           <div className="bg-slate-800 p-3.5 border-b border-slate-700 flex items-center justify-between">
             <div className="flex items-center space-x-2.5">
@@ -200,7 +495,7 @@ export function AdminChatWidget() {
                 <select
                   value={selectedReceiverId || ""}
                   onChange={(e) => setSelectedReceiverId(e.target.value || null)}
-                  className="bg-slate-900 text-white text-xs rounded-md border border-slate-700 px-2 py-1 focus:outline-none focus:ring-1 focus:ring-indigo-500 font-semibold"
+                  className="bg-slate-900 text-white text-xs rounded-md border border-slate-700 px-2 py-1 focus:outline-none focus:ring-1 focus:ring-indigo-500 font-semibold max-w-[150px] truncate"
                 >
                   <option value="">👥 Group Chat (All Admins)</option>
                   {users
@@ -217,15 +512,157 @@ export function AdminChatWidget() {
               </div>
             </div>
 
-            <button
-              onClick={() => setIsOpen(false)}
-              className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-700 transition"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
+            <div className="flex items-center space-x-1">
+              {/* Call Buttons in 1-on-1 Chat */}
+              {selectedReceiverId && selectedUser && (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => startCall(selectedUser, false)}
+                    disabled={callState !== "IDLE"}
+                    className="p-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white transition disabled:opacity-50 cursor-pointer text-xs"
+                    title={`Audio Call ${selectedUser.name}`}
+                  >
+                    📞
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => startCall(selectedUser, true)}
+                    disabled={callState !== "IDLE"}
+                    className="p-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white transition disabled:opacity-50 cursor-pointer text-xs"
+                    title={`Video Call ${selectedUser.name}`}
+                  >
+                    📹
+                  </button>
+                </>
+              )}
+
+              <button
+                onClick={() => setIsOpen(false)}
+                className="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-slate-700 transition"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
           </div>
+
+          {/* WebRTC Video Stream Modal Layer */}
+          {callState === "CONNECTED" && isVideoCall && (
+            <div className="relative w-full h-[220px] bg-black border-b border-slate-800 flex items-center justify-center overflow-hidden">
+              <video
+                ref={remoteVideoRef}
+                autoPlay
+                playsInline
+                className="w-full h-full object-cover"
+              />
+
+              {/* Local Video Picture-in-Picture */}
+              <div className="absolute bottom-2 right-2 w-24 h-32 bg-slate-900 rounded-lg overflow-hidden border-2 border-indigo-500 shadow-xl">
+                <video
+                  ref={localVideoRef}
+                  autoPlay
+                  playsInline
+                  muted
+                  className={`w-full h-full object-cover ${isVideoOff ? "hidden" : "block"}`}
+                />
+                {isVideoOff && (
+                  <div className="w-full h-full flex items-center justify-center text-[10px] text-slate-400">
+                    Cam Off
+                  </div>
+                )}
+              </div>
+
+              {/* Video Call Quick Controls */}
+              <div className="absolute top-2 left-2 flex items-center space-x-1 bg-slate-900/80 backdrop-blur-sm px-2 py-1 rounded-lg border border-slate-700 text-xs">
+                <span>📹 Video Call</span>
+                <span className="text-[10px] text-emerald-400 font-mono">⏱️ {formatDuration(callDuration)}</span>
+              </div>
+            </div>
+          )}
+
+          {/* WebRTC Audio/Video Call Status Bar */}
+          {callState !== "IDLE" && (!isVideoCall || callState !== "CONNECTED") && (
+            <div className="bg-indigo-950/90 border-b border-indigo-800 p-3 flex items-center justify-between animate-in fade-in duration-200">
+              <div className="flex items-center space-x-2.5">
+                <div className="w-8 h-8 rounded-full bg-emerald-600 flex items-center justify-center font-bold text-xs animate-pulse">
+                  {isVideoCall ? "📹" : "📞"}
+                </div>
+                <div>
+                  <p className="text-xs font-semibold text-white">
+                    {callState === "CALLING" && `Calling ${activePeer?.name}...`}
+                    {callState === "RINGING" && `Incoming ${isVideoCall ? "Video" : "Audio"} Call from ${activePeer?.name}`}
+                    {callState === "CONNECTED" && `Call with ${activePeer?.name}`}
+                  </p>
+                  <p className="text-[10px] text-indigo-300 font-mono">
+                    {callState === "CALLING" && "Ringing..."}
+                    {callState === "RINGING" && "Click Answer to connect"}
+                    {callState === "CONNECTED" && `⏱️ ${formatDuration(callDuration)}`}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center space-x-1.5">
+                {callState === "RINGING" && (
+                  <>
+                    <button
+                      type="button"
+                      onClick={acceptIncomingCall}
+                      className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-medium transition cursor-pointer flex items-center gap-1"
+                    >
+                      Answer {isVideoCall ? "📹" : "📞"}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={rejectIncomingCall}
+                      className="px-2.5 py-1 bg-rose-600 hover:bg-rose-500 text-white rounded-lg text-xs font-medium transition cursor-pointer"
+                    >
+                      Reject 🚫
+                    </button>
+                  </>
+                )}
+
+                {callState === "CONNECTED" && (
+                  <>
+                    <button
+                      type="button"
+                      onClick={toggleMute}
+                      className={`p-1.5 rounded-lg text-xs transition cursor-pointer ${
+                        isMuted ? "bg-amber-600 text-white" : "bg-slate-800 text-slate-300 hover:bg-slate-700"
+                      }`}
+                      title={isMuted ? "Unmute Mic" : "Mute Mic"}
+                    >
+                      {isMuted ? "🔇" : "🎙️"}
+                    </button>
+
+                    {isVideoCall && (
+                      <button
+                        type="button"
+                        onClick={toggleVideo}
+                        className={`p-1.5 rounded-lg text-xs transition cursor-pointer ${
+                          isVideoOff ? "bg-amber-600 text-white" : "bg-slate-800 text-slate-300 hover:bg-slate-700"
+                        }`}
+                        title={isVideoOff ? "Turn Cam On" : "Turn Cam Off"}
+                      >
+                        {isVideoOff ? "📷 Off" : "📹 Cam"}
+                      </button>
+                    )}
+                  </>
+                )}
+
+                {(callState === "CALLING" || callState === "CONNECTED") && (
+                  <button
+                    type="button"
+                    onClick={endCall}
+                    className="px-2.5 py-1 bg-rose-600 hover:bg-rose-500 text-white rounded-lg text-xs font-medium transition cursor-pointer"
+                  >
+                    End 🛑
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
 
           {/* Disappearing Timer Selector Toolbar */}
           <div className="bg-slate-950/80 px-3 py-1.5 border-b border-slate-800/80 flex items-center justify-end text-[11px] text-slate-400">
@@ -309,7 +746,17 @@ export function AdminChatWidget() {
                             : "bg-slate-800 text-slate-200 border border-slate-700/80 rounded-bl-none"
                         }`}
                       >
-                        <p className="whitespace-pre-wrap break-words">{msg.message}</p>
+                        {msg.imageUrl && (
+                          <div className="mb-1.5 rounded-lg overflow-hidden border border-slate-700/60 max-w-[220px]">
+                            <img 
+                              src={msg.imageUrl} 
+                              alt="Attached image" 
+                              className="w-full h-auto max-h-[180px] object-cover cursor-pointer hover:opacity-90 transition"
+                              onClick={() => window.open(msg.imageUrl!, "_blank")}
+                            />
+                          </div>
+                        )}
+                        {msg.message && <p className="whitespace-pre-wrap break-words">{msg.message}</p>}
 
                         <div className="flex items-center justify-end space-x-1.5 mt-1 text-[9px] opacity-75">
                           <span>
@@ -344,19 +791,86 @@ export function AdminChatWidget() {
             <div ref={messagesEndRef} />
           </div>
 
+          {/* Image Preview Bar */}
+          {selectedImage && (
+            <div className="px-3 py-1.5 bg-slate-950 border-t border-slate-800 flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <img src={selectedImage} alt="Preview" className="w-8 h-8 rounded object-cover border border-slate-700" />
+                <span className="text-[11px] text-slate-300">Image attached</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setSelectedImage(null);
+                  if (fileInputRef.current) fileInputRef.current.value = "";
+                }}
+                className="text-slate-400 hover:text-red-400 text-xs px-1 font-bold cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+          )}
+
+          {/* Emoji Picker Popover */}
+          {showEmojiPicker && (
+            <div className="p-2 bg-slate-950 border-t border-slate-800 grid grid-cols-10 gap-1 text-base select-none">
+              {EMOJIS.map((emoji) => (
+                <button
+                  key={emoji}
+                  type="button"
+                  onClick={() => {
+                    setInputText((prev) => prev + emoji);
+                  }}
+                  className="hover:bg-slate-800 p-1 rounded text-center transition hover:scale-125 cursor-pointer text-sm"
+                >
+                  {emoji}
+                </button>
+              ))}
+            </div>
+          )}
+
           {/* Message Input Footer */}
-          <form onSubmit={handleSendMessage} className="p-2.5 bg-slate-800 border-t border-slate-700 flex items-center space-x-2">
+          <form onSubmit={handleSendMessage} className="p-2.5 bg-slate-800 border-t border-slate-700 flex items-center space-x-1.5">
+            <input 
+              type="file" 
+              ref={fileInputRef} 
+              accept="image/*" 
+              className="hidden" 
+              onChange={handleImageSelect} 
+            />
+            
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="p-1.5 rounded-lg text-slate-400 hover:text-indigo-400 hover:bg-slate-700 transition text-sm cursor-pointer"
+              title="Attach Image"
+            >
+              📷
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setShowEmojiPicker((prev) => !prev)}
+              className={`p-1.5 rounded-lg transition text-sm ${
+                showEmojiPicker ? "bg-slate-700 text-amber-400" : "text-slate-400 hover:text-amber-400 hover:bg-slate-700"
+              }`}
+              title="Add Emoji"
+            >
+              😊
+            </button>
+
             <input
               type="text"
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
-              placeholder="Type a message..."
+              placeholder={selectedImage ? "Add a caption..." : "Type a message..."}
               className="flex-1 bg-slate-900 text-white text-xs px-3 py-2 rounded-xl border border-slate-700 focus:outline-none focus:border-indigo-500 placeholder:text-slate-500"
             />
+
             <button
               type="submit"
-              disabled={loading || !inputText.trim()}
-              className="bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white p-2 rounded-xl transition"
+              disabled={loading || (!inputText.trim() && !selectedImage)}
+              className="bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white p-2 rounded-xl transition cursor-pointer"
             >
               <svg className="w-4 h-4 transform rotate-90" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
@@ -364,6 +878,30 @@ export function AdminChatWidget() {
             </button>
           </form>
         </div>
+      )}
+
+      {/* Launcher Button with Call Ringing Indicator */}
+      {!isOpen && (
+        <button
+          onClick={() => setIsOpen(true)}
+          className={`relative p-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full shadow-lg transition cursor-pointer flex items-center justify-center ${
+            callState === "RINGING" ? "animate-bounce ring-4 ring-emerald-400" : ""
+          }`}
+        >
+          {callState === "RINGING" ? (
+            <span className="text-xl">{isVideoCall ? "📹" : "📞"}</span>
+          ) : (
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+            </svg>
+          )}
+
+          {unreadCount > 0 && (
+            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center border-2 border-slate-900">
+              {unreadCount}
+            </span>
+          )}
+        </button>
       )}
     </div>
   );
