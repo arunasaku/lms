@@ -15,6 +15,12 @@ const prisma = new PrismaClient();
 export const metadata: Metadata = {
   title: "Library Management System",
   description: "Modern library management system",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "LMS Library",
+  },
 };
 
 export default async function RootLayout({
