@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { prisma } from "@/lib/prisma";
 
 export function getMainClassFromDdc(ddcStr: string): string {
   if (!ddcStr) return "";
@@ -23,7 +24,7 @@ async function fetchFromUnionCatalogue(isbnOrQuery: string) {
   try {
     const cleanQuery = isbnOrQuery.replace(/[- ]/g, '');
     const searchUrl = `https://unioncatalogue.dlp.gov.lk/Search/Results?lookfor=${encodeURIComponent(cleanQuery)}&type=AllFields`;
-    const res = await fetch(searchUrl, { headers: { 'User-Agent': 'Mozilla/5.0' }, signal: AbortSignal.timeout(3000) });
+    const res = await fetch(searchUrl, { headers: { 'User-Agent': 'Mozilla/5.0' }, signal: AbortSignal.timeout(7000) });
     if (!res.ok) return null;
     const html = await res.text();
 
@@ -36,7 +37,7 @@ async function fetchFromUnionCatalogue(isbnOrQuery: string) {
 
     const recordId = uniqueRecords[0].replace('/Record/', '');
     const marcUrl = `https://unioncatalogue.dlp.gov.lk/Record/${recordId}/Export?style=MARCXML`;
-    const marcRes = await fetch(marcUrl, { signal: AbortSignal.timeout(3000) });
+    const marcRes = await fetch(marcUrl, { signal: AbortSignal.timeout(7000) });
     if (!marcRes.ok) return null;
     const marcXml = await marcRes.text();
 
@@ -105,8 +106,44 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "ISBN is required" }, { status: 400 });
   }
 
+  const cleanIsbn = isbn.replace(/[- ]/g, '').trim();
+
   try {
-    // 0. Try National Virtual Union Catalogue of Sri Lanka First
+    // 0. Check Local Library Database First
+    try {
+      const localBook = await prisma.book.findFirst({
+        where: {
+          OR: [
+            { isbn: cleanIsbn },
+            { isbn: isbn },
+            { title: { contains: isbn } }
+          ]
+        }
+      });
+
+      if (localBook) {
+        return NextResponse.json({
+          title: localBook.title,
+          author: localBook.author || "",
+          publisher: localBook.publisher || "",
+          year: localBook.year || "",
+          ddc: localBook.ddc || "",
+          mainClass: localBook.mainClass || getMainClassFromDdc(localBook.ddc || ""),
+          subdivision1: localBook.subdivision1 || "",
+          subdivision2: localBook.subdivision2 || "",
+          subdivision3: localBook.subdivision3 || "",
+          pages: localBook.pages || "",
+          height: localBook.height || "",
+          price: localBook.price ? String(localBook.price) : "",
+          isbn: localBook.isbn || isbn,
+          source: "Local Database"
+        });
+      }
+    } catch (dbErr) {
+      console.error("Local DB check error:", dbErr);
+    }
+
+    // 1. Try National Virtual Union Catalogue of Sri Lanka
     const unionCatData = await fetchFromUnionCatalogue(isbn);
     if (unionCatData) {
       return NextResponse.json(unionCatData);
@@ -115,67 +152,79 @@ export async function GET(request: Request) {
     // Determine if the input is an ISBN or a Book Name
     const isName = /[a-zA-Z]{3,}/.test(isbn);
     
-    // 1. Try Google Books API
+    // 2. Try Google Books API
     const googleQuery = isName ? `intitle:${encodeURIComponent(isbn)}` : `isbn:${isbn}`;
-    let res = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${googleQuery}&maxResults=1`, { signal: AbortSignal.timeout(2500) });
-    let data = await res.json();
-
-    if (data.items && data.items.length > 0) {
-      const bookInfo = data.items[0].volumeInfo;
-      return NextResponse.json({
-        title: bookInfo.title || "",
-        author: bookInfo.authors ? bookInfo.authors.join(", ") : "",
-        publisher: bookInfo.publisher || "",
-        year: bookInfo.publishedDate ? bookInfo.publishedDate.substring(0, 4) : "",
-        source: "Google Books"
-      });
+    try {
+      let res = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${googleQuery}&maxResults=1`, { signal: AbortSignal.timeout(5000) });
+      if (res.ok) {
+        let data = await res.json();
+        if (data.items && data.items.length > 0) {
+          const bookInfo = data.items[0].volumeInfo;
+          return NextResponse.json({
+            title: bookInfo.title || "",
+            author: bookInfo.authors ? bookInfo.authors.join(", ") : "",
+            publisher: bookInfo.publisher || "",
+            year: bookInfo.publishedDate ? bookInfo.publishedDate.substring(0, 4) : "",
+            source: "Google Books"
+          });
+        }
+      }
+    } catch (gErr) {
+      console.log("Google Books fetch error:", gErr);
     }
 
     if (!isName) {
-      // 2. Try OpenLibrary API as a fallback (Only for ISBNs)
-      res = await fetch(`https://openlibrary.org/api/books?bibkeys=ISBN:${isbn}&format=json&jscmd=data`, { signal: AbortSignal.timeout(2500) });
-      const olData = await res.json();
-      const olKey = `ISBN:${isbn}`;
+      // 3. Try OpenLibrary API as a fallback (Only for ISBNs)
+      try {
+        let res = await fetch(`https://openlibrary.org/api/books?bibkeys=ISBN:${isbn}&format=json&jscmd=data`, { signal: AbortSignal.timeout(5000) });
+        if (res.ok) {
+          const olData = await res.json();
+          const olKey = `ISBN:${isbn}`;
 
-      if (olData[olKey]) {
-        const bookInfo = olData[olKey];
-        return NextResponse.json({
-          title: bookInfo.title || "",
-          author: bookInfo.authors ? bookInfo.authors.map((a: any) => a.name).join(", ") : "",
-          publisher: bookInfo.publishers ? bookInfo.publishers.map((p: any) => p.name).join(", ") : "",
-          year: bookInfo.publish_date ? bookInfo.publish_date : "",
-          source: "Open Library"
-        });
+          if (olData[olKey]) {
+            const bookInfo = olData[olKey];
+            return NextResponse.json({
+              title: bookInfo.title || "",
+              author: bookInfo.authors ? bookInfo.authors.map((a: any) => a.name).join(", ") : "",
+              publisher: bookInfo.publishers ? bookInfo.publishers.map((p: any) => p.name).join(", ") : "",
+              year: bookInfo.publish_date ? bookInfo.publish_date : "",
+              source: "Open Library"
+            });
+          }
+        }
+      } catch (olErr) {
+        console.log("OpenLibrary fetch error:", olErr);
       }
 
-      // 3. Web Scraping for Grantha.lk (Only for ISBNs)
+      // 4. Web Scraping for Grantha.lk (Only for ISBNs)
       try {
-        const granthaRes = await fetch(`https://grantha.lk/catalogsearch/result/?q=${isbn}`, { signal: AbortSignal.timeout(2500) });
-        const html = await granthaRes.text();
-        
-        const titleMatch = html.match(/class="product-item-link"\s*href="[^"]+">\s*([^<]+)\s*<\/a>/i);
-        
-        if (titleMatch) {
-          let title = titleMatch[1].trim();
-          return NextResponse.json({
-            title: title,
-            author: "",
-            publisher: "",
-            year: "",
-            source: "Grantha.lk (Scraped)"
-          });
+        const granthaRes = await fetch(`https://grantha.lk/catalogsearch/result/?q=${isbn}`, { signal: AbortSignal.timeout(5000) });
+        if (granthaRes.ok) {
+          const html = await granthaRes.text();
+          const titleMatch = html.match(/class="product-item-link"\s*href="[^"]+">\s*([^<]+)\s*<\/a>/i);
+          
+          if (titleMatch) {
+            let title = titleMatch[1].trim();
+            return NextResponse.json({
+              title: title,
+              author: "",
+              publisher: "",
+              year: "",
+              source: "Grantha.lk (Scraped)"
+            });
+          }
         }
       } catch (e) {
         console.log("Grantha scrape failed:", e);
       }
     }
     
-    // 4. Use AI Fallback for both Name and ISBN searches as a last resort
+    // 5. Use AI Fallback for both Name and ISBN searches as a last resort
     try {
       const apiKey = process.env.GEMINI_API_KEY;
       if (apiKey) {
         const genAI = new GoogleGenerativeAI(apiKey);
-        const model = genAI.getGenerativeModel({ model: 'gemini-3.5-flash' });
+        const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
         const prompt = `Provide details for the book with ISBN or Name "${isbn}". If it is a Sri Lankan / Sinhala book, provide its Sinhala details.
 Respond ONLY in this exact JSON format, nothing else:
 {"title": "Book Name", "author": "Author Name", "publisher": "Publisher Name", "year": "YYYY", "ddc": "3-digit DDC number e.g. 800", "mainClass": "One of: 000 - පරිගණක විද්යාව, තොරතුරු හා සාමාන්ය කෘති, 100 - දර්ශනය, 200 - ආගම්, 300 - සමාජ ශාස්ත්ර, 400 - භාෂාව, 500 - ස්වභාවික විද්යා සහ ගණිතය, 600 - තාක්ෂණ විද්යා, 700 - කලා ශිල්ප, 800 - සාහිත්ය, 900 - ඉතිහාසය සහ භූගෝල විද්යාව", "subdivision1": "Subdivision 1", "subdivision2": "Subdivision 2", "subdivision3": "Subdivision 3"}
