@@ -452,6 +452,74 @@ export default function EditBookForm({ book }: { book: any }) {
           </div>
         </div>
 
+        {/* Collection Section */}
+        <div className="border border-indigo-100 bg-indigo-50/40 p-5 rounded-xl space-y-4">
+          <h3 className="text-base font-semibold text-indigo-950 flex items-center gap-2 border-b border-indigo-100 pb-2">
+            <span className="bg-indigo-600 text-white text-xs px-2 py-0.5 rounded font-medium">Collection</span>
+            එකතුව / ඛණ්ඩ වර්ගීකරණය (Classification)
+          </h3>
+
+          <div className="space-y-2">
+            <label htmlFor="mainClass" className="block text-sm font-medium text-slate-700">Main Class (ප්‍රධාන පන්තිය) *</label>
+            <select 
+              id="mainClass" 
+              name="mainClass" 
+              defaultValue={book.mainClass || ""}
+              className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition font-medium text-slate-800"
+            >
+              <option value="">-- ප්‍රධාන පන්තිය තෝරන්න (Select Main Class) --</option>
+              <option value="000 - පරිගණක විද්යාව, තොරතුරු හා සාමාන්ය කෘති">000 - පරිගණක විද්යාව, තොරතුරු හා සාමාන්ය කෘති</option>
+              <option value="100 - දර්ශනය">100 - දර්ශනය</option>
+              <option value="200 - ආගම්">200 - ආගම්</option>
+              <option value="300 - සමාජ ශාස්ත්ර">300 - සමාජ ශාස්ත්ර</option>
+              <option value="400 - භාෂාව">400 - භාෂාව</option>
+              <option value="500 - ස්වභාවික විද්යා සහ ගණිතය">500 - ස්වභාවික විද්යා සහ ගණිතය</option>
+              <option value="600 - තාක්ෂණ විද්යා">600 - තාක්ෂණ විද්යා</option>
+              <option value="700 - කලා ශිල්ප">700 - කලා ශිල්ප</option>
+              <option value="800 - සාහිත්ය">800 - සාහිත්ය</option>
+              <option value="900 - ඉතිහාසය සහ භූගෝල විද්යාව">900 - ඉතිහාසය සහ භූගෝල විද්යාව</option>
+            </select>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+            <div className="space-y-2">
+              <label htmlFor="subdivision1" className="block text-sm font-medium text-slate-700">Subdivision 1 (අනු කොටස 1)</label>
+              <input 
+                type="text" 
+                id="subdivision1" 
+                name="subdivision1" 
+                defaultValue={book.subdivision1 || ""}
+                placeholder="Subdivision 1 enter..."
+                className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition text-sm"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label htmlFor="subdivision2" className="block text-sm font-medium text-slate-700">Subdivision 2 (අනු කොටස 2)</label>
+              <input 
+                type="text" 
+                id="subdivision2" 
+                name="subdivision2" 
+                defaultValue={book.subdivision2 || ""}
+                placeholder="Subdivision 2 enter..."
+                className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition text-sm"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label htmlFor="subdivision3" className="block text-sm font-medium text-slate-700">Subdivision 3 (අනු කොටස 3)</label>
+              <input 
+                type="text" 
+                id="subdivision3" 
+                name="subdivision3" 
+                defaultValue={book.subdivision3 || ""}
+                placeholder="Subdivision 3 enter..."
+                className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition text-sm"
+              />
+            </div>
+          </div>
+        </div>
+
         <div className="pt-4 flex justify-end gap-3 border-t border-slate-100">
           <Link href="/catalog" className="px-6 py-2.5 bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 rounded-lg font-medium transition shadow-sm">
             Cancel

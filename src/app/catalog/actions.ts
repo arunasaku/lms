@@ -19,6 +19,10 @@ export async function createBook(formData: FormData) {
   const billNo = formData.get("billNo") as string | null;
   const isbn = formData.get("isbn") as string | null;
   const ddc = formData.get("ddc") as string | null;
+  const mainClass = formData.get("mainClass") as string | null;
+  const subdivision1 = formData.get("subdivision1") as string | null;
+  const subdivision2 = formData.get("subdivision2") as string | null;
+  const subdivision3 = formData.get("subdivision3") as string | null;
   const pages = formData.get("pages") as string | null;
   const height = formData.get("height") as string | null;
   const acquisitionType = formData.get("acquisitionType") as string | null;
@@ -53,6 +57,10 @@ export async function createBook(formData: FormData) {
       billNo: billNo || null,
       isbn: isbn || null,
       ddc: ddc || null,
+      mainClass: mainClass || null,
+      subdivision1: subdivision1 || null,
+      subdivision2: subdivision2 || null,
+      subdivision3: subdivision3 || null,
       pages: pages || null,
       height: height || null,
       acquisitionType: acquisitionType || "PURCHASED",
@@ -84,6 +92,10 @@ export async function updateBook(formData: FormData) {
   const billNo = formData.get("billNo") as string | null;
   const isbn = formData.get("isbn") as string | null;
   const ddc = formData.get("ddc") as string | null;
+  const mainClass = formData.get("mainClass") as string | null;
+  const subdivision1 = formData.get("subdivision1") as string | null;
+  const subdivision2 = formData.get("subdivision2") as string | null;
+  const subdivision3 = formData.get("subdivision3") as string | null;
   const pages = formData.get("pages") as string | null;
   const height = formData.get("height") as string | null;
   const acquisitionType = formData.get("acquisitionType") as string | null;
@@ -117,6 +129,10 @@ export async function updateBook(formData: FormData) {
       billNo: billNo || null,
       isbn: isbn || null,
       ddc: ddc || null,
+      mainClass: mainClass || null,
+      subdivision1: subdivision1 || null,
+      subdivision2: subdivision2 || null,
+      subdivision3: subdivision3 || null,
       pages: pages || null,
       height: height || null,
       acquisitionType: acquisitionType || "PURCHASED",

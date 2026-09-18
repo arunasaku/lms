@@ -82,6 +82,10 @@ model Book {
   billNo        String?
   isbn          String?
   ddc           String?
+  mainClass     String?
+  subdivision1  String?
+  subdivision2  String?
+  subdivision3  String?
   pages         String?
   height        String?
   acquisitionType String? @default("PURCHASED") // PURCHASED, GIFT, DONATION
