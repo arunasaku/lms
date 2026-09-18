@@ -13,22 +13,7 @@ export function Navigation({ session, libraryName, instituteName, headerFontSize
 
   const closeMenu = () => setIsOpen(false);
 
-  // Auto-logout when Admin closes the browser window/tab
-  useEffect(() => {
-    const userRole = (session?.user as any)?.role;
-    if (userRole?.toUpperCase() === 'ADMIN') {
-      const isTabActive = sessionStorage.getItem("admin_tab_active");
-      if (!isTabActive) {
-        // Tab was closed! Force instant signout to /login
-        sessionStorage.clear();
-        signOut({ redirect: false }).then(() => {
-          window.location.href = "/login";
-        });
-      } else {
-        sessionStorage.setItem("admin_tab_active", "true");
-      }
-    }
-  }, [session]);
+
 
   return (
     <>
