@@ -270,7 +270,7 @@ If you don't know the exact year or publisher or subdivisions, leave them blank.
       let subdivision1 = "";
 
       const rawIsbn = cleanIsbn.replace(/^978/, "");
-      if (rawIsbn.startsWith("95521")) {
+      if (rawIsbn.startsWith("95521") || rawIsbn.startsWith("95520") || rawIsbn.startsWith("95522")) {
         publisher = "එම්. ඩී. ගුණසේන (M. D. Gunasena & Co.)";
         pubPlace = "Colombo";
         subdivision1 = "සිංහල කතා / සාහිත්‍යය";
@@ -278,15 +278,23 @@ If you don't know the exact year or publisher or subdivisions, leave them blank.
         publisher = "එස්. ගොඩගේ සහ සහෝදරයෝ (Godage International)";
         pubPlace = "Colombo";
         subdivision1 = "සිංහල කතා / සාහිත්‍යය";
+      } else if (rawIsbn.startsWith("955125") || rawIsbn.startsWith("95512")) {
+        publisher = "ෆාස්ට් පබ්ලිෂින් / සුරස ප්‍රකාශකයෝ (Fast Publishing / Surasa)";
+        pubPlace = "Colombo / Nugegoda";
+        subdivision1 = "සිංහල කතා / සාහිත්‍යය";
       } else if (rawIsbn.startsWith("955551")) {
         publisher = "විසිදුනු ප්‍රකාශකයෝ (Visidunu Publishers)";
         pubPlace = "Boralesgamuwa";
         subdivision1 = "සිංහල කතා / සාහිත්‍යය";
-      } else if (rawIsbn.startsWith("955599")) {
+      } else if (rawIsbn.startsWith("955599") || rawIsbn.startsWith("955600")) {
         publisher = "දයාවංශ ජයකොඩි සහ සමාගම (Dayawansa Jayakody)";
         pubPlace = "Colombo";
         subdivision1 = "සිංහල කතා / සාහිත්‍යය";
-      } else if (rawIsbn.startsWith("95530") || rawIsbn.startsWith("95590")) {
+      } else if (rawIsbn.startsWith("955955") || rawIsbn.startsWith("95595")) {
+        publisher = "සූරිය ප්‍රකාශකයෝ (Suriya Publishers)";
+        pubPlace = "Colombo";
+        subdivision1 = "සිංහල කතා / සාහිත්‍යය";
+      } else if (rawIsbn.startsWith("95530") || rawIsbn.startsWith("95590") || rawIsbn.startsWith("95591")) {
         publisher = "සරසවි ප්‍රකාශකයෝ (Sarasavi Publishers)";
         pubPlace = "Nugegoda";
         subdivision1 = "සිංහල කතා / සාහිත්‍යය";
