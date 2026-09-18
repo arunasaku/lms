@@ -1,6 +1,24 @@
 import { NextResponse } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
+export function getMainClassFromDdc(ddcStr: string): string {
+  if (!ddcStr) return "";
+  const match = ddcStr.match(/\d{3}/);
+  if (!match) return "";
+  const num = parseInt(match[0], 10);
+  if (num >= 0 && num < 100) return "000 - පරිගණක විද්යාව, තොරතුරු හා සාමාන්ය කෘති";
+  if (num >= 100 && num < 200) return "100 - දර්ශනය";
+  if (num >= 200 && num < 300) return "200 - ආගම්";
+  if (num >= 300 && num < 400) return "300 - සමාජ ශාස්ත්ර";
+  if (num >= 400 && num < 500) return "400 - භාෂාව";
+  if (num >= 500 && num < 600) return "500 - ස්වභාවික විද්යා සහ ගණිතය";
+  if (num >= 600 && num < 700) return "600 - තාක්ෂණ විද්යා";
+  if (num >= 700 && num < 800) return "700 - කලා ශිල්ප";
+  if (num >= 800 && num < 900) return "800 - සාහිත්ය";
+  if (num >= 900 && num < 1000) return "900 - ඉතිහාසය සහ භූගෝල විද්යාව";
+  return "";
+}
+
 async function fetchFromUnionCatalogue(isbnOrQuery: string) {
   try {
     const cleanQuery = isbnOrQuery.replace(/[- ]/g, '');
@@ -25,11 +43,15 @@ async function fetchFromUnionCatalogue(isbnOrQuery: string) {
     const titleMatch = marcXml.match(/<datafield tag="245"[\s\S]*?<subfield code="a">([\s\S]*?)<\/subfield>/i);
     const authorMatch = marcXml.match(/<datafield tag="100"[\s\S]*?<subfield code="a">([\s\S]*?)<\/subfield>/i);
     const ddcMatch = marcXml.match(/<datafield tag="082"[\s\S]*?<subfield code="a">([\s\S]*?)<\/subfield>/i);
+    const ddcSubB = marcXml.match(/<datafield tag="082"[\s\S]*?<subfield code="b">([\s\S]*?)<\/subfield>/i);
     const publisherMatch = marcXml.match(/<datafield tag="260"[\s\S]*?<subfield code="b">([\s\S]*?)<\/subfield>/i);
     const yearMatch = marcXml.match(/<datafield tag="260"[\s\S]*?<subfield code="c">([\s\S]*?)<\/subfield>/i);
     const pagesMatch = marcXml.match(/<datafield tag="300"[\s\S]*?<subfield code="a">([\s\S]*?)<\/subfield>/i);
     const heightMatch = marcXml.match(/<datafield tag="300"[\s\S]*?<subfield code="c">([\s\S]*?)<\/subfield>/i);
     const priceMatch = marcXml.match(/<datafield tag="300"[\s\S]*?<subfield code="b">([\s\S]*?)<\/subfield>/i);
+
+    const subjectMatches = [...marcXml.matchAll(/<datafield tag="650"[\s\S]*?<subfield code="a">([\s\S]*?)<\/subfield>/gi)];
+    const subjectSubXMatches = [...marcXml.matchAll(/<datafield tag="650"[\s\S]*?<subfield code="x">([\s\S]*?)<\/subfield>/gi)];
 
     let title = titleMatch ? titleMatch[1].replace(/\s*\/\s*$/, '').trim() : '';
     let author = authorMatch ? authorMatch[1].trim() : '';
@@ -38,6 +60,11 @@ async function fetchFromUnionCatalogue(isbnOrQuery: string) {
     let ddc = ddcMatch ? ddcMatch[1].trim() : '';
     let pages = pagesMatch ? pagesMatch[1].replace(/[^0-9]/g, '').trim() : '';
     let height = heightMatch ? heightMatch[1].trim() : '';
+
+    let mainClass = getMainClassFromDdc(ddc);
+    let subdivision1 = ddcSubB ? ddcSubB[1].trim() : (subjectMatches[0] ? subjectMatches[0][1].trim() : '');
+    let subdivision2 = subjectMatches[1] ? subjectMatches[1][1].trim() : (subjectSubXMatches[0] ? subjectSubXMatches[0][1].trim() : '');
+    let subdivision3 = subjectMatches[2] ? subjectMatches[2][1].trim() : (subjectSubXMatches[1] ? subjectSubXMatches[1][1].trim() : '');
     
     let price = '';
     if (priceMatch) {
@@ -53,6 +80,10 @@ async function fetchFromUnionCatalogue(isbnOrQuery: string) {
         publisher,
         year,
         ddc,
+        mainClass,
+        subdivision1,
+        subdivision2,
+        subdivision3,
         price,
         pages,
         height,
@@ -101,7 +132,6 @@ export async function GET(request: Request) {
     }
 
     if (!isName) {
-      // ... existing code for ISBN fallback ...
       // 2. Try OpenLibrary API as a fallback (Only for ISBNs)
       res = await fetch(`https://openlibrary.org/api/books?bibkeys=ISBN:${isbn}&format=json&jscmd=data`);
       const olData = await res.json();
@@ -146,16 +176,15 @@ export async function GET(request: Request) {
       if (apiKey) {
         const genAI = new GoogleGenerativeAI(apiKey);
         const model = genAI.getGenerativeModel({ model: 'gemini-3.5-flash' });
-        const prompt = `Provide the details for the book with ISBN or Name "${isbn}". If it is an ISBN of a Sri Lankan / Sinhala book, provide its Sinhala or transliterated details.
+        const prompt = `Provide details for the book with ISBN or Name "${isbn}". If it is a Sri Lankan / Sinhala book, provide its Sinhala details.
 Respond ONLY in this exact JSON format, nothing else:
-{"title": "Book Name", "author": "Author Name", "publisher": "Publisher Name", "year": "YYYY"}
-If you don't know the exact year or publisher, leave them blank. Make sure the author is accurate. If you absolutely cannot find it, respond with {"error": "not found"}.`;
+{"title": "Book Name", "author": "Author Name", "publisher": "Publisher Name", "year": "YYYY", "ddc": "3-digit DDC number e.g. 800", "mainClass": "One of: 000 - පරිගණක විද්යාව, තොරතුරු හා සාමාන්ය කෘති, 100 - දර්ශනය, 200 - ආගම්, 300 - සමාජ ශාස්ත්ර, 400 - භාෂාව, 500 - ස්වභාවික විද්යා සහ ගණිතය, 600 - තාක්ෂණ විද්යා, 700 - කලා ශිල්ප, 800 - සාහිත්ය, 900 - ඉතිහාසය සහ භූගෝල විද්යාව", "subdivision1": "Subdivision 1", "subdivision2": "Subdivision 2", "subdivision3": "Subdivision 3"}
+If you don't know the exact year or publisher or subdivisions, leave them blank. Make sure title and author are accurate.`;
         
         const result = await model.generateContent(prompt);
         const response = await result.response;
         let text = response.text().trim();
         
-        // Extract JSON block in case AI added extra text
         const jsonMatch = text.match(/\{[\s\S]*\}/);
         if (jsonMatch) {
           text = jsonMatch[0];
@@ -164,11 +193,17 @@ If you don't know the exact year or publisher, leave them blank. Make sure the a
         const aiData = JSON.parse(text);
         
         if (aiData.title && !aiData.error) {
+          let mainClass = aiData.mainClass || getMainClassFromDdc(aiData.ddc || "");
           return NextResponse.json({
             title: aiData.title,
             author: aiData.author || "",
             publisher: aiData.publisher || "",
             year: aiData.year || "",
+            ddc: aiData.ddc || "",
+            mainClass: mainClass || "",
+            subdivision1: aiData.subdivision1 || "",
+            subdivision2: aiData.subdivision2 || "",
+            subdivision3: aiData.subdivision3 || "",
             source: "AI Knowledge Base"
           });
         }

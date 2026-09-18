@@ -22,8 +22,30 @@ export default function NewBookForm() {
   const [height, setHeight] = useState("");
   const [category, setCategory] = useState("");
   const [acquisitionType, setAcquisitionType] = useState("PURCHASED");
+  const [mainClass, setMainClass] = useState("");
+  const [subdivision1, setSubdivision1] = useState("");
+  const [subdivision2, setSubdivision2] = useState("");
+  const [subdivision3, setSubdivision3] = useState("");
   const [loading, setLoading] = useState(false);
   const [suggestingDdc, setSuggestingDdc] = useState(false);
+
+  const deriveMainClass = (ddcStr: string) => {
+    if (!ddcStr) return "";
+    const match = ddcStr.match(/\d{3}/);
+    if (!match) return "";
+    const num = parseInt(match[0], 10);
+    if (num >= 0 && num < 100) return "000 - පරිගණක විද්යාව, තොරතුරු හා සාමාන්ය කෘති";
+    if (num >= 100 && num < 200) return "100 - දර්ශනය";
+    if (num >= 200 && num < 300) return "200 - ආගම්";
+    if (num >= 300 && num < 400) return "300 - සමාජ ශාස්ත්ර";
+    if (num >= 400 && num < 500) return "400 - භාෂාව";
+    if (num >= 500 && num < 600) return "500 - ස්වභාවික විද්යා සහ ගණිතය";
+    if (num >= 600 && num < 700) return "600 - තාක්ෂණ විද්යා";
+    if (num >= 700 && num < 800) return "700 - කලා ශිල්ප";
+    if (num >= 800 && num < 900) return "800 - සාහිත්ය";
+    if (num >= 900 && num < 1000) return "900 - ඉතිහාසය සහ භූගෝල විද්යාව";
+    return "";
+  };
 
   const fetchIsbnInfo = async () => {
     if (!isbnSearch) return;
@@ -36,7 +58,15 @@ export default function NewBookForm() {
         if (data.author) setAuthor(data.author);
         if (data.publisher) setPublisher(data.publisher);
         if (data.year) setYear(data.year);
-        if (data.ddc) setDdc(data.ddc);
+        if (data.ddc) {
+          setDdc(data.ddc);
+          const derived = deriveMainClass(data.ddc);
+          if (derived) setMainClass(derived);
+        }
+        if (data.mainClass) setMainClass(data.mainClass);
+        if (data.subdivision1) setSubdivision1(data.subdivision1);
+        if (data.subdivision2) setSubdivision2(data.subdivision2);
+        if (data.subdivision3) setSubdivision3(data.subdivision3);
         if (data.price) setPrice(data.price);
         if (data.pages) setPages(data.pages);
         if (data.height) setHeight(data.height);
@@ -69,6 +99,8 @@ export default function NewBookForm() {
       const data = await res.json();
       if (data.ddc) {
         setDdc(data.ddc);
+        const derived = deriveMainClass(data.ddc);
+        if (derived) setMainClass(derived);
       }
     } catch (e) {
       console.error(e);
@@ -406,13 +438,15 @@ export default function NewBookForm() {
           </h3>
 
           <div className="space-y-2">
-            <label htmlFor="mainClass" className="block text-sm font-medium text-slate-700">Main Class (ප්‍රධාන පන්තිය) *</label>
+            <label htmlFor="mainClass" className="block text-sm font-medium text-slate-700">Call Number (ප්‍රධාන පන්තිය) *</label>
             <select 
               id="mainClass" 
               name="mainClass" 
+              value={mainClass}
+              onChange={(e) => setMainClass(e.target.value)}
               className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition font-medium text-slate-800"
             >
-              <option value="">-- ප්‍රධාන පන්තිය තෝරන්න (Select Main Class) --</option>
+              <option value="">-- Call Number එක තෝරන්න (Select Call Number) --</option>
               <option value="000 - පරිගණක විද්යාව, තොරතුරු හා සාමාන්ය කෘති">000 - පරිගණක විද්යාව, තොරතුරු හා සාමාන්ය කෘති</option>
               <option value="100 - දර්ශනය">100 - දර්ශනය</option>
               <option value="200 - ආගම්">200 - ආගම්</option>
@@ -433,6 +467,8 @@ export default function NewBookForm() {
                 type="text" 
                 id="subdivision1" 
                 name="subdivision1" 
+                value={subdivision1}
+                onChange={(e) => setSubdivision1(e.target.value)}
                 placeholder="Subdivision 1 enter..."
                 className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition text-sm"
               />
@@ -444,6 +480,8 @@ export default function NewBookForm() {
                 type="text" 
                 id="subdivision2" 
                 name="subdivision2" 
+                value={subdivision2}
+                onChange={(e) => setSubdivision2(e.target.value)}
                 placeholder="Subdivision 2 enter..."
                 className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition text-sm"
               />
@@ -455,6 +493,8 @@ export default function NewBookForm() {
                 type="text" 
                 id="subdivision3" 
                 name="subdivision3" 
+                value={subdivision3}
+                onChange={(e) => setSubdivision3(e.target.value)}
                 placeholder="Subdivision 3 enter..."
                 className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition text-sm"
               />
