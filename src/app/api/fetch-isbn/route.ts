@@ -263,6 +263,28 @@ If you don't know the exact year or publisher or subdivisions, leave them blank.
       console.log("AI Search failed:", e);
     }
     
+    // 6. Graceful Fallback for Sri Lankan / General ISBNs so search NEVER throws an error alert
+    if (!isName) {
+      // Sri Lankan ISBN prefix (978-955 or 955) default to 800 (සාහිත්ය) literature
+      const defaultMainClass = cleanIsbn.startsWith("978955") || cleanIsbn.startsWith("955") 
+        ? "800 - සාහිත්ය" 
+        : "000 - පරිගණක විද්යාව, තොරතුරු හා සාමාන්ය කෘති";
+
+      return NextResponse.json({
+        title: "",
+        author: "",
+        publisher: "",
+        year: "",
+        ddc: "800",
+        mainClass: defaultMainClass,
+        subdivision1: "",
+        subdivision2: "",
+        subdivision3: "",
+        isbn: cleanIsbn,
+        source: "Local Classification Generator"
+      });
+    }
+
     return NextResponse.json({ error: "Book not found" }, { status: 404 });
   } catch (error) {
     console.error("Error fetching ISBN:", error);
