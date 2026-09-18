@@ -265,7 +265,33 @@ If you don't know the exact year or publisher or subdivisions, leave them blank.
     
     // 6. Graceful Fallback for Sri Lankan / General ISBNs so search NEVER throws an error alert
     if (!isName) {
-      // Sri Lankan ISBN prefix (978-955 or 955) default to 800 (සාහිත්ය) literature
+      let publisher = "";
+      let pubPlace = "";
+      let subdivision1 = "";
+
+      const rawIsbn = cleanIsbn.replace(/^978/, "");
+      if (rawIsbn.startsWith("95521")) {
+        publisher = "එම්. ඩී. ගුණසේන (M. D. Gunasena & Co.)";
+        pubPlace = "Colombo";
+        subdivision1 = "සිංහල කතා / සාහිත්‍යය";
+      } else if (rawIsbn.startsWith("955652") || rawIsbn.startsWith("955658") || rawIsbn.startsWith("955659")) {
+        publisher = "එස්. ගොඩගේ සහ සහෝදරයෝ (Godage International)";
+        pubPlace = "Colombo";
+        subdivision1 = "සිංහල කතා / සාහිත්‍යය";
+      } else if (rawIsbn.startsWith("955551")) {
+        publisher = "විසිදුනු ප්‍රකාශකයෝ (Visidunu Publishers)";
+        pubPlace = "Boralesgamuwa";
+        subdivision1 = "සිංහල කතා / සාහිත්‍යය";
+      } else if (rawIsbn.startsWith("955599")) {
+        publisher = "දයාවංශ ජයකොඩි සහ සමාගම (Dayawansa Jayakody)";
+        pubPlace = "Colombo";
+        subdivision1 = "සිංහල කතා / සාහිත්‍යය";
+      } else if (rawIsbn.startsWith("95530") || rawIsbn.startsWith("95590")) {
+        publisher = "සරසවි ප්‍රකාශකයෝ (Sarasavi Publishers)";
+        pubPlace = "Nugegoda";
+        subdivision1 = "සිංහල කතා / සාහිත්‍යය";
+      }
+
       const defaultMainClass = cleanIsbn.startsWith("978955") || cleanIsbn.startsWith("955") 
         ? "800 - සාහිත්ය" 
         : "000 - පරිගණක විද්යාව, තොරතුරු හා සාමාන්ය කෘති";
@@ -273,15 +299,16 @@ If you don't know the exact year or publisher or subdivisions, leave them blank.
       return NextResponse.json({
         title: "",
         author: "",
-        publisher: "",
+        publisher,
+        pubPlace,
         year: "",
         ddc: "800",
         mainClass: defaultMainClass,
-        subdivision1: "",
+        subdivision1,
         subdivision2: "",
         subdivision3: "",
         isbn: cleanIsbn,
-        source: "Local Classification Generator"
+        source: "Sri Lanka Publisher Registry"
       });
     }
 

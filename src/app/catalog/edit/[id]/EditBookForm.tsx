@@ -57,6 +57,7 @@ export default function EditBookForm({ book }: { book: any }) {
         if (data.title) setTitle(data.title);
         if (data.author) setAuthor(data.author);
         if (data.publisher) setPublisher(data.publisher);
+        if (data.pubPlace) setPubPlace(data.pubPlace);
         if (data.year) setYear(data.year);
         if (data.ddc) {
           setDdc(data.ddc);
