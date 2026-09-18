@@ -23,7 +23,7 @@ async function fetchFromUnionCatalogue(isbnOrQuery: string) {
   try {
     const cleanQuery = isbnOrQuery.replace(/[- ]/g, '');
     const searchUrl = `https://unioncatalogue.dlp.gov.lk/Search/Results?lookfor=${encodeURIComponent(cleanQuery)}&type=AllFields`;
-    const res = await fetch(searchUrl, { headers: { 'User-Agent': 'Mozilla/5.0' } });
+    const res = await fetch(searchUrl, { headers: { 'User-Agent': 'Mozilla/5.0' }, signal: AbortSignal.timeout(3000) });
     if (!res.ok) return null;
     const html = await res.text();
 
@@ -36,7 +36,7 @@ async function fetchFromUnionCatalogue(isbnOrQuery: string) {
 
     const recordId = uniqueRecords[0].replace('/Record/', '');
     const marcUrl = `https://unioncatalogue.dlp.gov.lk/Record/${recordId}/Export?style=MARCXML`;
-    const marcRes = await fetch(marcUrl);
+    const marcRes = await fetch(marcUrl, { signal: AbortSignal.timeout(3000) });
     if (!marcRes.ok) return null;
     const marcXml = await marcRes.text();
 
@@ -117,7 +117,7 @@ export async function GET(request: Request) {
     
     // 1. Try Google Books API
     const googleQuery = isName ? `intitle:${encodeURIComponent(isbn)}` : `isbn:${isbn}`;
-    let res = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${googleQuery}&maxResults=1`);
+    let res = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${googleQuery}&maxResults=1`, { signal: AbortSignal.timeout(2500) });
     let data = await res.json();
 
     if (data.items && data.items.length > 0) {
@@ -133,7 +133,7 @@ export async function GET(request: Request) {
 
     if (!isName) {
       // 2. Try OpenLibrary API as a fallback (Only for ISBNs)
-      res = await fetch(`https://openlibrary.org/api/books?bibkeys=ISBN:${isbn}&format=json&jscmd=data`);
+      res = await fetch(`https://openlibrary.org/api/books?bibkeys=ISBN:${isbn}&format=json&jscmd=data`, { signal: AbortSignal.timeout(2500) });
       const olData = await res.json();
       const olKey = `ISBN:${isbn}`;
 
@@ -150,7 +150,7 @@ export async function GET(request: Request) {
 
       // 3. Web Scraping for Grantha.lk (Only for ISBNs)
       try {
-        const granthaRes = await fetch(`https://grantha.lk/catalogsearch/result/?q=${isbn}`);
+        const granthaRes = await fetch(`https://grantha.lk/catalogsearch/result/?q=${isbn}`, { signal: AbortSignal.timeout(2500) });
         const html = await granthaRes.text();
         
         const titleMatch = html.match(/class="product-item-link"\s*href="[^"]+">\s*([^<]+)\s*<\/a>/i);
