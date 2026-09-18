@@ -22,7 +22,9 @@ export function getMainClassFromDdc(ddcStr: string): string {
 
 async function fetchFromUnionCatalogue(isbnOrQuery: string) {
   try {
-    const cleanQuery = isbnOrQuery.replace(/[- ]/g, '');
+    const raw = isbnOrQuery.trim();
+    const isIsbn = /^[0-9xX\- ]+$/.test(raw);
+    const cleanQuery = isIsbn ? raw.replace(/[- ]/g, '') : raw;
     const searchUrl = `https://unioncatalogue.dlp.gov.lk/Search/Results?lookfor=${encodeURIComponent(cleanQuery)}&type=AllFields`;
     const res = await fetch(searchUrl, { headers: { 'User-Agent': 'Mozilla/5.0' }, signal: AbortSignal.timeout(7000) });
     if (!res.ok) return null;
@@ -150,7 +152,7 @@ export async function GET(request: Request) {
     }
 
     // Determine if the input is an ISBN or a Book Name
-    const isName = /[a-zA-Z]{3,}/.test(isbn);
+    const isName = !/^[0-9xX\- ]+$/.test(isbn.trim());
     
     // 2. Try Google Books API
     const googleQuery = isName ? `intitle:${encodeURIComponent(isbn)}` : `isbn:${isbn}`;
