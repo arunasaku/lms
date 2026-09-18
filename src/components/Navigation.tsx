@@ -5,7 +5,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
 import { LogoutButton } from "./LogoutButton";
-import { AdminChatWidget } from "./AdminChatWidget";
 import Image from "next/image";
 
 export function Navigation({ session, libraryName, instituteName, headerFontSize = 18, children }: { session: any, libraryName?: string, instituteName?: string, headerFontSize?: number, children: React.ReactNode }) {
@@ -159,7 +158,6 @@ export function Navigation({ session, libraryName, instituteName, headerFontSize
           </div>
         </main>
       </div>
-      <AdminChatWidget />
     </>
   );
 }
