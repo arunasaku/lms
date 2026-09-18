@@ -152,7 +152,7 @@ export default function EditBookForm({ book }: { book: any }) {
               required
               defaultValue={book.accNo}
               placeholder="e.g. 21697"
-              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+              className="w-full px-4 py-2.5 bg-white text-slate-900 font-semibold placeholder:text-slate-400 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition shadow-sm"
             />
           </div>
 
@@ -165,7 +165,7 @@ export default function EditBookForm({ book }: { book: any }) {
               value={isbn}
               onChange={(e) => setIsbn(e.target.value)}
               placeholder="e.g. 9789556583359"
-              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+              className="w-full px-4 py-2.5 bg-white text-slate-900 font-semibold placeholder:text-slate-400 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition shadow-sm"
             />
           </div>
 
@@ -195,7 +195,7 @@ export default function EditBookForm({ book }: { book: any }) {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Main Book title..."
-              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+              className="w-full px-4 py-2.5 bg-white text-slate-900 font-semibold placeholder:text-slate-400 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition shadow-sm"
             />
           </div>
 
@@ -208,7 +208,7 @@ export default function EditBookForm({ book }: { book: any }) {
               value={title2}
               onChange={(e) => setTitle2(e.target.value)}
               placeholder="Secondary title or Subtitle..."
-              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+              className="w-full px-4 py-2.5 bg-white text-slate-900 font-semibold placeholder:text-slate-400 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition shadow-sm"
             />
           </div>
         </div>
@@ -223,7 +223,7 @@ export default function EditBookForm({ book }: { book: any }) {
               value={author}
               onChange={(e) => setAuthor(e.target.value)}
               placeholder="Main Author name..."
-              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+              className="w-full px-4 py-2.5 bg-white text-slate-900 font-semibold placeholder:text-slate-400 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition shadow-sm"
             />
           </div>
 
@@ -236,7 +236,7 @@ export default function EditBookForm({ book }: { book: any }) {
               value={author2}
               onChange={(e) => setAuthor2(e.target.value)}
               placeholder="Second Author name..."
-              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+              className="w-full px-4 py-2.5 bg-white text-slate-900 font-semibold placeholder:text-slate-400 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition shadow-sm"
             />
           </div>
 
@@ -249,7 +249,7 @@ export default function EditBookForm({ book }: { book: any }) {
               value={author3}
               onChange={(e) => setAuthor3(e.target.value)}
               placeholder="Third Author name..."
-              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+              className="w-full px-4 py-2.5 bg-white text-slate-900 font-semibold placeholder:text-slate-400 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition shadow-sm"
             />
           </div>
         </div>
@@ -264,7 +264,7 @@ export default function EditBookForm({ book }: { book: any }) {
               value={publisher}
               onChange={(e) => setPublisher(e.target.value)}
               placeholder="Publisher name..."
-              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+              className="w-full px-4 py-2.5 bg-white text-slate-900 font-semibold placeholder:text-slate-400 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition shadow-sm"
             />
           </div>
 
@@ -277,7 +277,7 @@ export default function EditBookForm({ book }: { book: any }) {
               value={pubPlace}
               onChange={(e) => setPubPlace(e.target.value)}
               placeholder="e.g. Colombo, Kandy..."
-              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+              className="w-full px-4 py-2.5 bg-white text-slate-900 font-semibold placeholder:text-slate-400 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition shadow-sm"
             />
           </div>
 
@@ -290,7 +290,7 @@ export default function EditBookForm({ book }: { book: any }) {
               value={year}
               onChange={(e) => setYear(e.target.value)}
               placeholder="e.g. 2023"
-              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+              className="w-full px-4 py-2.5 bg-white text-slate-900 font-semibold placeholder:text-slate-400 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition shadow-sm"
             />
           </div>
         </div>
@@ -305,7 +305,7 @@ export default function EditBookForm({ book }: { book: any }) {
               value={publisher}
               onChange={(e) => setPublisher(e.target.value)}
               placeholder="Publisher..."
-              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+              className="w-full px-4 py-2.5 bg-white text-slate-900 font-semibold placeholder:text-slate-400 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition shadow-sm"
             />
           </div>
         </div>
@@ -320,7 +320,7 @@ export default function EditBookForm({ book }: { book: any }) {
               value={pages}
               onChange={(e) => setPages(e.target.value)}
               placeholder="e.g. 138 p."
-              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+              className="w-full px-4 py-2.5 bg-white text-slate-900 font-semibold placeholder:text-slate-400 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition shadow-sm"
             />
           </div>
 
@@ -333,7 +333,7 @@ export default function EditBookForm({ book }: { book: any }) {
               value={height}
               onChange={(e) => setHeight(e.target.value)}
               placeholder="e.g. 18 cm"
-              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+              className="w-full px-4 py-2.5 bg-white text-slate-900 font-semibold placeholder:text-slate-400 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition shadow-sm"
             />
           </div>
 
@@ -347,7 +347,7 @@ export default function EditBookForm({ book }: { book: any }) {
               value={price}
               onChange={(e) => setPrice(e.target.value)}
               placeholder="0.00"
-              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+              className="w-full px-4 py-2.5 bg-white text-slate-900 font-semibold placeholder:text-slate-400 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition shadow-sm"
             />
           </div>
         </div>
@@ -363,7 +363,7 @@ export default function EditBookForm({ book }: { book: any }) {
               value={category}
               onChange={(e) => setCategory(e.target.value)}
               placeholder="Select or type category (e.g. Fiction, Science)..."
-              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+              className="w-full px-4 py-2.5 bg-white text-slate-900 font-semibold placeholder:text-slate-400 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition shadow-sm"
             />
             <datalist id="category-edit-list">
               <option value="General Collection" />
@@ -390,7 +390,7 @@ export default function EditBookForm({ book }: { book: any }) {
               name="shelfLoc" 
               defaultValue={book.shelfLoc || ""}
               placeholder="e.g. A3, Row 2"
-              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+              className="w-full px-4 py-2.5 bg-white text-slate-900 font-semibold placeholder:text-slate-400 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition shadow-sm"
             />
           </div>
         </div>
@@ -404,7 +404,7 @@ export default function EditBookForm({ book }: { book: any }) {
               name="vendor" 
               defaultValue={book.vendor || ""}
               placeholder="Where was it bought?"
-              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+              className="w-full px-4 py-2.5 bg-white text-slate-900 font-semibold placeholder:text-slate-400 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition shadow-sm"
             />
           </div>
 
@@ -416,7 +416,7 @@ export default function EditBookForm({ book }: { book: any }) {
               name="billNo" 
               defaultValue={book.billNo || ""}
               placeholder="Receipt / Bill No..."
-              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+              className="w-full px-4 py-2.5 bg-white text-slate-900 font-semibold placeholder:text-slate-400 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition shadow-sm"
             />
           </div>
         </div>
@@ -428,7 +428,7 @@ export default function EditBookForm({ book }: { book: any }) {
               id="itemType" 
               name="itemType" 
               defaultValue={book.itemType || "LENDING"}
-              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+              className="w-full px-4 py-2.5 bg-white text-slate-900 font-semibold placeholder:text-slate-400 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition shadow-sm"
             >
               <option value="LENDING">Lending</option>
               <option value="REFERENCE">Reference</option>
@@ -443,7 +443,7 @@ export default function EditBookForm({ book }: { book: any }) {
               id="status" 
               name="status" 
               defaultValue={book.status || "AVAILABLE"}
-              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+              className="w-full px-4 py-2.5 bg-white text-slate-900 font-semibold placeholder:text-slate-400 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition shadow-sm"
             >
               <option value="AVAILABLE">AVAILABLE</option>
               <option value="BORROWED">BORROWED</option>
