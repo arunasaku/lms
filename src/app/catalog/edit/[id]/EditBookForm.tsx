@@ -29,6 +29,27 @@ export default function EditBookForm({ book }: { book: any }) {
   const [loading, setLoading] = useState(false);
   const [suggestingDdc, setSuggestingDdc] = useState(false);
 
+  const subdivisionsMap: Record<string, string[]> = {
+    "0": ["020 - පුස්තකාල විද්යාව", "060 - සාමාන්ය සංවිධාන", "070 - ප්රවෘත්ති මාධ්ය, පුවත්පත් කලාව, ප්රකාශනය", "080 - එකතු"],
+    "1": ["120 - ඥාන විභාගය, හේතුඵලවාදය, මාව වර්ගයා", "140 - විශේෂ දාර්ශනික මත", "150 - මනෝ විද්යාව", "160 - තර්ක ශාස්ත්රය", "170 - ආචාර ධර්ම"],
+    "2": ["230 - ක්රිස්තියානි ධර්මය", "290 - වෙනත් ආගම්"],
+    "3": ["320 - දේශපාලන විද්යාව", "330 - ආර්ථික විද්යාව", "340 - නීතිය", "350 - පරිපාලනය", "360 - සමාජ ප්රශ්න, සමාජ සේවා සහ සංවිධාන", "370 - අධ්යාපන", "380 - වාණිජ්ය විද්යා, සන්නිවේදනය හා ප්රවාහන සේවා", "390 - සිරිත් විරිත්, ජනශ්රැති"],
+    "4": ["420 - ඉංග්රීසි භාෂාව", "490 - වෙනත් භාෂා"],
+    "5": ["510 ගණිතය", "520 - තාරකා විද්යාව හා අනුබද්ධ විද්යා", "530 - භෞතික විද්යාව", "540 - රසායන විද්යාව", "550 - භූ විද්යාව", "560 - පාෂාණිධාතු විද්යාව", "570 - ජෛවීය විද්යාව", "580 - ශාක", "590 - සත්ත්වයෝ"],
+    "6": ["610 - වෛද්ය විද්යා", "620 - ඉංජිනේරු විද්යා", "630 - කෘෂිකර්මය හා ඒ ආශ්රිත තාක්ෂණය", "640 - ගෘහ විද්යාව", "650 - කළමනාකරණ සේවා", "660 - රසායණික ඉංජිනේරු විද්යාව", "670 - නිශ්පාදන", "680 - වෙනත් ශිල්පීය නිශ්පාදන", "690 - ගොඩනැගිලි"],
+    "7": ["720 - ගෘහ නීර්මාණ ශිල්පය", "730 - ප්රතිමා ශිල්පය සහ කැටයම් කලාව", "740 - ඇඳීම සහ සැරසිලි කලාව", "750 - සිතුවම් කලාව", "760 - ග්රැෆික් කලාව", "770 - ඡායාරූප ශිල්පය", "780 - සංගීතය", "790 - විනෝදය හා ක්රීඩා"],
+    "8": ["820 - ඉංග්රීසි සාහිත්යය", "890 - වෙනත් භාෂා සාහිත්යය", "සිංහල කතා / සාහිත්‍යය"],
+    "9": ["910 - භූගෝල විද්ය හා චාරිකා", "920 - චරිතාපදාන, වංශාවලි, නම්", "930 - පැරණි ඉතිහාසය", "940 - යුරෝපා ඉතිහාසය", "950 - ආසියාව"]
+  };
+  
+  const currentMainClassPrefix = mainClass ? mainClass.charAt(0) : "";
+  const availableSubdivisions = currentMainClassPrefix ? (subdivisionsMap[currentMainClassPrefix] || []) : [];
+  
+  const subdivisionOptions = [...availableSubdivisions];
+  if (subdivision1 && !subdivisionOptions.includes(subdivision1)) {
+    subdivisionOptions.unshift(subdivision1);
+  }
+
   const deriveMainClass = (ddcStr: string) => {
     if (!ddcStr) return "";
     const match = ddcStr.match(/\d{3}/);
@@ -513,15 +534,18 @@ export default function EditBookForm({ book }: { book: any }) {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
             <div className="space-y-2">
               <label htmlFor="subdivision1" className="block text-sm font-medium text-slate-700">Subdivision 1 (අනු කොටස 1)</label>
-              <input 
-                type="text" 
+              <select 
                 id="subdivision1" 
                 name="subdivision1" 
                 value={subdivision1}
                 onChange={(e) => setSubdivision1(e.target.value)}
-                placeholder="Subdivision 1 enter..."
-                className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition text-sm"
-              />
+                className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition text-sm font-medium text-slate-800"
+              >
+                <option value="">-- අනු කොටස තෝරන්න --</option>
+                {subdivisionOptions.map((opt, idx) => (
+                  <option key={idx} value={opt}>{opt}</option>
+                ))}
+              </select>
             </div>
 
             <div className="space-y-2">
