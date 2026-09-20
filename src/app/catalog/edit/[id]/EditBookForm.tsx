@@ -26,20 +26,21 @@ export default function EditBookForm({ book }: { book: any }) {
   const [subdivision1, setSubdivision1] = useState(book.subdivision1 || "");
   const [subdivision2, setSubdivision2] = useState(book.subdivision2 || "");
   const [subdivision3, setSubdivision3] = useState(book.subdivision3 || "");
+  const [subdivision4, setSubdivision4] = useState(book.subdivision4 || "");
   const [loading, setLoading] = useState(false);
   const [suggestingDdc, setSuggestingDdc] = useState(false);
 
   const subdivisionsMap: Record<string, string[]> = {
-    "0": ["020 - පුස්තකාල විද්යාව", "060 - සාමාන්ය සංවිධාන", "070 - ප්රවෘත්ති මාධ්ය, පුවත්පත් කලාව, ප්රකාශනය", "080 - එකතු"],
-    "1": ["120 - ඥාන විභාගය, හේතුඵලවාදය, මාව වර්ගයා", "140 - විශේෂ දාර්ශනික මත", "150 - මනෝ විද්යාව", "160 - තර්ක ශාස්ත්රය", "170 - ආචාර ධර්ම"],
-    "2": ["230 - ක්රිස්තියානි ධර්මය", "290 - වෙනත් ආගම්"],
-    "3": ["320 - දේශපාලන විද්යාව", "330 - ආර්ථික විද්යාව", "340 - නීතිය", "350 - පරිපාලනය", "360 - සමාජ ප්රශ්න, සමාජ සේවා සහ සංවිධාන", "370 - අධ්යාපන", "380 - වාණිජ්ය විද්යා, සන්නිවේදනය හා ප්රවාහන සේවා", "390 - සිරිත් විරිත්, ජනශ්රැති"],
-    "4": ["420 - ඉංග්රීසි භාෂාව", "490 - වෙනත් භාෂා"],
-    "5": ["510 ගණිතය", "520 - තාරකා විද්යාව හා අනුබද්ධ විද්යා", "530 - භෞතික විද්යාව", "540 - රසායන විද්යාව", "550 - භූ විද්යාව", "560 - පාෂාණිධාතු විද්යාව", "570 - ජෛවීය විද්යාව", "580 - ශාක", "590 - සත්ත්වයෝ"],
-    "6": ["610 - වෛද්ය විද්යා", "620 - ඉංජිනේරු විද්යා", "630 - කෘෂිකර්මය හා ඒ ආශ්රිත තාක්ෂණය", "640 - ගෘහ විද්යාව", "650 - කළමනාකරණ සේවා", "660 - රසායණික ඉංජිනේරු විද්යාව", "670 - නිශ්පාදන", "680 - වෙනත් ශිල්පීය නිශ්පාදන", "690 - ගොඩනැගිලි"],
-    "7": ["720 - ගෘහ නීර්මාණ ශිල්පය", "730 - ප්රතිමා ශිල්පය සහ කැටයම් කලාව", "740 - ඇඳීම සහ සැරසිලි කලාව", "750 - සිතුවම් කලාව", "760 - ග්රැෆික් කලාව", "770 - ඡායාරූප ශිල්පය", "780 - සංගීතය", "790 - විනෝදය හා ක්රීඩා"],
-    "8": ["820 - ඉංග්රීසි සාහිත්යය", "890 - වෙනත් භාෂා සාහිත්යය", "සිංහල කතා / සාහිත්‍යය"],
-    "9": ["910 - භූගෝල විද්ය හා චාරිකා", "920 - චරිතාපදාන, වංශාවලි, නම්", "930 - පැරණි ඉතිහාසය", "940 - යුරෝපා ඉතිහාසය", "950 - ආසියාව"]
+    "0": ["020 - පුස්තකාල විද්‍යාව", "060 - සාමාන්‍ය සංවිධාන", "070 - ප්‍රවෘත්ති මාධ්‍ය, පුවත්පත් කලාව, ප්‍රකාශනය", "080 - එකතු"],
+    "1": ["120 - ඥාන විභාගය, හේතුඵලවාදය, මානව වර්ගයා", "140 - විශේෂ දාර්ශනික මත", "150 - මනෝ විද්‍යාව", "160 - තර්ක ශාස්ත්‍රය", "170 - ආචාර ධර්ම"],
+    "2": ["230 - ක්‍රිස්තියානි ධර්මය", "290 - වෙනත් ආගම්"],
+    "3": ["320 - දේශපාලන විද්‍යාව", "330 - ආර්ථික විද්‍යාව", "340 - නීතිය", "350 - පරිපාලනය", "360 - සමාජ ප්‍රශ්න, සමාජ සේවා සහ සංවිධාන", "370 - අධ්‍යාපන", "380 - වාණිජ්‍ය විද්‍යා, සන්නිවේදනය හා ප්‍රවාහන සේවා", "390 - සිරිත් විරිත්, ජනශ්‍රැති"],
+    "4": ["420 - ඉංග්‍රීසි භාෂාව", "490 - වෙනත් භාෂා"],
+    "5": ["510 - ගණිතය", "520 - තාරකා විද්‍යාව හා අනුබද්ධ විද්‍යා", "530 - භෞතික විද්‍යාව", "540 - රසායන විද්‍යාව", "550 - භූ විද්‍යාව", "560 - පාෂාණිධාතු විද්‍යාව", "570 - ජෛවීය විද්‍යාව", "580 - ශාක", "590 - සත්ත්වයෝ"],
+    "6": ["610 - වෛද්‍ය විද්‍යා", "620 - ඉංජිනේරු විද්‍යා", "630 - කෘෂිකර්මය හා ඒ ආශ්‍රිත තාක්ෂණය", "640 - ගෘහ විද්‍යාව", "650 - කළමනාකරණ සේවා", "660 - රසායනික ඉංජිනේරු විද්‍යාව", "670 - නිෂ්පාදන", "680 - වෙනත් ශිල්පීය නිෂ්පාදන", "690 - ගොඩනැගිලි"],
+    "7": ["720 - ගෘහ නිර්මාණ ශිල්පය", "730 - ප්‍රතිමා ශිල්පය සහ කැටයම් කලාව", "740 - ඇඳීම සහ සැරසිලි කලාව", "750 - සිතුවම් කලාව", "760 - ග්‍රැෆික් කලාව", "770 - ඡායාරූප ශිල්පය", "780 - සංගීතය", "790 - විනෝදය හා ක්‍රීඩා"],
+    "8": ["820 - ඉංග්‍රීසි සාහිත්‍යය", "890 - වෙනත් භාෂා සාහිත්‍යය", "සිංහල කතා / සාහිත්‍යය"],
+    "9": ["910 - භූගෝල විද්‍යා හා චාරිකා", "920 - චරිතාපදාන, වංශාවලි, නම්", "930 - පැරණි ඉතිහාසය", "940 - යුරෝපා ඉතිහාසය", "950 - ආසියාව"]
   };
   
   const currentMainClassPrefix = mainClass ? mainClass.charAt(0) : "";
@@ -52,7 +53,16 @@ export default function EditBookForm({ book }: { book: any }) {
 
   const subdivision2Map: Record<string, string[]> = {
     "290": ["294.3 - බුද්ධාගම", "294.5 - හින්දු ආගම"],
-    "490": ["491.48 - සිංහල", "494.811 - දෙමළ", "495.1 - චීන", "495.6 - ජපන්", "495.7 - කොරියන්"]
+    "490": ["495.1 - චීන", "495.6 - ජපන්", "495.7 - කොරියන්"],
+    "890": ["891.48 - සිංහල", "894.811 - දෙමළ"]
+  };
+
+  const subdivision3Map: Record<string, string[]> = {
+    "891.48": ["891.481 - පද්‍ය", "891.482 - නාට්‍ය", "891.483 - ප්‍රබන්ධ", "891.484 - රචනා", "891.485 - කථා", "891.486 - ලිපි", "891.487 - හාස්‍ය හා උපහාසය"]
+  };
+
+  const subdivision4Map: Record<string, string[]> = {
+    "891.483": ["891.48301 - කෙටිකතා", "891.483081 - ඓතිහාසික ප්‍රබන්ධ", "891.483083 - මනෝවිද්‍යාත්මක, යථාර්ථවාදී, සමාජ විද්‍යාත්මක ප්‍රබන්ධ", "891.483085 - ප්‍රේම කතා", "891.483087 - වික්‍රමාන්විත ප්‍රබන්ධ", "891.4830872 - රහස් පරීක්ෂක, අද්භූත ප්‍රබන්ධ", "891.48308729 - ගොතික් ප්‍රබන්ධ", "891.48308733 - අවතාර ප්‍රබන්ධ", "891.48308738 - ත්‍රාසජනක ප්‍රබන්ධ", "891.48308762 - විද්‍යා ප්‍රබන්ධ", "891.48308766 - ෆැන්ටසි ප්‍රබන්ධ"]
   };
 
   const currentSub1Prefix = subdivision1 ? subdivision1.substring(0, 3) : "";
@@ -61,6 +71,22 @@ export default function EditBookForm({ book }: { book: any }) {
   const subdivision2Options = [...availableSubdivisions2];
   if (subdivision2 && !subdivision2Options.includes(subdivision2)) {
     subdivision2Options.unshift(subdivision2);
+  }
+
+  const currentSub2Prefix = subdivision2 ? subdivision2.split(" ")[0] : "";
+  const availableSubdivisions3 = currentSub2Prefix ? (subdivision3Map[currentSub2Prefix] || []) : [];
+  
+  const subdivision3Options = [...availableSubdivisions3];
+  if (subdivision3 && !subdivision3Options.includes(subdivision3)) {
+    subdivision3Options.unshift(subdivision3);
+  }
+
+  const currentSub3Prefix = subdivision3 ? subdivision3.split(" ")[0] : "";
+  const availableSubdivisions4 = currentSub3Prefix ? (subdivision4Map[currentSub3Prefix] || []) : [];
+  
+  const subdivision4Options = [...availableSubdivisions4];
+  if (subdivision4 && !subdivision4Options.includes(subdivision4)) {
+    subdivision4Options.unshift(subdivision4);
   }
 
   const deriveMainClass = (ddcStr: string) => {
@@ -531,16 +557,16 @@ export default function EditBookForm({ book }: { book: any }) {
               className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition font-medium text-slate-800"
             >
               <option value="">-- Call Number එක තෝරන්න (Select Call Number) --</option>
-              <option value="000 - පරිගණක විද්යාව, තොරතුරු හා සාමාන්ය කෘති">000 - පරිගණක විද්යාව, තොරතුරු හා සාමාන්ය කෘති</option>
+              <option value="000 - පරිගණක විද්‍යාව, තොරතුරු හා සාමාන්‍ය කෘති">000 - පරිගණක විද්‍යාව, තොරතුරු හා සාමාන්‍ය කෘති</option>
               <option value="100 - දර්ශනය">100 - දර්ශනය</option>
               <option value="200 - ආගම්">200 - ආගම්</option>
-              <option value="300 - සමාජ ශාස්ත්ර">300 - සමාජ ශාස්ත්ර</option>
+              <option value="300 - සමාජ ශාස්ත්‍ර">300 - සමාජ ශාස්ත්‍ර</option>
               <option value="400 - භාෂාව">400 - භාෂාව</option>
-              <option value="500 - ස්වභාවික විද්යා සහ ගණිතය">500 - ස්වභාවික විද්යා සහ ගණිතය</option>
-              <option value="600 - තාක්ෂණ විද්යා">600 - තාක්ෂණ විද්යා</option>
+              <option value="500 - ස්වභාවික විද්‍යා සහ ගණිතය">500 - ස්වභාවික විද්‍යා සහ ගණිතය</option>
+              <option value="600 - තාක්ෂණ විද්‍යා">600 - තාක්ෂණ විද්‍යා</option>
               <option value="700 - කලා ශිල්ප">700 - කලා ශිල්ප</option>
-              <option value="800 - සාහිත්ය">800 - සාහිත්ය</option>
-              <option value="900 - ඉතිහාසය සහ භූගෝල විද්යාව">900 - ඉතිහාසය සහ භූගෝල විද්යාව</option>
+              <option value="800 - සාහිත්‍ය">800 - සාහිත්‍ය</option>
+              <option value="900 - ඉතිහාසය සහ භූගෝල විද්‍යාව">900 - ඉතිහාසය සහ භූගෝල විද්‍යාව</option>
             </select>
           </div>
 
@@ -579,15 +605,34 @@ export default function EditBookForm({ book }: { book: any }) {
 
             <div className="space-y-2">
               <label htmlFor="subdivision3" className="block text-sm font-medium text-slate-700">Subdivision 3 (අනු කොටස 3)</label>
-              <input 
-                type="text" 
+              <select 
                 id="subdivision3" 
                 name="subdivision3" 
                 value={subdivision3}
                 onChange={(e) => setSubdivision3(e.target.value)}
-                placeholder="Subdivision 3 enter..."
-                className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition text-sm"
-              />
+                className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition text-sm font-medium text-slate-800"
+              >
+                <option value="">-- අනු කොටස තෝරන්න --</option>
+                {subdivision3Options.map((opt, idx) => (
+                  <option key={idx} value={opt}>{opt}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="space-y-2">
+              <label htmlFor="subdivision4" className="block text-sm font-medium text-slate-700">Subdivision 4 (අනු කොටස 4)</label>
+              <select 
+                id="subdivision4" 
+                name="subdivision4" 
+                value={subdivision4}
+                onChange={(e) => setSubdivision4(e.target.value)}
+                className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition text-sm font-medium text-slate-800"
+              >
+                <option value="">-- අනු කොටස තෝරන්න --</option>
+                {subdivision4Options.map((opt, idx) => (
+                  <option key={idx} value={opt}>{opt}</option>
+                ))}
+              </select>
             </div>
           </div>
         </div>

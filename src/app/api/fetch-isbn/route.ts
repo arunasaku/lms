@@ -7,16 +7,16 @@ export function getMainClassFromDdc(ddcStr: string): string {
   const match = ddcStr.match(/\d{3}/);
   if (!match) return "";
   const num = parseInt(match[0], 10);
-  if (num >= 0 && num < 100) return "000 - පරිගණක විද්යාව, තොරතුරු හා සාමාන්ය කෘති";
+  if (num >= 0 && num < 100) return "000 - පරිගණක විද්‍යාව, තොරතුරු හා සාමාන්‍ය කෘති";
   if (num >= 100 && num < 200) return "100 - දර්ශනය";
   if (num >= 200 && num < 300) return "200 - ආගම්";
-  if (num >= 300 && num < 400) return "300 - සමාජ ශාස්ත්ර";
+  if (num >= 300 && num < 400) return "300 - සමාජ ශාස්ත්‍ර";
   if (num >= 400 && num < 500) return "400 - භාෂාව";
-  if (num >= 500 && num < 600) return "500 - ස්වභාවික විද්යා සහ ගණිතය";
-  if (num >= 600 && num < 700) return "600 - තාක්ෂණ විද්යා";
+  if (num >= 500 && num < 600) return "500 - ස්වභාවික විද්‍යා සහ ගණිතය";
+  if (num >= 600 && num < 700) return "600 - තාක්ෂණ විද්‍යා";
   if (num >= 700 && num < 800) return "700 - කලා ශිල්ප";
-  if (num >= 800 && num < 900) return "800 - සාහිත්ය";
-  if (num >= 900 && num < 1000) return "900 - ඉතිහාසය සහ භූගෝල විද්යාව";
+  if (num >= 800 && num < 900) return "800 - සාහිත්‍ය";
+  if (num >= 900 && num < 1000) return "900 - ඉතිහාසය සහ භූගෝල විද්‍යාව";
   return "";
 }
 

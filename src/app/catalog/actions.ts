@@ -23,6 +23,7 @@ export async function createBook(formData: FormData) {
   const subdivision1 = formData.get("subdivision1") as string | null;
   const subdivision2 = formData.get("subdivision2") as string | null;
   const subdivision3 = formData.get("subdivision3") as string | null;
+  const subdivision4 = formData.get("subdivision4") as string | null;
   const pages = formData.get("pages") as string | null;
   const height = formData.get("height") as string | null;
   const acquisitionType = formData.get("acquisitionType") as string | null;
@@ -61,6 +62,7 @@ export async function createBook(formData: FormData) {
       subdivision1: subdivision1 || null,
       subdivision2: subdivision2 || null,
       subdivision3: subdivision3 || null,
+      subdivision4: subdivision4 || null,
       pages: pages || null,
       height: height || null,
       acquisitionType: acquisitionType || "PURCHASED",
@@ -96,6 +98,7 @@ export async function updateBook(formData: FormData) {
   const subdivision1 = formData.get("subdivision1") as string | null;
   const subdivision2 = formData.get("subdivision2") as string | null;
   const subdivision3 = formData.get("subdivision3") as string | null;
+  const subdivision4 = formData.get("subdivision4") as string | null;
   const pages = formData.get("pages") as string | null;
   const height = formData.get("height") as string | null;
   const acquisitionType = formData.get("acquisitionType") as string | null;
@@ -133,6 +136,7 @@ export async function updateBook(formData: FormData) {
       subdivision1: subdivision1 || null,
       subdivision2: subdivision2 || null,
       subdivision3: subdivision3 || null,
+      subdivision4: subdivision4 || null,
       pages: pages || null,
       height: height || null,
       acquisitionType: acquisitionType || "PURCHASED",

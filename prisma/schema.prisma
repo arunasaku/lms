@@ -86,6 +86,7 @@ model Book {
   subdivision1  String?
   subdivision2  String?
   subdivision3  String?
+  subdivision4  String?
   pages         String?
   height        String?
   acquisitionType String? @default("PURCHASED") // PURCHASED, GIFT, DONATION
