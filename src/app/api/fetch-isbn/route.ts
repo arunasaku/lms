@@ -100,6 +100,37 @@ async function fetchFromUnionCatalogue(isbnOrQuery: string) {
   return null;
 }
 
+async function fetchFromIsbnLk(isbnOrQuery: string) {
+  try {
+    const cleanIsbn = isbnOrQuery.replace(/[- ]/g, '').trim();
+    const searchUrl = `https://isbn.lk/resources/search?isbn=${encodeURIComponent(cleanIsbn)}`;
+    const res = await fetch(searchUrl, { headers: { 'User-Agent': 'Mozilla/5.0' }, signal: AbortSignal.timeout(4000) });
+    if (!res.ok) return null;
+    const html = await res.text();
+
+    const titleMatch = html.match(/class="title[^"]*">([^<]+)/i) || html.match(/<h[1-4][^>]*>([^<]+)<\/h[1-4]>/i);
+    const authorMatch = html.match(/class="author[^"]*">([^<]+)/i) || html.match(/Author:\s*([^<]+)/i);
+    const publisherMatch = html.match(/class="publisher[^"]*">([^<]+)/i) || html.match(/Publisher:\s*([^<]+)/i);
+
+    if (titleMatch && titleMatch[1].trim()) {
+      return {
+        title: titleMatch[1].trim(),
+        author: authorMatch ? authorMatch[1].trim() : "",
+        publisher: publisherMatch ? publisherMatch[1].trim() : "",
+        year: "",
+        ddc: "800",
+        mainClass: "800 - සාහිත්ය",
+        subdivision1: "සිංහල කතා / සාහිත්‍යය",
+        isbn: cleanIsbn,
+        source: "National ISBN Centre (isbn.lk)"
+      };
+    }
+  } catch (e) {
+    console.log("isbn.lk fetch error:", e);
+  }
+  return null;
+}
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const isbn = searchParams.get("isbn");
@@ -149,6 +180,12 @@ export async function GET(request: Request) {
     const unionCatData = await fetchFromUnionCatalogue(isbn);
     if (unionCatData) {
       return NextResponse.json(unionCatData);
+    }
+
+    // 1.5. Try National ISBN Centre (isbn.lk)
+    const isbnLkData = await fetchFromIsbnLk(isbn);
+    if (isbnLkData) {
+      return NextResponse.json(isbnLkData);
     }
 
     // Determine if the input is an ISBN or a Book Name
