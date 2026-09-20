@@ -51,6 +51,19 @@ export default function NewBookForm() {
     subdivisionOptions.unshift(subdivision1);
   }
 
+  const subdivision2Map: Record<string, string[]> = {
+    "290": ["294.3 - බුද්ධාගම", "294.5 - හින්දු ආගම"],
+    "490": ["491.48 - සිංහල", "494.811 - දෙමළ", "495.1 - චීන", "495.6 - ජපන්", "495.7 - කොරියන්"]
+  };
+
+  const currentSub1Prefix = subdivision1 ? subdivision1.substring(0, 3) : "";
+  const availableSubdivisions2 = currentSub1Prefix ? (subdivision2Map[currentSub1Prefix] || []) : [];
+
+  const subdivision2Options = [...availableSubdivisions2];
+  if (subdivision2 && !subdivision2Options.includes(subdivision2)) {
+    subdivision2Options.unshift(subdivision2);
+  }
+
   const deriveMainClass = (ddcStr: string) => {
     if (!ddcStr) return "";
     const match = ddcStr.match(/\d{3}/);
@@ -500,15 +513,18 @@ export default function NewBookForm() {
 
             <div className="space-y-2">
               <label htmlFor="subdivision2" className="block text-sm font-medium text-slate-700">Subdivision 2 (අනු කොටස 2)</label>
-              <input 
-                type="text" 
+              <select 
                 id="subdivision2" 
                 name="subdivision2" 
                 value={subdivision2}
                 onChange={(e) => setSubdivision2(e.target.value)}
-                placeholder="Subdivision 2 enter..."
-                className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition text-sm"
-              />
+                className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition text-sm font-medium text-slate-800"
+              >
+                <option value="">-- අනු කොටස තෝරන්න --</option>
+                {subdivision2Options.map((opt, idx) => (
+                  <option key={idx} value={opt}>{opt}</option>
+                ))}
+              </select>
             </div>
 
             <div className="space-y-2">
