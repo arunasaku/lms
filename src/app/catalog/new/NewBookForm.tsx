@@ -54,25 +54,23 @@ export default function NewBookForm() {
       const res = await fetch(`/api/fetch-isbn?isbn=${encodeURIComponent(isbnSearch)}`);
       if (res.ok) {
         const data = await res.json();
-        if (data.title) setTitle(data.title);
-        if (data.author) setAuthor(data.author);
-        if (data.publisher) setPublisher(data.publisher);
-        if (data.pubPlace) setPubPlace(data.pubPlace);
-        if (data.year) setYear(data.year);
-        if (data.ddc) {
-          setDdc(data.ddc);
-          const derived = deriveMainClass(data.ddc);
-          if (derived) setMainClass(derived);
-        }
-        if (data.mainClass) setMainClass(data.mainClass);
-        if (data.subdivision1) setSubdivision1(data.subdivision1);
-        if (data.subdivision2) setSubdivision2(data.subdivision2);
-        if (data.subdivision3) setSubdivision3(data.subdivision3);
-        if (data.price) setPrice(data.price);
-        if (data.pages) setPages(data.pages);
-        if (data.height) setHeight(data.height);
-        if (data.isbn) setIsbn(data.isbn);
-        else if (!/[a-zA-Z]{3,}/.test(isbnSearch)) setIsbn(isbnSearch);
+        setTitle(data.title || "");
+        setAuthor(data.author || "");
+        setPublisher(data.publisher || "");
+        setPubPlace(data.pubPlace || "");
+        setYear(data.year || "");
+        setDdc(data.ddc || "");
+        
+        const derived = data.ddc ? deriveMainClass(data.ddc) : "";
+        setMainClass(data.mainClass || derived || "");
+        
+        setSubdivision1(data.subdivision1 || "");
+        setSubdivision2(data.subdivision2 || "");
+        setSubdivision3(data.subdivision3 || "");
+        setPrice(data.price || "");
+        setPages(data.pages || "");
+        setHeight(data.height || "");
+        setIsbn(data.isbn || isbnSearch);
         
         // Auto suggest DDC if not provided by source
         if (data.title && !data.ddc) {
