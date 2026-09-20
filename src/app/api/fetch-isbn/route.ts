@@ -176,13 +176,58 @@ export async function GET(request: Request) {
       console.error("Local DB check error:", dbErr);
     }
 
-    // 1. Try National Virtual Union Catalogue of Sri Lanka
+    // 1. Try Gemini AI First if API key is present
+    try {
+      const apiKey = process.env.GEMINI_API_KEY;
+      if (apiKey) {
+        const genAI = new GoogleGenerativeAI(apiKey);
+        const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+        const prompt = `Provide precise book catalog details for the book with ISBN or Title "${isbn}". If it is a Sri Lankan / Sinhala book, provide its Sinhala details.
+Respond ONLY in this exact JSON format, nothing else:
+{"title": "Book Name", "author": "Author Name", "publisher": "Publisher Name", "pubPlace": "Publication Place", "year": "YYYY", "ddc": "3-digit DDC number e.g. 800", "mainClass": "One of: 000 - පරිගණක විද්යාව, තොරතුරු හා සාමාන්ය කෘති, 100 - දර්ශනය, 200 - ආගම්, 300 - සමාජ ශාස්ත්ර, 400 - භාෂාව, 500 - ස්වභාවික විද්යා සහ ගණිතය, 600 - තාක්ෂණ විද්යා, 700 - කලා ශිල්ප, 800 - සාහිත්ය, 900 - ඉතිහාසය සහ භූගෝල විද්යාව", "subdivision1": "Subdivision 1", "subdivision2": "Subdivision 2", "subdivision3": "Subdivision 3", "pages": "e.g. 150 p.", "height": "e.g. 21 cm"}
+If exact details are unknown, make your best intelligent estimate for Sri Lankan literature/cataloging standards. Ensure title and author are populated if possible.`;
+        
+        const result = await model.generateContent(prompt);
+        const response = await result.response;
+        let text = response.text().trim();
+        
+        const jsonMatch = text.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+          text = jsonMatch[0];
+        }
+        
+        const aiData = JSON.parse(text);
+        
+        if (aiData.title && aiData.title !== "Book Name" && !aiData.error) {
+          let mainClass = aiData.mainClass || getMainClassFromDdc(aiData.ddc || "");
+          return NextResponse.json({
+            title: aiData.title,
+            author: aiData.author || "",
+            publisher: aiData.publisher || "",
+            pubPlace: aiData.pubPlace || "",
+            year: aiData.year || "",
+            ddc: aiData.ddc || "",
+            mainClass: mainClass || "",
+            subdivision1: aiData.subdivision1 || "",
+            subdivision2: aiData.subdivision2 || "",
+            subdivision3: aiData.subdivision3 || "",
+            pages: aiData.pages || "",
+            height: aiData.height || "",
+            source: "Gemini AI"
+          });
+        }
+      }
+    } catch (e) {
+      console.log("AI Search failed:", e);
+    }
+
+    // 2. Try National Virtual Union Catalogue of Sri Lanka
     const unionCatData = await fetchFromUnionCatalogue(isbn);
     if (unionCatData) {
       return NextResponse.json(unionCatData);
     }
 
-    // 1.5. Try National ISBN Centre (isbn.lk)
+    // 2.5. Try National ISBN Centre (isbn.lk)
     const isbnLkData = await fetchFromIsbnLk(isbn);
     if (isbnLkData) {
       return NextResponse.json(isbnLkData);
@@ -258,47 +303,7 @@ export async function GET(request: Request) {
       }
     }
     
-    // 5. Use AI Fallback for both Name and ISBN searches as a last resort
-    try {
-      const apiKey = process.env.GEMINI_API_KEY;
-      if (apiKey) {
-        const genAI = new GoogleGenerativeAI(apiKey);
-        const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
-        const prompt = `Provide details for the book with ISBN or Name "${isbn}". If it is a Sri Lankan / Sinhala book, provide its Sinhala details.
-Respond ONLY in this exact JSON format, nothing else:
-{"title": "Book Name", "author": "Author Name", "publisher": "Publisher Name", "year": "YYYY", "ddc": "3-digit DDC number e.g. 800", "mainClass": "One of: 000 - පරිගණක විද්යාව, තොරතුරු හා සාමාන්ය කෘති, 100 - දර්ශනය, 200 - ආගම්, 300 - සමාජ ශාස්ත්ර, 400 - භාෂාව, 500 - ස්වභාවික විද්යා සහ ගණිතය, 600 - තාක්ෂණ විද්යා, 700 - කලා ශිල්ප, 800 - සාහිත්ය, 900 - ඉතිහාසය සහ භූගෝල විද්යාව", "subdivision1": "Subdivision 1", "subdivision2": "Subdivision 2", "subdivision3": "Subdivision 3"}
-If you don't know the exact year or publisher or subdivisions, leave them blank. Make sure title and author are accurate.`;
-        
-        const result = await model.generateContent(prompt);
-        const response = await result.response;
-        let text = response.text().trim();
-        
-        const jsonMatch = text.match(/\{[\s\S]*\}/);
-        if (jsonMatch) {
-          text = jsonMatch[0];
-        }
-        
-        const aiData = JSON.parse(text);
-        
-        if (aiData.title && !aiData.error) {
-          let mainClass = aiData.mainClass || getMainClassFromDdc(aiData.ddc || "");
-          return NextResponse.json({
-            title: aiData.title,
-            author: aiData.author || "",
-            publisher: aiData.publisher || "",
-            year: aiData.year || "",
-            ddc: aiData.ddc || "",
-            mainClass: mainClass || "",
-            subdivision1: aiData.subdivision1 || "",
-            subdivision2: aiData.subdivision2 || "",
-            subdivision3: aiData.subdivision3 || "",
-            source: "AI Knowledge Base"
-          });
-        }
-      }
-    } catch (e) {
-      console.log("AI Search failed:", e);
-    }
+    
     
     // 6. Graceful Fallback for Sri Lankan / General ISBNs so search NEVER throws an error alert
     if (!isName) {
