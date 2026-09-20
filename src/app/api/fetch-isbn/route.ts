@@ -337,9 +337,8 @@ If you don't know the exact year or publisher or subdivisions, leave them blank.
         subdivision1 = "සිංහල කතා / සාහිත්‍යය";
       }
 
-      const defaultMainClass = cleanIsbn.startsWith("978955") || cleanIsbn.startsWith("955") 
-        ? "800 - සාහිත්ය" 
-        : "000 - පරිගණක විද්යාව, තොරතුරු හා සාමාන්ය කෘති";
+      const isSriLankan = cleanIsbn.startsWith("978955") || cleanIsbn.startsWith("955") || cleanIsbn.startsWith("978624") || cleanIsbn.startsWith("624");
+      const defaultMainClass = isSriLankan ? "800 - සාහිත්ය" : "000 - පරිගණක විද්යාව, තොරතුරු හා සාමාන්ය කෘති";
 
       return NextResponse.json({
         title: "",
@@ -349,11 +348,11 @@ If you don't know the exact year or publisher or subdivisions, leave them blank.
         year: "",
         ddc: "800",
         mainClass: defaultMainClass,
-        subdivision1,
+        subdivision1: subdivision1 || (isSriLankan ? "සිංහල කතා / සාහිත්‍යය" : ""),
         subdivision2: "",
         subdivision3: "",
         isbn: cleanIsbn,
-        source: "Sri Lanka Publisher Registry"
+        source: "Sri Lanka Publisher Registry (624/955)"
       });
     }
 
