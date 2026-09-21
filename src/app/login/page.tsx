@@ -18,9 +18,9 @@ export default function LoginPage() {
   // If already logged in, redirect away from /login to dashboard
   useEffect(() => {
     if (status === "authenticated") {
-      window.location.href = "/";
+      router.replace("/");
     }
-  }, [status]);
+  }, [status, router]);
 
   // Clean up any bad localhost callbackUrl in URL query string
   useEffect(() => {
@@ -45,7 +45,7 @@ export default function LoginPage() {
         setError("Invalid Member ID or Password");
       } else {
         sessionStorage.setItem("admin_tab_active", "true");
-        window.location.href = "/";
+        router.replace("/");
       }
     } catch (err) {
       setError("An unexpected error occurred");
