@@ -376,15 +376,42 @@ export default function EditBookForm({ book }: { book: any }) {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="space-y-2">
             <label htmlFor="pages" className="block text-sm font-medium text-slate-700">Pages / Physical Details</label>
-            <input 
-              type="text" 
-              id="pages" 
-              name="pages" 
-              value={pages}
-              onChange={(e) => setPages(e.target.value)}
-              placeholder="e.g. 138 p."
-              className="w-full px-4 py-2.5 bg-white text-slate-900 font-semibold placeholder:text-slate-400 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition shadow-sm"
-            />
+            <div className="flex gap-2">
+              <input 
+                type="text" 
+                id="pages" 
+                name="pages" 
+                value={pages}
+                onChange={(e) => setPages(e.target.value)}
+                placeholder="e.g. 138 p. : col. ill."
+                className="w-full px-4 py-2.5 bg-white text-slate-900 font-semibold placeholder:text-slate-400 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition shadow-sm"
+              />
+              <select
+                onChange={(e) => {
+                  if (!e.target.value) return;
+                  const val = e.target.value;
+                  if (!pages) {
+                    setPages(val);
+                  } else if (!pages.includes(val)) {
+                    setPages(pages + (pages.includes(":") ? `, ${val}` : ` : ${val}`));
+                  }
+                  e.target.value = "";
+                }}
+                className="px-3 py-2.5 bg-slate-50 text-slate-700 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition text-xs font-medium cursor-pointer shrink-0"
+                title="Quick add physical details (රූප සටහන්/විස්තර එකතු කරන්න)"
+              >
+                <option value="">+ විස්තර (Details)</option>
+                <option value="ill.">ill. (Illustrations)</option>
+                <option value="col. ill.">col. ill. (Coloured Ill.)</option>
+                <option value="pictures">pictures (ඡායාරූප)</option>
+                <option value="col. pic.">col. pic. (වර්ණ ඡායාරූප)</option>
+                <option value="charts">charts (සටහන් / ප්‍රස්ථාර)</option>
+                <option value="maps">maps (සිතියම්)</option>
+                <option value="tables">tables (වගු)</option>
+                <option value="music">music (සංගීත සටහන්)</option>
+                <option value="port.">port. (ආලේඛ්‍ය ඡායාරූප)</option>
+              </select>
+            </div>
           </div>
 
           <div className="space-y-2">
