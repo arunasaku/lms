@@ -297,7 +297,7 @@ export async function GET(request: Request) {
         const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
         const prompt = `Provide precise book catalog details for the book with ISBN or Title "${isbn}". If it is a Sri Lankan / Sinhala book, provide its Sinhala details.
 Respond ONLY in this exact JSON format, nothing else:
-{"title": "Book Name", "author": "Author Name", "publisher": "Publisher Name", "pubPlace": "Publication Place", "year": "YYYY", "ddc": "3-digit DDC number e.g. 800", "mainClass": "One of: 000 - පරිගණක විද්යාව, තොරතුරු හා සාමාන්ය කෘති, 100 - දර්ශනය, 200 - ආගම්, 300 - සමාජ ශාස්ත්ර, 400 - භාෂාව, 500 - ස්වභාවික විද්යා සහ ගණිතය, 600 - තාක්ෂණ විද්යා, 700 - කලා ශිල්ප, 800 - සාහිත්ය, 900 - ඉතිහාසය සහ භූගෝල විද්යාව", "subdivision1": "Subdivision 1", "subdivision2": "Subdivision 2", "subdivision3": "Subdivision 3", "pages": "e.g. 150 p.", "height": "e.g. 21 cm"}
+{"title": "Book Name", "author": "Author Name", "publisher": "Publisher Name", "pubPlace": "Publication Place", "year": "YYYY", "ddc": "3-digit DDC number e.g. 800", "mainClass": "One of: 000 - පරිගණක විද්‍යාව, තොරතුරු හා සාමාන්‍ය කෘති, 100 - දර්ශනය, 200 - ආගම්, 300 - සමාජ ශාස්ත්‍ර, 400 - භාෂාව, 500 - ස්වභාවික විද්‍යා සහ ගණිතය, 600 - තාක්ෂණ විද්‍යා, 700 - කලා ශිල්ප, 800 - සාහිත්‍ය, 900 - ඉතිහාසය සහ භූගෝල විද්‍යාව", "subdivision1": "Subdivision 1", "subdivision2": "Subdivision 2", "subdivision3": "Subdivision 3", "pages": "e.g. 150 p.", "height": "e.g. 21 cm"}
 If exact details are unknown, make your best intelligent estimate for Sri Lankan literature/cataloging standards. Ensure title and author are populated if possible.`;
         
         const result = await model.generateContent(prompt);
