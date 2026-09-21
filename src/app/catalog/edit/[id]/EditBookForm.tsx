@@ -29,6 +29,10 @@ export default function EditBookForm({ book }: { book: any }) {
   const [subdivision4, setSubdivision4] = useState(book.subdivision4 || "");
   const [loading, setLoading] = useState(false);
   const [suggestingDdc, setSuggestingDdc] = useState(false);
+  const [isCustomSub1, setIsCustomSub1] = useState(false);
+  const [isCustomSub2, setIsCustomSub2] = useState(false);
+  const [isCustomSub3, setIsCustomSub3] = useState(false);
+  const [isCustomSub4, setIsCustomSub4] = useState(false);
 
   const subdivisionsMap: Record<string, string[]> = {
     "0": ["020 - පුස්තකාල විද්‍යාව", "060 - සාමාන්‍ය සංවිධාන", "070 - ප්‍රවෘත්ති මාධ්‍ය, පුවත්පත් කලාව, ප්‍රකාශනය", "080 - එකතු"],

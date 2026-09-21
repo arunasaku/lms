@@ -29,6 +29,10 @@ export default function NewBookForm() {
   const [subdivision4, setSubdivision4] = useState("");
   const [loading, setLoading] = useState(false);
   const [suggestingDdc, setSuggestingDdc] = useState(false);
+  const [isCustomSub1, setIsCustomSub1] = useState(false);
+  const [isCustomSub2, setIsCustomSub2] = useState(false);
+  const [isCustomSub3, setIsCustomSub3] = useState(false);
+  const [isCustomSub4, setIsCustomSub4] = useState(false);
 
   const subdivisionsMap: Record<string, string[]> = {
     "0": ["020 - පුස්තකාල විද්‍යාව", "060 - සාමාන්‍ය සංවිධාන", "070 - ප්‍රවෘත්ති මාධ්‍ය, පුවත්පත් කලාව, ප්‍රකාශනය", "080 - එකතු"],
@@ -352,15 +356,42 @@ export default function NewBookForm() {
 
           <div className="space-y-2">
             <label htmlFor="pages" className="block text-sm font-medium text-slate-700">Pages / Physical Details</label>
-            <input 
-              type="text" 
-              id="pages" 
-              name="pages" 
-              value={pages}
-              onChange={(e) => setPages(e.target.value)}
-              placeholder="e.g. 138 p."
-              className="w-full px-4 py-2.5 bg-white text-slate-900 font-semibold placeholder:text-slate-400 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition shadow-sm"
-            />
+            <div className="flex gap-2">
+              <input 
+                type="text" 
+                id="pages" 
+                name="pages" 
+                value={pages}
+                onChange={(e) => setPages(e.target.value)}
+                placeholder="e.g. 138 p. : col. ill."
+                className="w-full px-4 py-2.5 bg-white text-slate-900 font-semibold placeholder:text-slate-400 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition shadow-sm"
+              />
+              <select
+                onChange={(e) => {
+                  if (!e.target.value) return;
+                  const val = e.target.value;
+                  if (!pages) {
+                    setPages(val);
+                  } else if (!pages.includes(val)) {
+                    setPages(pages + (pages.includes(":") ? `, ${val}` : ` : ${val}`));
+                  }
+                  e.target.value = "";
+                }}
+                className="px-3 py-2.5 bg-slate-50 text-slate-700 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition text-xs font-medium cursor-pointer shrink-0"
+                title="Quick add physical details (රූප සටහන්/විස්තර එකතු කරන්න)"
+              >
+                <option value="">+ විස්තර (Details)</option>
+                <option value="ill.">ill. (Illustrations)</option>
+                <option value="col. ill.">col. ill. (Coloured Ill.)</option>
+                <option value="pictures">pictures (ඡායාරූප)</option>
+                <option value="col. pic.">col. pic. (වර්ණ ඡායාරූප)</option>
+                <option value="charts">charts (සටහන් / ප්‍රස්ථාර)</option>
+                <option value="maps">maps (සිතියම්)</option>
+                <option value="tables">tables (වගු)</option>
+                <option value="music">music (සංගීත සටහන්)</option>
+                <option value="port.">port. (ආලේඛ්‍ය ඡායාරූප)</option>
+              </select>
+            </div>
           </div>
 
           <div className="space-y-2">
@@ -521,68 +552,188 @@ export default function NewBookForm() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+            {/* Subdivision 1 */}
             <div className="space-y-2">
-              <label htmlFor="subdivision1" className="block text-sm font-medium text-slate-700">Subdivision 1 (අනු කොටස 1)</label>
-              <select 
-                id="subdivision1" 
-                name="subdivision1" 
-                value={subdivision1}
-                onChange={(e) => setSubdivision1(e.target.value)}
-                className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition text-sm font-medium text-slate-800"
-              >
-                <option value="">-- අනු කොටස තෝරන්න --</option>
-                {subdivisionOptions.map((opt, idx) => (
-                  <option key={idx} value={opt}>{opt}</option>
-                ))}
-              </select>
+              <div className="flex items-center justify-between">
+                <label htmlFor="subdivision1" className="block text-sm font-medium text-slate-700">Subdivision 1 (අනු කොටස 1)</label>
+                <button
+                  type="button"
+                  onClick={() => setIsCustomSub1(!isCustomSub1)}
+                  className="text-xs text-indigo-600 hover:text-indigo-800 font-medium underline transition"
+                >
+                  {isCustomSub1 ? "📋 ලැයිස්තුවෙන්" : "✏️ අතින් ලියන්න"}
+                </button>
+              </div>
+              {isCustomSub1 ? (
+                <input
+                  type="text"
+                  id="subdivision1"
+                  name="subdivision1"
+                  value={subdivision1}
+                  onChange={(e) => setSubdivision1(e.target.value)}
+                  placeholder="අනු කොටස 1 අතින් ඇතුළත් කරන්න..."
+                  className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition text-sm font-medium text-slate-800"
+                />
+              ) : (
+                <select 
+                  id="subdivision1" 
+                  name="subdivision1" 
+                  value={subdivision1}
+                  onChange={(e) => {
+                    if (e.target.value === "__CUSTOM__") {
+                      setIsCustomSub1(true);
+                      setSubdivision1("");
+                    } else {
+                      setSubdivision1(e.target.value);
+                    }
+                  }}
+                  className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition text-sm font-medium text-slate-800"
+                >
+                  <option value="">-- අනු කොටස තෝරන්න --</option>
+                  {subdivisionOptions.map((opt, idx) => (
+                    <option key={idx} value={opt}>{opt}</option>
+                  ))}
+                  <option value="__CUSTOM__">-- ✏️ වෙනත් (අතින් ඇතුළත් කරන්න) --</option>
+                </select>
+              )}
             </div>
 
+            {/* Subdivision 2 */}
             <div className="space-y-2">
-              <label htmlFor="subdivision2" className="block text-sm font-medium text-slate-700">Subdivision 2 (අනු කොටස 2)</label>
-              <select 
-                id="subdivision2" 
-                name="subdivision2" 
-                value={subdivision2}
-                onChange={(e) => setSubdivision2(e.target.value)}
-                className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition text-sm font-medium text-slate-800"
-              >
-                <option value="">-- අනු කොටස තෝරන්න --</option>
-                {subdivision2Options.map((opt, idx) => (
-                  <option key={idx} value={opt}>{opt}</option>
-                ))}
-              </select>
+              <div className="flex items-center justify-between">
+                <label htmlFor="subdivision2" className="block text-sm font-medium text-slate-700">Subdivision 2 (අනු කොටස 2)</label>
+                <button
+                  type="button"
+                  onClick={() => setIsCustomSub2(!isCustomSub2)}
+                  className="text-xs text-indigo-600 hover:text-indigo-800 font-medium underline transition"
+                >
+                  {isCustomSub2 ? "📋 ලැයිස්තුවෙන්" : "✏️ අතින් ලියන්න"}
+                </button>
+              </div>
+              {isCustomSub2 ? (
+                <input
+                  type="text"
+                  id="subdivision2"
+                  name="subdivision2"
+                  value={subdivision2}
+                  onChange={(e) => setSubdivision2(e.target.value)}
+                  placeholder="අනු කොටස 2 අතින් ඇතුළත් කරන්න..."
+                  className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition text-sm font-medium text-slate-800"
+                />
+              ) : (
+                <select 
+                  id="subdivision2" 
+                  name="subdivision2" 
+                  value={subdivision2}
+                  onChange={(e) => {
+                    if (e.target.value === "__CUSTOM__") {
+                      setIsCustomSub2(true);
+                      setSubdivision2("");
+                    } else {
+                      setSubdivision2(e.target.value);
+                    }
+                  }}
+                  className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition text-sm font-medium text-slate-800"
+                >
+                  <option value="">-- අනු කොටස තෝරන්න --</option>
+                  {subdivision2Options.map((opt, idx) => (
+                    <option key={idx} value={opt}>{opt}</option>
+                  ))}
+                  <option value="__CUSTOM__">-- ✏️ වෙනත් (අතින් ඇතුළත් කරන්න) --</option>
+                </select>
+              )}
             </div>
 
+            {/* Subdivision 3 */}
             <div className="space-y-2">
-              <label htmlFor="subdivision3" className="block text-sm font-medium text-slate-700">Subdivision 3 (අනු කොටස 3)</label>
-              <select 
-                id="subdivision3" 
-                name="subdivision3" 
-                value={subdivision3}
-                onChange={(e) => setSubdivision3(e.target.value)}
-                className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition text-sm font-medium text-slate-800"
-              >
-                <option value="">-- අනු කොටස තෝරන්න --</option>
-                {subdivision3Options.map((opt, idx) => (
-                  <option key={idx} value={opt}>{opt}</option>
-                ))}
-              </select>
+              <div className="flex items-center justify-between">
+                <label htmlFor="subdivision3" className="block text-sm font-medium text-slate-700">Subdivision 3 (අනු කොටස 3)</label>
+                <button
+                  type="button"
+                  onClick={() => setIsCustomSub3(!isCustomSub3)}
+                  className="text-xs text-indigo-600 hover:text-indigo-800 font-medium underline transition"
+                >
+                  {isCustomSub3 ? "📋 ලැයිස්තුවෙන්" : "✏️ අතින් ලියන්න"}
+                </button>
+              </div>
+              {isCustomSub3 ? (
+                <input
+                  type="text"
+                  id="subdivision3"
+                  name="subdivision3"
+                  value={subdivision3}
+                  onChange={(e) => setSubdivision3(e.target.value)}
+                  placeholder="අනු කොටස 3 අතින් ඇතුළත් කරන්න..."
+                  className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition text-sm font-medium text-slate-800"
+                />
+              ) : (
+                <select 
+                  id="subdivision3" 
+                  name="subdivision3" 
+                  value={subdivision3}
+                  onChange={(e) => {
+                    if (e.target.value === "__CUSTOM__") {
+                      setIsCustomSub3(true);
+                      setSubdivision3("");
+                    } else {
+                      setSubdivision3(e.target.value);
+                    }
+                  }}
+                  className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition text-sm font-medium text-slate-800"
+                >
+                  <option value="">-- අනු කොටස තෝරන්න --</option>
+                  {subdivision3Options.map((opt, idx) => (
+                    <option key={idx} value={opt}>{opt}</option>
+                  ))}
+                  <option value="__CUSTOM__">-- ✏️ වෙනත් (අතින් ඇතුළත් කරන්න) --</option>
+                </select>
+              )}
             </div>
 
+            {/* Subdivision 4 */}
             <div className="space-y-2">
-              <label htmlFor="subdivision4" className="block text-sm font-medium text-slate-700">Subdivision 4 (අනු කොටස 4)</label>
-              <select 
-                id="subdivision4" 
-                name="subdivision4" 
-                value={subdivision4}
-                onChange={(e) => setSubdivision4(e.target.value)}
-                className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition text-sm font-medium text-slate-800"
-              >
-                <option value="">-- අනු කොටස තෝරන්න --</option>
-                {subdivision4Options.map((opt, idx) => (
-                  <option key={idx} value={opt}>{opt}</option>
-                ))}
-              </select>
+              <div className="flex items-center justify-between">
+                <label htmlFor="subdivision4" className="block text-sm font-medium text-slate-700">Subdivision 4 (අනු කොටස 4)</label>
+                <button
+                  type="button"
+                  onClick={() => setIsCustomSub4(!isCustomSub4)}
+                  className="text-xs text-indigo-600 hover:text-indigo-800 font-medium underline transition"
+                >
+                  {isCustomSub4 ? "📋 ලැයිස්තුවෙන්" : "✏️ අතින් ලියන්න"}
+                </button>
+              </div>
+              {isCustomSub4 ? (
+                <input
+                  type="text"
+                  id="subdivision4"
+                  name="subdivision4"
+                  value={subdivision4}
+                  onChange={(e) => setSubdivision4(e.target.value)}
+                  placeholder="අනු කොටස 4 අතින් ඇතුළත් කරන්න..."
+                  className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition text-sm font-medium text-slate-800"
+                />
+              ) : (
+                <select 
+                  id="subdivision4" 
+                  name="subdivision4" 
+                  value={subdivision4}
+                  onChange={(e) => {
+                    if (e.target.value === "__CUSTOM__") {
+                      setIsCustomSub4(true);
+                      setSubdivision4("");
+                    } else {
+                      setSubdivision4(e.target.value);
+                    }
+                  }}
+                  className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition text-sm font-medium text-slate-800"
+                >
+                  <option value="">-- අනු කොටස තෝරන්න --</option>
+                  {subdivision4Options.map((opt, idx) => (
+                    <option key={idx} value={opt}>{opt}</option>
+                  ))}
+                  <option value="__CUSTOM__">-- ✏️ වෙනත් (අතින් ඇතුළත් කරන්න) --</option>
+                </select>
+              )}
             </div>
           </div>
         </div>
