@@ -1,12 +1,14 @@
 "use client";
 
 import { signOut } from "next-auth/react";
+import { forceLogout } from "@/app/actions/auth";
 
 export function LogoutButton() {
   return (
     <button 
       onClick={async () => {
         sessionStorage.clear();
+        await forceLogout();
         await signOut({ redirect: false });
         window.location.href = "/login";
       }} 

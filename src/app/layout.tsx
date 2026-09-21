@@ -49,7 +49,7 @@ export default async function RootLayout({
       <body
         className={`${inter.className} antialiased bg-slate-50 text-slate-900 flex flex-col md:flex-row h-screen overflow-hidden`}
       >
-        <Providers>
+        <Providers session={session}>
           {session ? (
             <>
               <Navigation session={session} libraryName={libraryName} instituteName={instituteName} headerFontSize={headerFontSize}>
