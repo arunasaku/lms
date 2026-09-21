@@ -18,11 +18,14 @@ export default function NewBookForm() {
   const [year, setYear] = useState("");
   const [ddc, setDdc] = useState("");
   const [price, setPrice] = useState("");
-  const [pages, setPages] = useState("");
+  const [pageCount, setPageCount] = useState("");
+  const [physicalDetails, setPhysicalDetails] = useState("");
   const [height, setHeight] = useState("");
   const [category, setCategory] = useState("");
   const [acquisitionType, setAcquisitionType] = useState("PURCHASED");
   const [mainClass, setMainClass] = useState("");
+
+  const pages = pageCount ? (physicalDetails ? `${pageCount} : ${physicalDetails}` : pageCount) : physicalDetails;
   const [subdivision1, setSubdivision1] = useState("");
   const [subdivision2, setSubdivision2] = useState("");
   const [subdivision3, setSubdivision3] = useState("");
@@ -133,7 +136,19 @@ export default function NewBookForm() {
         setSubdivision2(data.subdivision2 || "");
         setSubdivision3(data.subdivision3 || "");
         setPrice(data.price || "");
-        setPages(data.pages || "");
+        if (data.pages) {
+          if (data.pages.includes(":")) {
+            const parts = data.pages.split(":");
+            setPageCount(parts[0].trim());
+            setPhysicalDetails(parts.slice(1).join(":").trim());
+          } else {
+            setPageCount(data.pages);
+            setPhysicalDetails("");
+          }
+        } else {
+          setPageCount("");
+          setPhysicalDetails("");
+        }
         setHeight(data.height || "");
         setIsbn(data.isbn || isbnSearch);
         
@@ -223,8 +238,8 @@ export default function NewBookForm() {
               onChange={(e) => setAcquisitionType(e.target.value)}
               className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition font-medium text-slate-800"
             >
-              <option value="PURCHASED">🛒 මිලදී ගත් පොතක් (Purchased)</option>
-              <option value="GIFT">🎁 තෑගි / පරිත්‍යාගයක් (Gift / Donation)</option>
+              <option value="PURCHASED">Purchased</option>
+              <option value="GIFT">Gift / Donation</option>
             </select>
           </div>
         </div>
@@ -341,7 +356,7 @@ export default function NewBookForm() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="space-y-2 md:col-span-1">
+          <div className="space-y-2">
             <label htmlFor="isbn" className="block text-sm font-medium text-slate-700">ISBN Number</label>
             <input 
               type="text" 
@@ -354,17 +369,29 @@ export default function NewBookForm() {
             />
           </div>
 
-          <div className="space-y-2 md:col-span-2">
+          <div className="space-y-2">
+            <label htmlFor="pageCount" className="block text-sm font-medium text-slate-700">Pages</label>
+            <input 
+              type="text" 
+              id="pageCount" 
+              value={pageCount}
+              onChange={(e) => setPageCount(e.target.value)}
+              placeholder="e.g. 138 p."
+              className="w-full px-4 py-2.5 bg-white text-slate-900 font-semibold placeholder:text-slate-400 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition shadow-sm"
+            />
+          </div>
+
+          <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <label htmlFor="pages" className="block text-sm font-medium text-slate-700">Pages / Physical Details</label>
+              <label htmlFor="physicalDetails" className="block text-sm font-medium text-slate-700">Physical Details</label>
               <select
                 onChange={(e) => {
                   if (!e.target.value) return;
                   const val = e.target.value;
-                  if (!pages) {
-                    setPages(val);
-                  } else if (!pages.includes(val)) {
-                    setPages(pages + (pages.includes(":") ? `, ${val}` : ` : ${val}`));
+                  if (!physicalDetails) {
+                    setPhysicalDetails(val);
+                  } else if (!physicalDetails.includes(val)) {
+                    setPhysicalDetails(physicalDetails + `, ${val}`);
                   }
                   e.target.value = "";
                 }}
@@ -385,14 +412,14 @@ export default function NewBookForm() {
             </div>
             <input 
               type="text" 
-              id="pages" 
-              name="pages" 
-              value={pages}
-              onChange={(e) => setPages(e.target.value)}
-              placeholder="e.g. 138 p. : col. ill."
+              id="physicalDetails" 
+              value={physicalDetails}
+              onChange={(e) => setPhysicalDetails(e.target.value)}
+              placeholder="e.g. ill., col. maps"
               className="w-full px-4 py-2.5 bg-white text-slate-900 font-semibold placeholder:text-slate-400 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition shadow-sm"
             />
           </div>
+          <input type="hidden" name="pages" value={pages} />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -514,11 +541,11 @@ export default function NewBookForm() {
         <div className="border border-indigo-100 bg-indigo-50/40 p-5 rounded-xl space-y-4">
           <h3 className="text-base font-semibold text-indigo-950 flex items-center gap-2 border-b border-indigo-100 pb-2">
             <span className="bg-indigo-600 text-white text-xs px-2 py-0.5 rounded font-medium">Collection</span>
-            එකතුව / ඛණ්ඩ වර්ගීකරණය (Classification)
+            Classification
           </h3>
 
           <div className="space-y-2">
-            <label htmlFor="mainClass" className="block text-sm font-medium text-slate-700">Call Number (ප්‍රධාන පන්තිය) *</label>
+            <label htmlFor="mainClass" className="block text-sm font-medium text-slate-700">Call Number *</label>
             <select 
               id="mainClass" 
               name="mainClass" 
@@ -526,17 +553,17 @@ export default function NewBookForm() {
               onChange={(e) => setMainClass(e.target.value)}
               className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition font-medium text-slate-800"
             >
-              <option value="">-- Call Number එක තෝරන්න (Select Call Number) --</option>
-              <option value="000 - පරිගණක විද්‍යාව, තොරතුරු හා සාමාන්‍ය කෘති">000 - පරිගණක විද්‍යාව, තොරතුරු හා සාමාන්‍ය කෘති</option>
-              <option value="100 - දර්ශනය">100 - දර්ශනය</option>
-              <option value="200 - ආගම්">200 - ආගම්</option>
-              <option value="300 - සමාජ ශාස්ත්‍ර">300 - සමාජ ශාස්ත්‍ර</option>
-              <option value="400 - භාෂාව">400 - භාෂාව</option>
-              <option value="500 - ස්වභාවික විද්‍යා සහ ගණිතය">500 - ස්වභාවික විද්‍යා සහ ගණිතය</option>
-              <option value="600 - තාක්ෂණ විද්‍යා">600 - තාක්ෂණ විද්‍යා</option>
-              <option value="700 - කලා ශිල්ප">700 - කලා ශිල්ප</option>
-              <option value="800 - සාහිත්‍ය">800 - සාහිත්‍ය</option>
-              <option value="900 - ඉතිහාසය සහ භූගෝල විද්‍යාව">900 - ඉතිහාසය සහ භූගෝල විද්‍යාව</option>
+              <option value="">-- Select Call Number --</option>
+              <option value="000 - Computer Science, Information & General Works">000 - Computer Science, Information & General Works</option>
+              <option value="100 - Philosophy">100 - Philosophy</option>
+              <option value="200 - Religion">200 - Religion</option>
+              <option value="300 - Social Sciences">300 - Social Sciences</option>
+              <option value="400 - Language">400 - Language</option>
+              <option value="500 - Natural Sciences & Mathematics">500 - Natural Sciences & Mathematics</option>
+              <option value="600 - Technology">600 - Technology</option>
+              <option value="700 - Arts & Recreation">700 - Arts & Recreation</option>
+              <option value="800 - Literature">800 - Literature</option>
+              <option value="900 - History & Geography">900 - History & Geography</option>
             </select>
           </div>
 
