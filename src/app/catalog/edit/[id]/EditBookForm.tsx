@@ -374,18 +374,9 @@ export default function EditBookForm({ book }: { book: any }) {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="space-y-2">
-            <label htmlFor="pages" className="block text-sm font-medium text-slate-700">Pages / Physical Details</label>
-            <div className="flex gap-2">
-              <input 
-                type="text" 
-                id="pages" 
-                name="pages" 
-                value={pages}
-                onChange={(e) => setPages(e.target.value)}
-                placeholder="e.g. 138 p. : col. ill."
-                className="w-full px-4 py-2.5 bg-white text-slate-900 font-semibold placeholder:text-slate-400 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition shadow-sm"
-              />
+          <div className="space-y-2 md:col-span-2">
+            <div className="flex items-center justify-between">
+              <label htmlFor="pages" className="block text-sm font-medium text-slate-700">Pages / Physical Details</label>
               <select
                 onChange={(e) => {
                   if (!e.target.value) return;
@@ -397,7 +388,7 @@ export default function EditBookForm({ book }: { book: any }) {
                   }
                   e.target.value = "";
                 }}
-                className="px-3 py-2.5 bg-slate-50 text-slate-700 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition text-xs font-medium cursor-pointer shrink-0"
+                className="px-2.5 py-1 bg-slate-50 text-slate-700 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 transition text-xs font-medium cursor-pointer"
                 title="Quick add physical details"
               >
                 <option value="">+ Details</option>
@@ -412,9 +403,18 @@ export default function EditBookForm({ book }: { book: any }) {
                 <option value="port.">port. (Portraits)</option>
               </select>
             </div>
+            <input 
+              type="text" 
+              id="pages" 
+              name="pages" 
+              value={pages}
+              onChange={(e) => setPages(e.target.value)}
+              placeholder="e.g. 138 p. : col. ill."
+              className="w-full px-4 py-2.5 bg-white text-slate-900 font-semibold placeholder:text-slate-400 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition shadow-sm"
+            />
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-2 md:col-span-1">
             <label htmlFor="height" className="block text-sm font-medium text-slate-700">Book Height / Size</label>
             <input 
               type="text" 
@@ -423,20 +423,6 @@ export default function EditBookForm({ book }: { book: any }) {
               value={height}
               onChange={(e) => setHeight(e.target.value)}
               placeholder="e.g. 18 cm"
-              className="w-full px-4 py-2.5 bg-white text-slate-900 font-semibold placeholder:text-slate-400 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition shadow-sm"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <label htmlFor="price" className="block text-sm font-medium text-slate-700">Price (Rs.)</label>
-            <input 
-              type="number" 
-              id="price" 
-              name="price" 
-              step="0.01"
-              value={price}
-              onChange={(e) => setPrice(e.target.value)}
-              placeholder="0.00"
               className="w-full px-4 py-2.5 bg-white text-slate-900 font-semibold placeholder:text-slate-400 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition shadow-sm"
             />
           </div>
