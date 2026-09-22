@@ -26,7 +26,7 @@ export default async function Home() {
 
   const [totalBooks, totalMembers, activeLoans, recentLoans, allLoans, overdueLoans, config] = await Promise.all([
     prisma.book.count(),
-    prisma.user.count(),
+    prisma.user.count({ where: { role: { not: 'ADMIN' } } }),
     prisma.loan.count({ where: { status: 'ACTIVE' } }),
     prisma.loan.findMany({
       take: 5,
