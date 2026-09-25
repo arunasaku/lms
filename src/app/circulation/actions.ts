@@ -5,8 +5,11 @@ import { revalidatePath } from "next/cache";
 
 export async function getMemberName(memberId: string) {
   if (!memberId) return null;
-  const user = await prisma.user.findUnique({ where: { memberId }, select: { name: true } });
-  return user ? user.name : null;
+  const user = await prisma.user.findUnique({ where: { memberId }, select: { name: true, memberType: true } });
+  if (!user) return null;
+  return user.memberType === "SENIOR"
+    ? `${user.name} (Senior Citizen - Max 5 Books)`
+    : user.name;
 }
 
 export async function getBookTitle(accNo: string) {
@@ -40,15 +43,19 @@ export async function issueBook(formData: FormData) {
       return { success: false, error: "සාමාජිකයාට ගෙවීමට ඇති දඩ මුදල් (Unpaid fines) පවතී. දඩ මුදල් ගෙවා අවසන් වනතුරු පොත් ලබාගත නොහැක." };
     }
 
-    // Check 2: Max 2 books per member
+    // Check 2: Max books limit (Senior Citizen = 5, Regular = 2)
     const activeLoansCount = await prisma.loan.count({
       where: {
         userId: user.id,
         status: "ACTIVE"
       }
     });
-    if (activeLoansCount >= 2) {
-      return { success: false, error: "සාමාජිකයා දැනටමත් පොත් 2ක් ලබාගෙන ඇත. උපරිම ලබාගත හැක්කේ පොත් 2ක් පමණි." };
+    const maxAllowed = user.memberType === "SENIOR" ? 5 : 2;
+    if (activeLoansCount >= maxAllowed) {
+      return { 
+        success: false, 
+        error: `සාමාජිකයා දැනටමත් පොත් ${activeLoansCount}ක් ලබාගෙන ඇත. ${user.memberType === 'SENIOR' ? 'ජ්‍යෙෂ්ඨ පුරවැසි සාමාජිකයෙකුට' : 'සාමාන්‍ය සාමාජිකයෙකුට'} ලබාගත හැක්කේ උපරිම පොත් ${maxAllowed}ක් පමණි.` 
+      };
     }
 
     const book = await prisma.book.findUnique({ where: { accNo } });

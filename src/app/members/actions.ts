@@ -40,6 +40,9 @@ export async function createMember(formData: FormData) {
   const guarantorName = formData.get("guarantorName") as string | null;
   const guarantorAddress = formData.get("guarantorAddress") as string | null;
   const guarantorPhone = formData.get("guarantorPhone") as string | null;
+  const depositAmountRaw = formData.get("depositAmount") as string | null;
+  const depositAmount = depositAmountRaw && !isNaN(parseFloat(depositAmountRaw)) ? parseFloat(depositAmountRaw) : null;
+  const depositReceiptNo = formData.get("depositReceiptNo") as string | null;
 
   const permCirculation = formData.get("permCirculation") === "on";
   const permCatalog = formData.get("permCatalog") === "on";
@@ -97,6 +100,8 @@ export async function createMember(formData: FormData) {
       guarantorName: guarantorName?.trim() || null,
       guarantorAddress: guarantorAddress?.trim() || null,
       guarantorPhone: guarantorPhone?.trim() || null,
+      depositAmount,
+      depositReceiptNo: depositReceiptNo?.trim() || null,
       permCirculation,
       permCatalog,
       permMembers,
@@ -142,6 +147,9 @@ export async function updateMember(formData: FormData) {
   const guarantorName = formData.get("guarantorName") as string | null;
   const guarantorAddress = formData.get("guarantorAddress") as string | null;
   const guarantorPhone = formData.get("guarantorPhone") as string | null;
+  const depositAmountRaw = formData.get("depositAmount") as string | null;
+  const depositAmount = depositAmountRaw && !isNaN(parseFloat(depositAmountRaw)) ? parseFloat(depositAmountRaw) : null;
+  const depositReceiptNo = formData.get("depositReceiptNo") as string | null;
 
   const permCirculation = formData.get("permCirculation") === "on";
   const permCatalog = formData.get("permCatalog") === "on";
@@ -194,6 +202,8 @@ export async function updateMember(formData: FormData) {
     guarantorName: guarantorName?.trim() || null,
     guarantorAddress: guarantorAddress?.trim() || null,
     guarantorPhone: guarantorPhone?.trim() || null,
+    depositAmount,
+    depositReceiptNo: depositReceiptNo?.trim() || null,
     permCirculation,
     permCatalog,
     permMembers,

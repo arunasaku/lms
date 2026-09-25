@@ -31,6 +31,8 @@ model User {
   guarantorName    String?
   guarantorAddress String?
   guarantorPhone   String?
+  depositAmount    Float?
+  depositReceiptNo String?
   // For STAFF permissions
   permCirculation Boolean  @default(false)
   permCatalog     Boolean  @default(false)

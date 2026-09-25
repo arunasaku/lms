@@ -92,7 +92,7 @@ export default async function MemberProfileViewPage({ params }: { params: Promis
                   {user.role}
                 </span>
                 <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
-                  {user.memberType === 'CHILDREN' ? 'Child / Student' : 'Adult'}
+                  {user.memberType === 'SENIOR' ? 'Senior Citizen (Max 5 Books)' : user.memberType === 'CHILDREN' ? 'Child / Student' : 'Adult'}
                 </span>
               </div>
             </div>
@@ -168,6 +168,26 @@ export default async function MemberProfileViewPage({ params }: { params: Promis
               <div>
                 <p className="text-xs font-semibold text-amber-800/70 uppercase">Address</p>
                 <p className="text-slate-900 font-medium">{user.guarantorAddress || "Not specified"}</p>
+              </div>
+            </div>
+          )}
+
+          {/* Security Deposit Details Box */}
+          {(user.depositAmount !== null && user.depositAmount !== undefined || user.depositReceiptNo) && (
+            <div className="bg-emerald-50/80 rounded-xl p-5 border border-emerald-200 space-y-3 text-sm">
+              <h4 className="font-bold text-emerald-950 flex items-center gap-2">
+                <svg className="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+                Security Deposit Information (ඇප තැන්පතු තොරතුරු)
+              </h4>
+              <div>
+                <p className="text-xs font-semibold text-emerald-800/70 uppercase">Deposit Amount</p>
+                <p className="font-bold text-lg text-emerald-800">
+                  Rs. {user.depositAmount ? user.depositAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "0.00"}
+                </p>
+              </div>
+              <div>
+                <p className="text-xs font-semibold text-emerald-800/70 uppercase">Receipt Number</p>
+                <p className="text-slate-900 font-semibold font-mono bg-white/80 px-2.5 py-1 rounded border border-emerald-200/80 inline-block text-xs mt-0.5">{user.depositReceiptNo || "Not specified"}</p>
               </div>
             </div>
           )}

@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { updateMember } from '@/app/members/actions'
 import { RoleSelector } from '@/components/RoleSelector'
+import { GuaranteeSection } from '@/components/GuaranteeSection'
 
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
@@ -109,8 +110,9 @@ export default async function EditMemberPage({ params }: { params: Promise<{ id:
                 defaultValue={member.memberType || "ADULT"}
                 className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
               >
-                <option value="ADULT">Adult</option>
-                <option value="CHILDREN">Child / Student</option>
+                <option value="ADULT">Adult (වැඩිහිටි)</option>
+                <option value="CHILDREN">Child / Student (ළමා / ශිෂ්‍ය)</option>
+                <option value="SENIOR">Senior Citizen (ජ්‍යෙෂ්ඨ පුරවැසි - පොත් 5ක්)</option>
               </select>
             </div>
           </div>
@@ -266,53 +268,14 @@ export default async function EditMemberPage({ params }: { params: Promise<{ id:
             </div>
           </div>
 
-          {/* Guarantor Details Section */}
-          <div className="bg-amber-50/60 p-5 rounded-xl border border-amber-200 space-y-4">
-            <h4 className="font-semibold text-amber-900 text-base flex items-center gap-2">
-              <svg className="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
-              Guarantor Information (ඇපකරුගේ තොරතුරු)
-            </h4>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <label htmlFor="guarantorName" className="block text-sm font-medium text-slate-700">Guarantor Name</label>
-                <input 
-                  type="text" 
-                  id="guarantorName" 
-                  name="guarantorName" 
-                  autoComplete="off"
-                  defaultValue={member.guarantorName || ""}
-                  placeholder="Guarantor's full name..."
-                  className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <label htmlFor="guarantorPhone" className="block text-sm font-medium text-slate-700">Guarantor Phone / WhatsApp No</label>
-                <input 
-                  type="text" 
-                  id="guarantorPhone" 
-                  name="guarantorPhone" 
-                  autoComplete="off"
-                  defaultValue={member.guarantorPhone || ""}
-                  placeholder="e.g. 0771234567"
-                  className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition"
-                />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <label htmlFor="guarantorAddress" className="block text-sm font-medium text-slate-700">Guarantor Address</label>
-              <input 
-                type="text" 
-                id="guarantorAddress" 
-                name="guarantorAddress" 
-                autoComplete="off"
-                defaultValue={member.guarantorAddress || ""}
-                placeholder="Guarantor's address..."
-                className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition"
-              />
-            </div>
-          </div>
+          {/* Guarantor & Security Deposit Section */}
+          <GuaranteeSection
+            defaultGuarantorName={member.guarantorName || ""}
+            defaultGuarantorPhone={member.guarantorPhone || ""}
+            defaultGuarantorAddress={member.guarantorAddress || ""}
+            defaultDepositAmount={member.depositAmount}
+            defaultDepositReceiptNo={member.depositReceiptNo || ""}
+          />
 
           <div className="space-y-2 pt-4 border-t border-slate-100">
             <label htmlFor="password" className="block text-sm font-medium text-slate-700">New Password (Leave blank to keep current)</label>

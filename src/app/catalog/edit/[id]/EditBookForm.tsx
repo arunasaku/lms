@@ -388,8 +388,16 @@ export default function EditBookForm({ book }: { book: any }) {
           </div>
 
           <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <label htmlFor="physicalDetails" className="block text-sm font-medium text-slate-700">Physical Details</label>
+            <label htmlFor="physicalDetails" className="block text-sm font-medium text-slate-700">Physical Details</label>
+            <div className="relative flex items-center">
+              <input 
+                type="text" 
+                id="physicalDetails" 
+                value={physicalDetails}
+                onChange={(e) => setPhysicalDetails(e.target.value)}
+                placeholder="e.g. ill., col. maps"
+                className="w-full pl-4 pr-28 py-2.5 bg-white text-slate-900 font-semibold placeholder:text-slate-400 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition shadow-sm"
+              />
               <select
                 onChange={(e) => {
                   if (!e.target.value) return;
@@ -401,7 +409,7 @@ export default function EditBookForm({ book }: { book: any }) {
                   }
                   e.target.value = "";
                 }}
-                className="px-2.5 py-1 bg-slate-50 text-slate-700 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 transition text-xs font-medium cursor-pointer"
+                className="absolute right-2 px-2 py-1 bg-slate-100 text-slate-700 border border-slate-200 rounded text-xs font-medium cursor-pointer hover:bg-slate-200 focus:outline-none"
                 title="Quick add physical details"
               >
                 <option value="">+ Details</option>
@@ -416,14 +424,6 @@ export default function EditBookForm({ book }: { book: any }) {
                 <option value="port.">port. (Portraits)</option>
               </select>
             </div>
-            <input 
-              type="text" 
-              id="physicalDetails" 
-              value={physicalDetails}
-              onChange={(e) => setPhysicalDetails(e.target.value)}
-              placeholder="e.g. ill., col. maps"
-              className="w-full px-4 py-2.5 bg-white text-slate-900 font-semibold placeholder:text-slate-400 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition shadow-sm"
-            />
           </div>
 
           <div className="space-y-2">
@@ -590,186 +590,150 @@ export default function EditBookForm({ book }: { book: any }) {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
             {/* Subdivision 1 */}
             <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <label htmlFor="subdivision1" className="block text-sm font-medium text-slate-700">Subdivision 1</label>
-                <button
-                  type="button"
-                  onClick={() => setIsCustomSub1(!isCustomSub1)}
-                  className="text-xs text-indigo-600 hover:text-indigo-800 font-medium underline transition"
-                >
-                  {isCustomSub1 ? "📋 Select List" : "✏️ Custom Input"}
-                </button>
-              </div>
-              {isCustomSub1 ? (
+              <label htmlFor="subdivision1" className="block text-sm font-medium text-slate-700">Subdivision 1</label>
+              <div className="relative flex items-center">
                 <input
                   type="text"
                   id="subdivision1"
                   name="subdivision1"
+                  list="subdivision1-list"
                   value={subdivision1}
                   onChange={(e) => setSubdivision1(e.target.value)}
-                  placeholder="Enter custom Subdivision 1..."
-                  className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition text-sm font-medium text-slate-800"
+                  placeholder="Select or type Subdivision 1..."
+                  className="w-full pl-4 pr-10 py-2.5 bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition text-sm font-medium text-slate-800 shadow-sm"
                 />
-              ) : (
-                <select 
-                  id="subdivision1" 
-                  name="subdivision1" 
-                  value={subdivision1}
+                <select
+                  value=""
                   onChange={(e) => {
-                    if (e.target.value === "__CUSTOM__") {
-                      setIsCustomSub1(true);
-                      setSubdivision1("");
-                    } else {
+                    if (e.target.value) {
                       setSubdivision1(e.target.value);
                     }
                   }}
-                  className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition text-sm font-medium text-slate-800"
+                  className="absolute right-2.5 px-1 py-1 text-slate-400 hover:text-slate-600 bg-transparent cursor-pointer focus:outline-none"
+                  title="Select Subdivision 1 from list"
                 >
-                  <option value="">-- Select Subdivision --</option>
+                  <option value="" disabled hidden>▼</option>
                   {subdivisionOptions.map((opt, idx) => (
-                    <option key={idx} value={opt}>{opt}</option>
+                    <option key={idx} value={opt} className="text-slate-800 bg-white">{opt}</option>
                   ))}
-                  <option value="__CUSTOM__">-- ✏️ Custom (Enter Manually) --</option>
                 </select>
-              )}
+                <datalist id="subdivision1-list">
+                  {subdivisionOptions.map((opt, idx) => (
+                    <option key={idx} value={opt} />
+                  ))}
+                </datalist>
+              </div>
             </div>
 
             {/* Subdivision 2 */}
             <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <label htmlFor="subdivision2" className="block text-sm font-medium text-slate-700">Subdivision 2</label>
-                <button
-                  type="button"
-                  onClick={() => setIsCustomSub2(!isCustomSub2)}
-                  className="text-xs text-indigo-600 hover:text-indigo-800 font-medium underline transition"
-                >
-                  {isCustomSub2 ? "📋 Select List" : "✏️ Custom Input"}
-                </button>
-              </div>
-              {isCustomSub2 ? (
+              <label htmlFor="subdivision2" className="block text-sm font-medium text-slate-700">Subdivision 2</label>
+              <div className="relative flex items-center">
                 <input
                   type="text"
                   id="subdivision2"
                   name="subdivision2"
+                  list="subdivision2-list"
                   value={subdivision2}
                   onChange={(e) => setSubdivision2(e.target.value)}
-                  placeholder="Enter custom Subdivision 2..."
-                  className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition text-sm font-medium text-slate-800"
+                  placeholder="Select or type Subdivision 2..."
+                  className="w-full pl-4 pr-10 py-2.5 bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition text-sm font-medium text-slate-800 shadow-sm"
                 />
-              ) : (
-                <select 
-                  id="subdivision2" 
-                  name="subdivision2" 
-                  value={subdivision2}
+                <select
+                  value=""
                   onChange={(e) => {
-                    if (e.target.value === "__CUSTOM__") {
-                      setIsCustomSub2(true);
-                      setSubdivision2("");
-                    } else {
+                    if (e.target.value) {
                       setSubdivision2(e.target.value);
                     }
                   }}
-                  className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition text-sm font-medium text-slate-800"
+                  className="absolute right-2.5 px-1 py-1 text-slate-400 hover:text-slate-600 bg-transparent cursor-pointer focus:outline-none"
+                  title="Select Subdivision 2 from list"
                 >
-                  <option value="">-- Select Subdivision --</option>
+                  <option value="" disabled hidden>▼</option>
                   {subdivision2Options.map((opt, idx) => (
-                    <option key={idx} value={opt}>{opt}</option>
+                    <option key={idx} value={opt} className="text-slate-800 bg-white">{opt}</option>
                   ))}
-                  <option value="__CUSTOM__">-- ✏️ Custom (Enter Manually) --</option>
                 </select>
-              )}
+                <datalist id="subdivision2-list">
+                  {subdivision2Options.map((opt, idx) => (
+                    <option key={idx} value={opt} />
+                  ))}
+                </datalist>
+              </div>
             </div>
 
             {/* Subdivision 3 */}
             <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <label htmlFor="subdivision3" className="block text-sm font-medium text-slate-700">Subdivision 3</label>
-                <button
-                  type="button"
-                  onClick={() => setIsCustomSub3(!isCustomSub3)}
-                  className="text-xs text-indigo-600 hover:text-indigo-800 font-medium underline transition"
-                >
-                  {isCustomSub3 ? "📋 Select List" : "✏️ Custom Input"}
-                </button>
-              </div>
-              {isCustomSub3 ? (
+              <label htmlFor="subdivision3" className="block text-sm font-medium text-slate-700">Subdivision 3</label>
+              <div className="relative flex items-center">
                 <input
                   type="text"
                   id="subdivision3"
                   name="subdivision3"
+                  list="subdivision3-list"
                   value={subdivision3}
                   onChange={(e) => setSubdivision3(e.target.value)}
-                  placeholder="Enter custom Subdivision 3..."
-                  className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition text-sm font-medium text-slate-800"
+                  placeholder="Select or type Subdivision 3..."
+                  className="w-full pl-4 pr-10 py-2.5 bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition text-sm font-medium text-slate-800 shadow-sm"
                 />
-              ) : (
-                <select 
-                  id="subdivision3" 
-                  name="subdivision3" 
-                  value={subdivision3}
+                <select
+                  value=""
                   onChange={(e) => {
-                    if (e.target.value === "__CUSTOM__") {
-                      setIsCustomSub3(true);
-                      setSubdivision3("");
-                    } else {
+                    if (e.target.value) {
                       setSubdivision3(e.target.value);
                     }
                   }}
-                  className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition text-sm font-medium text-slate-800"
+                  className="absolute right-2.5 px-1 py-1 text-slate-400 hover:text-slate-600 bg-transparent cursor-pointer focus:outline-none"
+                  title="Select Subdivision 3 from list"
                 >
-                  <option value="">-- Select Subdivision --</option>
+                  <option value="" disabled hidden>▼</option>
                   {subdivision3Options.map((opt, idx) => (
-                    <option key={idx} value={opt}>{opt}</option>
+                    <option key={idx} value={opt} className="text-slate-800 bg-white">{opt}</option>
                   ))}
-                  <option value="__CUSTOM__">-- ✏️ Custom (Enter Manually) --</option>
                 </select>
-              )}
+                <datalist id="subdivision3-list">
+                  {subdivision3Options.map((opt, idx) => (
+                    <option key={idx} value={opt} />
+                  ))}
+                </datalist>
+              </div>
             </div>
 
             {/* Subdivision 4 */}
             <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <label htmlFor="subdivision4" className="block text-sm font-medium text-slate-700">Subdivision 4</label>
-                <button
-                  type="button"
-                  onClick={() => setIsCustomSub4(!isCustomSub4)}
-                  className="text-xs text-indigo-600 hover:text-indigo-800 font-medium underline transition"
-                >
-                  {isCustomSub4 ? "📋 Select List" : "✏️ Custom Input"}
-                </button>
-              </div>
-              {isCustomSub4 ? (
+              <label htmlFor="subdivision4" className="block text-sm font-medium text-slate-700">Subdivision 4</label>
+              <div className="relative flex items-center">
                 <input
                   type="text"
                   id="subdivision4"
                   name="subdivision4"
+                  list="subdivision4-list"
                   value={subdivision4}
                   onChange={(e) => setSubdivision4(e.target.value)}
-                  placeholder="Enter custom Subdivision 4..."
-                  className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition text-sm font-medium text-slate-800"
+                  placeholder="Select or type Subdivision 4..."
+                  className="w-full pl-4 pr-10 py-2.5 bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition text-sm font-medium text-slate-800 shadow-sm"
                 />
-              ) : (
-                <select 
-                  id="subdivision4" 
-                  name="subdivision4" 
-                  value={subdivision4}
+                <select
+                  value=""
                   onChange={(e) => {
-                    if (e.target.value === "__CUSTOM__") {
-                      setIsCustomSub4(true);
-                      setSubdivision4("");
-                    } else {
+                    if (e.target.value) {
                       setSubdivision4(e.target.value);
                     }
                   }}
-                  className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition text-sm font-medium text-slate-800"
+                  className="absolute right-2.5 px-1 py-1 text-slate-400 hover:text-slate-600 bg-transparent cursor-pointer focus:outline-none"
+                  title="Select Subdivision 4 from list"
                 >
-                  <option value="">-- Select Subdivision --</option>
+                  <option value="" disabled hidden>▼</option>
                   {subdivision4Options.map((opt, idx) => (
-                    <option key={idx} value={opt}>{opt}</option>
+                    <option key={idx} value={opt} className="text-slate-800 bg-white">{opt}</option>
                   ))}
-                  <option value="__CUSTOM__">-- ✏️ Custom (Enter Manually) --</option>
                 </select>
-              )}
+                <datalist id="subdivision4-list">
+                  {subdivision4Options.map((opt, idx) => (
+                    <option key={idx} value={opt} />
+                  ))}
+                </datalist>
+              </div>
             </div>
           </div>
         </div>
