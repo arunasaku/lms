@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useSession } from "next-auth/react";
+import { usePathname } from "next/navigation";
 
 interface ChatUser {
   id: string;
@@ -31,6 +32,8 @@ export function SystemConfigChatWidget() {
   const { data: session } = useSession();
   const currentUserId = (session?.user as any)?.id || (session?.user as any)?.sub;
   const userRole = (session?.user as any)?.role;
+  const pathname = usePathname();
+  const isToolsPage = pathname?.startsWith("/tools");
 
   const [isOpen, setIsOpen] = useState(false);
   const [users, setUsers] = useState<ChatUser[]>([]);
@@ -482,6 +485,8 @@ export function SystemConfigChatWidget() {
   return (
     <div className="fixed bottom-4 right-4 z-50 print:hidden font-sans">
       <audio ref={remoteAudioRef} autoPlay className="hidden" />
+
+
 
       {/* Chat Drawer Window */}
       {isOpen && (

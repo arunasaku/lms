@@ -1,6 +1,6 @@
 "use client";
 
-export function OpenChatButton({ label = "Open Communications →" }: { label?: string }) {
+export function OpenChatButton({ label = "System Config →" }: { label?: string }) {
   return (
     <button
       onClick={() => {
