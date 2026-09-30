@@ -317,6 +317,17 @@ export function SystemConfigChatWidget() {
     }
   };
 
+  // Auto-cancel incoming call after 30 seconds of ringing if unanswered
+  useEffect(() => {
+    let timer: any;
+    if (callState === "RINGING") {
+      timer = setTimeout(() => {
+        cleanupCall();
+      }, 30000);
+    }
+    return () => clearTimeout(timer);
+  }, [callState]);
+
   // Fetch messages function & signaling listener
   const fetchMessages = async () => {
     if (!isAuthorized) return;
@@ -327,6 +338,7 @@ export function SystemConfigChatWidget() {
         setMessages(data);
 
         // Process WebRTC call signals
+        const currentTime = Date.now();
         data.forEach((msg) => {
           if (
             msg.senderId !== currentUserId &&
@@ -335,6 +347,10 @@ export function SystemConfigChatWidget() {
             !handledSignalIds.current.has(msg.id)
           ) {
             handledSignalIds.current.add(msg.id);
+
+            // Ignore stale signals older than 45 seconds
+            const msgAge = currentTime - new Date(msg.createdAt).getTime();
+            if (msgAge > 45000) return;
 
             if (msg.messageType === "CALL_OFFER" && msg.callSignal) {
               const sig = JSON.parse(msg.callSignal);

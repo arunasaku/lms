@@ -13,7 +13,7 @@ export async function PATCH(req: Request, props: { params: Promise<{ id: string 
     const userRole = (session?.user as any)?.role;
     const userId = (session?.user as any)?.id;
 
-    if (!session || userRole !== "ADMIN") {
+    if (!session || userRole?.toUpperCase() !== "ADMIN") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
 

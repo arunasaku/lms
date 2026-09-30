@@ -5,10 +5,20 @@ import { authOptions } from "@/lib/auth";
 
 const prisma = new PrismaClient();
 
-// Clean up expired auto-disappearing messages
+// Clean up expired auto-disappearing messages & stale call signals
 async function cleanupExpiredMessages() {
   try {
     const now = new Date();
+    const oneMinuteAgo = new Date(now.getTime() - 60 * 1000);
+
+    // Delete WebRTC call signal messages older than 60 seconds
+    await prisma.adminChatMessage.deleteMany({
+      where: {
+        messageType: { not: "TEXT" },
+        createdAt: { lt: oneMinuteAgo }
+      }
+    });
+
     const readMessages = await prisma.adminChatMessage.findMany({
       where: {
         isRead: true,
