@@ -5,7 +5,6 @@ import Link from "next/link";
 import { Providers } from "@/components/Providers";
 import { Navigation } from "@/components/Navigation";
 import { LogoutButton } from "@/components/LogoutButton";
-import { SystemConfigChatWidget } from "@/components/SystemConfigChatWidget";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { PrismaClient } from "@prisma/client";
@@ -51,7 +50,6 @@ export default async function RootLayout({
         className={`${inter.className} antialiased bg-slate-50 text-slate-900 flex flex-col md:flex-row h-screen overflow-hidden`}
       >
         <Providers session={session}>
-          <SystemConfigChatWidget />
           {session ? (
             <>
               <Navigation session={session} libraryName={libraryName} instituteName={instituteName} headerFontSize={headerFontSize}>

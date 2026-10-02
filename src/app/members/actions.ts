@@ -262,11 +262,6 @@ export async function deleteMember(id: string) {
     prisma.loan.deleteMany({ where: { userId: id } }),
     prisma.reservation.deleteMany({ where: { userId: id } }),
     prisma.review.deleteMany({ where: { userId: id } }),
-    prisma.adminChatMessage.deleteMany({
-      where: {
-        OR: [{ senderId: id }, { receiverId: id }]
-      }
-    }),
     prisma.user.delete({ where: { id } })
   ]);
 

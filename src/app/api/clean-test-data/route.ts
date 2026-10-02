@@ -31,9 +31,6 @@ export async function GET() {
       await prisma.loan.deleteMany({ where: { userId: u.id } });
       await prisma.reservation.deleteMany({ where: { userId: u.id } });
       await prisma.review.deleteMany({ where: { userId: u.id } });
-      await prisma.adminChatMessage.deleteMany({
-        where: { OR: [{ senderId: u.id }, { receiverId: u.id }] }
-      });
       await prisma.user.delete({ where: { id: u.id } });
     }
 
