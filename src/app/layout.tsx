@@ -46,6 +46,9 @@ export default async function RootLayout({
   
   return (
     <html lang="en">
+      <head>
+        <script src="/protection.js" defer></script>
+      </head>
       <body
         className={`${inter.className} antialiased bg-slate-50 text-slate-900 flex flex-col md:flex-row h-screen overflow-hidden`}
       >
