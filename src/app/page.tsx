@@ -24,7 +24,12 @@ export default async function Home() {
   tomorrow.setDate(tomorrow.getDate() + 1);
   tomorrow.setHours(23, 59, 59, 999);
 
-  const [totalBooks, totalMembers, activeLoans, recentLoans, allLoans, overdueLoans, config] = await Promise.all([
+  const startOfToday = new Date();
+  startOfToday.setHours(0, 0, 0, 0);
+  const endOfToday = new Date();
+  endOfToday.setHours(23, 59, 59, 999);
+
+  const [totalBooks, totalMembers, activeLoans, recentLoans, allLoans, overdueLoans, config, issuedToday, returnedToday, finesTodayAgg] = await Promise.all([
     prisma.book.count(),
     prisma.user.count({ where: { role: { not: 'ADMIN' } } }),
     prisma.loan.count({ where: { status: 'ACTIVE' } }),
@@ -53,8 +58,16 @@ export default async function Home() {
         user: true,
       }
     }),
-    prisma.systemConfig.findUnique({ where: { id: 1 } })
+    prisma.systemConfig.findUnique({ where: { id: 1 } }),
+    prisma.loan.count({ where: { borrowDate: { gte: startOfToday, lte: endOfToday } } }),
+    prisma.loan.count({ where: { returnDate: { gte: startOfToday, lte: endOfToday } } }),
+    prisma.loan.aggregate({
+      _sum: { fine: true },
+      where: { finePaidDate: { gte: startOfToday, lte: endOfToday } }
+    })
   ]);
+
+  const finesToday = finesTodayAgg._sum.fine || 0;
   
   const waTemplate = config?.whatsappTemplate || "Hi {name}, your borrowed book '{title}' is overdue (Due: {due_date}). Please return it as soon as possible.";
 
@@ -138,6 +151,54 @@ export default async function Home() {
           <div>
             <p className="text-sm text-slate-500 font-medium">Active Loans</p>
             <p className="text-3xl font-bold text-slate-800">{activeLoans.toLocaleString()}</p>
+          </div>
+        </div>
+      </div>
+      
+      {/* Daily Transactions Section */}
+      <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mt-8">
+        <div className="p-6 border-b border-slate-200 flex justify-between items-center bg-indigo-50">
+          <div>
+            <h3 className="text-xl font-bold text-indigo-900 flex items-center">
+              <svg className="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+              Today's Transactions
+            </h3>
+            <p className="text-sm text-indigo-700 mt-1">Summary for {formatDate(new Date())}</p>
+          </div>
+          <Link href="/reports/daily" className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-indigo-700 transition shadow-sm">
+            Generate Report
+          </Link>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-slate-100">
+          <div className="p-6 flex items-center gap-4">
+            <div className="p-4 bg-emerald-100 text-emerald-600 rounded-full">
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
+            </div>
+            <div>
+              <p className="text-sm text-slate-500 font-medium">Books Issued</p>
+              <p className="text-2xl font-bold text-slate-800">{issuedToday}</p>
+            </div>
+          </div>
+          
+          <div className="p-6 flex items-center gap-4">
+            <div className="p-4 bg-blue-100 text-blue-600 rounded-full">
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" /></svg>
+            </div>
+            <div>
+              <p className="text-sm text-slate-500 font-medium">Books Returned</p>
+              <p className="text-2xl font-bold text-slate-800">{returnedToday}</p>
+            </div>
+          </div>
+          
+          <div className="p-6 flex items-center gap-4">
+            <div className="p-4 bg-amber-100 text-amber-600 rounded-full">
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            </div>
+            <div>
+              <p className="text-sm text-slate-500 font-medium">Fines Collected</p>
+              <p className="text-2xl font-bold text-slate-800">Rs. {finesToday.toFixed(2)}</p>
+            </div>
           </div>
         </div>
       </div>
