@@ -3,8 +3,9 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import ReportControls from "./ReportControls";
 
-export default async function DailyReportPage({ searchParams }: { searchParams: { date?: string } }) {
+export default async function DailyReportPage({ searchParams }: { searchParams: Promise<{ date?: string }> | { date?: string } }) {
   const session = await getServerSession(authOptions);
   
   if (!session) {
@@ -18,7 +19,9 @@ export default async function DailyReportPage({ searchParams }: { searchParams: 
     redirect("/catalog");
   }
 
-  const dateParam = searchParams.date || new Date().toISOString().split('T')[0];
+  // Handle Next.js 15 async searchParams
+  const params = await searchParams;
+  const dateParam = params?.date || new Date().toISOString().split('T')[0];
   
   const targetDate = new Date(dateParam);
   const startOfDay = new Date(targetDate);
@@ -59,14 +62,11 @@ export default async function DailyReportPage({ searchParams }: { searchParams: 
           <h2 className="text-3xl font-bold text-slate-800">Daily Transaction Report</h2>
           <p className="text-slate-500 mt-1">Detailed summary of library activities.</p>
         </div>
-        <div className="flex gap-4">
-          <Link href="/" className="px-4 py-2 bg-slate-100 text-slate-700 rounded-lg font-medium hover:bg-slate-200 transition">
+        <div className="flex gap-4 items-center">
+          <Link href="/" className="px-4 py-2 bg-slate-100 text-slate-700 rounded-lg text-sm font-medium hover:bg-slate-200 transition">
             Back to Dashboard
           </Link>
-          <button className="px-4 py-2 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 transition"
-                  onMouseDown={(e) => { e.preventDefault(); }}>
-            Print Report (Ctrl+P)
-          </button>
+          <ReportControls defaultDate={dateParam} />
         </div>
       </div>
 
